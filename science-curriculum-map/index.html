@@ -113,6 +113,24 @@ body.v-hub #homeBtn{display:none}
   font-size:12.5px; color:var(--sub);
 }
 .hubHead .nums b{color:var(--ink); font-weight:800}
+.visitHub{
+  background:color-mix(in srgb, var(--earth) 8%, #fff);
+  border:1px solid color-mix(in srgb, var(--earth) 24%, #fff);
+  color:var(--ink) !important;
+}
+.visitHub b{color:var(--earth) !important}
+.visitHub .today{color:var(--sub); font-weight:500; margin-left:5px; font-size:11px}
+/* 헤더 오른쪽 배지 */
+.visitBadge{
+  display:inline-flex; align-items:center; gap:5px; padding:5px 11px;
+  background:#f1f6fb; border:1px solid #d0e2f2; border-radius:14px;
+  font-size:12px; color:#495057; margin-left:auto;
+}
+.visitBadge b{color:var(--earth); font-weight:800}
+.visitBadge[hidden]{display:none}
+body.v-hub .visitBadge{display:none}   /* 허브에서는 하단 스트립에 이미 있으니 중복 방지 */
+@media (max-width:640px){ .visitBadge{padding:4px 9px; font-size:11px} }
+@media print{ .visitBadge, .visitHub{display:none !important} }
 /* 카드 */
 .hubCards{display:grid; grid-template-columns:repeat(auto-fit,minmax(232px,1fr)); gap:14px; margin-bottom:12px}
 .hubCard{
@@ -855,6 +873,7 @@ footer#app-credit{flex:none}
   <button class="hbtn" id="denseBtn" onclick="toggleDense()" title="지도를 조밀하게">⇕ 밀도</button>
   <button class="hbtn" id="tipBtn" onclick="openTip()" title="이 지도의 핵심 사용법">❓ 사용법</button>
   <a class="hbtn" href="about/" style="text-decoration:none" title="이 지도 소개 · 함께 만들기">🤝 소개</a>
+  <span id="visitBadge" class="visitBadge" hidden></span>
   <button class="hbtn" id="clearBtn" onclick="clearFilters()" hidden>✕ 필터 해제</button>
   <div class="legend" id="legend"></div>
 </header>
@@ -1103,6 +1122,7 @@ function renderHub(){
       <span><b>359</b> 성취수준 A~E</span>
       <span><b>${nQ}</b> 예시 문항</span>
       <span><b>${miscList().length}</b> 오개념</span>
+      <span id="visitHub" class="visitHub" hidden></span>
     </div>
   </div>`;
 
@@ -1144,7 +1164,73 @@ function renderHub(){
   </div>`;
 
   document.getElementById('hubBody').innerHTML = h;
+  renderVisits();                        // 허브를 다시 그릴 때마다 최신 카운트 반영
 }
+
+/* ---------- 방문자 카운트 (Supabase) ----------
+ * 오프라인 사용도 지원해야 하므로:
+ *  - 키가 없거나 요청 실패 시 조용히 숨김 (앱 동작에는 영향 없음)
+ *  - 같은 브라우저에서 하루 1회만 카운트 증가 (새로고침에도 안 늘어남)
+ */
+const VISITS = {
+  url:     '',                            // 예: 'https://xxxx.supabase.co'  — 사용자 채움
+  anonKey: '',                            // Supabase anon public key       — 사용자 채움
+  site:    'science-curriculum-map',      // Supabase의 site 컬럼 값
+};
+let visitData = null;                     // { today, total }
+
+async function fetchVisits(bump){
+  if(!VISITS.url || !VISITS.anonKey) return null;
+  const fn = bump ? 'bump_visit' : 'get_visits';
+  try {
+    const r = await fetch(`${VISITS.url}/rest/v1/rpc/${fn}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': VISITS.anonKey,
+        'Authorization': 'Bearer ' + VISITS.anonKey,
+      },
+      body: JSON.stringify({ p_site: VISITS.site }),
+    });
+    if(!r.ok) return null;
+    const j = await r.json();
+    const row = Array.isArray(j) ? j[0] : j;
+    if(!row || row.total == null) return null;
+    return { today: +row.today, total: +row.total };
+  } catch(e){ return null; }
+}
+
+function fmt(n){ return (n||0).toLocaleString('ko-KR'); }
+function renderVisits(){
+  const v = visitData;
+  const head = document.getElementById('visitBadge');
+  const hub  = document.getElementById('visitHub');
+  if(!v){
+    if(head) head.hidden = true;
+    if(hub) hub.hidden = true;
+    return;
+  }
+  if(head){
+    head.hidden = false;
+    head.innerHTML = `<span>지금까지</span> <b>${fmt(v.total)}</b>번 열림`;
+    head.title = `오늘 ${fmt(v.today)}회 · 누적 ${fmt(v.total)}회`;
+  }
+  if(hub){
+    hub.hidden = false;
+    hub.innerHTML = `<b>${fmt(v.total)}</b>번 함께 열어봤어요<span class="today">오늘 ${fmt(v.today)}</span>`;
+  }
+}
+
+async function initVisits(){
+  if(!VISITS.url || !VISITS.anonKey) return;   // 아직 키 미설정 — 조용히 지나감
+  const today = new Date().toLocaleDateString('sv-SE');   // 'YYYY-MM-DD' KST 근사
+  const last = LS.get('visitDay', '');
+  const bump = last !== today;
+  visitData = await fetchVisits(bump);
+  if(bump && visitData) LS.set('visitDay', today);
+  renderVisits();
+}
+initVisits();
 
 /* 교육학적 설명 — 나선형 조직 / 왜 알아야 하나 / 진단평가 */
 function hubPedagogy(){
