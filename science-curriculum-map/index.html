@@ -1172,10 +1172,13 @@ function renderHub(){
  *  - 키가 없거나 요청 실패 시 조용히 숨김 (앱 동작에는 영향 없음)
  *  - 같은 브라우저에서 하루 1회만 카운트 증가 (새로고침에도 안 늘어남)
  */
+// Supabase A (과학이조선생 프로젝트) — 여러 교사 앱이 공용으로 쓰는 곳.
+// anon key는 클라이언트에 그대로 넣도록 설계된 공개 값(브라우저에 노출되어도 안전).
+// 실제 보안은 RLS와 함수 실행 권한으로 걸어둔다(테이블 직접 접근 불가, bump/get 함수만 anon에 grant).
 const VISITS = {
-  url:     '',                            // 예: 'https://xxxx.supabase.co'  — 사용자 채움
-  anonKey: '',                            // Supabase anon public key       — 사용자 채움
-  site:    'science-curriculum-map',      // Supabase의 site 컬럼 값
+  url:     'https://vbvtnmnodeoocbbjauap.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZidnRubW5vZGVvb2NiYmphdWFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0OTQ0OTYsImV4cCI6MjA5NTA3MDQ5Nn0.dvuRrt3qw2Tya_QwGbcXrmGPdfDgI4xmgyH8UjU73Nc',
+  site:    'science-curriculum-map',      // Supabase의 site 컬럼 값 (앱마다 다르게 두면 한 테이블에서 앱별 카운트 가능)
 };
 let visitData = null;                     // { today, total }
 
