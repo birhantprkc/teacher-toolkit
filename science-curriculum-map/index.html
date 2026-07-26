@@ -113,24 +113,34 @@ body.v-hub #homeBtn{display:none}
   font-size:12.5px; color:var(--sub);
 }
 .hubHead .nums b{color:var(--ink); font-weight:800}
-.visitHub{
-  background:color-mix(in srgb, var(--earth) 8%, #fff);
-  border:1px solid color-mix(in srgb, var(--earth) 24%, #fff);
-  color:var(--ink) !important;
+/* 방문자 카운터 — 애널리틱스 배지 스타일 (VISIT · TOTAL · TODAY) */
+.visit{
+  display:inline-flex; align-items:center; gap:0;
+  border:1px solid color-mix(in srgb, var(--earth) 32%, #fff);
+  background:#fff; border-radius:14px; overflow:hidden;
+  font-size:11.5px; font-family:'SF Mono','Consolas','Menlo','Malgun Gothic',monospace;
+  letter-spacing:.01em; line-height:1;
 }
-.visitHub b{color:var(--earth) !important}
-.visitHub .today{color:var(--sub); font-weight:500; margin-left:5px; font-size:11px}
-/* 헤더 오른쪽 배지 */
-.visitBadge{
-  display:inline-flex; align-items:center; gap:5px; padding:5px 11px;
-  background:color-mix(in srgb, var(--earth) 12%, #fff);
-  border:1px solid color-mix(in srgb, var(--earth) 35%, #fff);
-  border-radius:14px; font-size:12px; color:#212529; margin-left:auto;
+.visit[hidden]{display:none}
+.visit .lbl{
+  background:var(--earth); color:#fff;
+  padding:5px 9px; font-weight:800; letter-spacing:.14em; font-size:10.5px;
 }
-.visitBadge b{color:var(--earth); font-weight:800}
-.visitBadge[hidden]{display:none}
-/* 허브 하단 스트립은 스크롤해야 보이므로 헤더 배지를 허브에서도 살려 첫 화면에 노출 */
-@media (max-width:640px){ .visitBadge{padding:4px 9px; font-size:11px} }
+.visit .cell{padding:5px 10px; color:#495057; display:inline-flex; align-items:center; gap:5px}
+.visit .cell + .cell{border-left:1px solid var(--line)}
+.visit .cell .k{font-size:9.5px; font-weight:800; color:#868e96; letter-spacing:.12em}
+.visit .cell .v{font-size:12.5px; font-weight:800; color:var(--ink)}
+/* 헤더에서는 오른쪽 정렬 */
+#visitBadge{margin-left:auto}
+/* 허브 스트립 안에서는 다른 통계 칩과 어울리게 살짝 크게 */
+.hubHead .nums #visitHub{font-size:12px}
+@media (max-width:640px){
+  .visit{font-size:11px}
+  .visit .lbl{padding:4px 7px; font-size:10px}
+  .visit .cell{padding:4px 8px}
+  .visit .cell .v{font-size:12px}
+}
+@media print{ .visit{display:none !important} }
 @media print{ .visitBadge, .visitHub{display:none !important} }
 /* 카드 */
 .hubCards{display:grid; grid-template-columns:repeat(auto-fit,minmax(232px,1fr)); gap:14px; margin-bottom:12px}
@@ -874,7 +884,7 @@ footer#app-credit{flex:none}
   <button class="hbtn" id="denseBtn" onclick="toggleDense()" title="지도를 조밀하게">⇕ 밀도</button>
   <button class="hbtn" id="tipBtn" onclick="openTip()" title="이 지도의 핵심 사용법">❓ 사용법</button>
   <a class="hbtn" href="about/" style="text-decoration:none" title="이 지도 소개 · 함께 만들기">🤝 소개</a>
-  <span id="visitBadge" class="visitBadge" hidden></span>
+  <span id="visitBadge" class="visit" hidden></span>
   <button class="hbtn" id="clearBtn" onclick="clearFilters()" hidden>✕ 필터 해제</button>
   <div class="legend" id="legend"></div>
 </header>
@@ -1123,7 +1133,7 @@ function renderHub(){
       <span><b>359</b> 성취수준 A~E</span>
       <span><b>${nQ}</b> 예시 문항</span>
       <span><b>${miscList().length}</b> 오개념</span>
-      <span id="visitHub" class="visitHub" hidden></span>
+      <span id="visitHub" class="visit" hidden></span>
     </div>
   </div>`;
 
@@ -1214,15 +1224,13 @@ function renderVisits(){
     if(hub) hub.hidden = true;
     return;
   }
-  if(head){
-    head.hidden = false;
-    head.innerHTML = `<span>지금까지</span> <b>${fmt(v.total)}</b>번 열림`;
-    head.title = `오늘 ${fmt(v.today)}회 · 누적 ${fmt(v.total)}회`;
-  }
-  if(hub){
-    hub.hidden = false;
-    hub.innerHTML = `<b>${fmt(v.total)}</b>번 함께 열어봤어요<span class="today">오늘 ${fmt(v.today)}</span>`;
-  }
+  // 애널리틱스 배지 스타일: [VISIT] TOTAL 5,340 · TODAY 12
+  const body = `<span class="lbl">VISIT</span>`
+    + `<span class="cell"><span class="k">TOTAL</span><span class="v">${fmt(v.total)}</span></span>`
+    + `<span class="cell"><span class="k">TODAY</span><span class="v">${fmt(v.today)}</span></span>`;
+  const title = `TOTAL ${fmt(v.total)} · TODAY ${fmt(v.today)}`;
+  if(head){ head.hidden = false; head.innerHTML = body; head.title = title; }
+  if(hub){  hub.hidden  = false; hub.innerHTML  = body; hub.title  = title; }
 }
 
 async function initVisits(){
