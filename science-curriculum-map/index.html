@@ -123,12 +123,13 @@ body.v-hub #homeBtn{display:none}
 /* 헤더 오른쪽 배지 */
 .visitBadge{
   display:inline-flex; align-items:center; gap:5px; padding:5px 11px;
-  background:#f1f6fb; border:1px solid #d0e2f2; border-radius:14px;
-  font-size:12px; color:#495057; margin-left:auto;
+  background:color-mix(in srgb, var(--earth) 12%, #fff);
+  border:1px solid color-mix(in srgb, var(--earth) 35%, #fff);
+  border-radius:14px; font-size:12px; color:#212529; margin-left:auto;
 }
 .visitBadge b{color:var(--earth); font-weight:800}
 .visitBadge[hidden]{display:none}
-body.v-hub .visitBadge{display:none}   /* 허브에서는 하단 스트립에 이미 있으니 중복 방지 */
+/* 허브 하단 스트립은 스크롤해야 보이므로 헤더 배지를 허브에서도 살려 첫 화면에 노출 */
 @media (max-width:640px){ .visitBadge{padding:4px 9px; font-size:11px} }
 @media print{ .visitBadge, .visitHub{display:none !important} }
 /* 카드 */
