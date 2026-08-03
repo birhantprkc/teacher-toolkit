@@ -1,0 +1,16 @@
+{
+  "name": "학습지 스튜디오",
+  "short_name": "학습지",
+  "description": "수업 내용을 블록으로 조립해 A4 학습지를 만들고 교사용·학생용·정답지를 한 번에 뽑는 도구",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0e8a80",
+  "lang": "ko",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
