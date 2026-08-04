@@ -273,7 +273,13 @@ if (VIEWER) document.body.classList.add('viewer');
 /* ───────── 무대 크기 맞추기 ───────── */
 const W = 1080, H = 1920, stage = document.getElementById('stage');
 function fit(){
-  const s = Math.min(innerWidth / W, innerHeight / H);
+  // 로딩 중이나 탭 복원 직후 창 크기를 0으로 읽는 순간이 있다.
+  // 그대로 적용하면 배율이 0이 되어 화면이 통째로 사라지고 복구되지 않는다.
+  const vw = innerWidth || document.documentElement.clientWidth;
+  const vh = innerHeight || document.documentElement.clientHeight;
+  if (!(vw > 0 && vh > 0)) return;
+  const s = Math.min(vw / W, vh / H);
+  if (!(s > 0)) return;
   stage.style.transform = `translate(-50%,-50%) scale(${s})`;
   showRegion();
 }
