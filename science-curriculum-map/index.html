@@ -240,6 +240,10 @@ body.v-hub #homeBtn{display:none}
   padding:10px 20px; font-size:13.5px; color:var(--ink); font-weight:600;
 }
 .hubFoot a:hover{border-color:#868e96}
+.hubFoot a.introLink{
+  background:#212529; color:#fff; border-color:#212529; font-weight:700;
+}
+.hubFoot a.introLink:hover{background:#000; border-color:#000}
 @media (max-width:640px){
   .spStep{margin-right:0; margin-bottom:22px}
   .spStep::after{content:'▼'; right:auto; left:50%; top:auto; bottom:-17px; transform:translateX(-50%)}
@@ -1191,6 +1195,7 @@ function renderHub(){
   h += hubPedagogy();
 
   h += `<div class="hubFoot">
+    <a href="intro/" class="introLink">▶ 30초 소개 영상</a>
     <a href="#" onclick="event.preventDefault();openTip()">❓ 사용법 — 선을 눌러 보세요</a>
     <a href="about/">🤝 이 지도 소개 · 함께 만들기</a>
   </div>`;
