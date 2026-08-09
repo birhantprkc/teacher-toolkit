@@ -74,8 +74,52 @@ table{border-collapse:collapse;width:100%;font-size:13.6px;min-width:620px}
 th,td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
 th{background:#f2f4f7;font-weight:700;font-size:12.8px;position:sticky;top:0}
 tbody tr:hover{background:#fafbfc}
-td.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 td.name{white-space:normal;min-width:120px;font-weight:600}
+
+/* 가격표 전용 — 열 정렬 고정 */
+#ptable{table-layout:fixed;min-width:760px}
+#ptable th,#ptable td{padding:9px 10px;overflow:hidden;text-overflow:ellipsis}
+#ptable th.num,#ptable td.num{padding-right:14px}
+#ptable .sep{border-left:1px solid var(--line)}
+#ptable thead th{vertical-align:bottom;line-height:1.35;white-space:normal}
+#ptable th small{display:block;font-weight:600;font-size:11px;opacity:.75;margin-top:1px}
+
+/* 토글 */
+details.d{border:1px solid var(--line);border-radius:9px;margin-bottom:6px;background:#fff}
+details.d[open]{background:#fcfdfe;border-color:#cfd8e3}
+details.d>summary{cursor:pointer;padding:8px 11px;font-size:13.3px;font-weight:600;
+  list-style:none;display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+details.d>summary::-webkit-details-marker{display:none}
+details.d>summary::before{content:'+';flex:0 0 auto;width:15px;height:15px;margin-top:3px;
+  border-radius:4px;background:#eef1f5;color:var(--sub);font-size:12px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;line-height:1}
+details.d[open]>summary::before{content:'−';background:var(--accent);color:#fff}
+details.d.p>summary::before{background:#dcfce7;color:var(--ok)}
+details.d.c>summary::before{background:#fee2e2;color:var(--bad)}
+details.d[open].p>summary::before,details.d[open].c>summary::before{background:var(--accent);color:#fff}
+details.d .dbody{padding:0 12px 11px 34px;font-size:12.9px;color:var(--sub);line-height:1.7}
+details.d .dbody b{color:var(--ink)}
+
+/* 매뉴얼 배지 */
+.manual{border-radius:9px;padding:9px 11px;font-size:12.6px;line-height:1.6;margin-bottom:12px}
+.manual.good{background:#ecfdf5;border:1px solid #a7f3d0}
+.manual.mid{background:#fffbeb;border:1px solid #fde68a}
+.manual .mtitle{font-weight:800;font-size:12px;letter-spacing:.2px;margin-bottom:2px}
+.manual.good .mtitle{color:var(--ok)} .manual.mid .mtitle{color:var(--warn)}
+
+/* 출처 */
+.credits{background:#fff;border:1px solid var(--line);border-radius:var(--r);
+  padding:20px 22px;margin-top:22px}
+.credits h3{margin:0 0 4px;font-size:15px;color:var(--ink)}
+.credits p.lead{margin:0 0 14px;color:var(--sub);font-size:13.3px}
+.credits ul{margin:0;padding:0;list-style:none;display:grid;gap:11px}
+.credits li{font-size:13.3px;line-height:1.65}
+.credits li b{color:var(--accent)}
+.credits li .who{color:var(--sub);font-size:12.5px}
+.credits a{color:var(--accent);word-break:break-all}
+.credits .thanks{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);
+  font-size:12.9px;color:var(--sub);line-height:1.75}
 .cheap{color:var(--ok);font-weight:700}
 .dash{color:#b6bcc4}
 .chip{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;
@@ -173,98 +217,211 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
 <!-- ============ 탭1 업체 비교 ============ -->
 <section class="panel on" id="p1">
   <div class="card">
-    <h2>업체 4곳, 어디가 우리 학교에 맞나</h2>
-    <p class="lead">가격대와 운용 방식이 뚜렷하게 다릅니다. 우열이 아니라 <b>예산 규모와 학교 여건에 따른 선택</b>의 문제입니다.</p>
+    <h2>업체 4곳, 중학교 수업에 쓴다면</h2>
+    <p class="lead">
+      성능 스펙이 아니라 <b>중학교 교실에서 실제로 굴릴 수 있는가</b>를 기준으로 정리했습니다.
+      판단 축은 네 가지 — <b>① 중학교 수업 매뉴얼이 있는가 ② 모둠 수만큼 살 수 있는가 ③ 수업 준비가 간단한가 ④ 학교 기기에서 돌아가는가</b>.
+      우열이 아니라 학교 여건에 따른 선택의 문제입니다.
+    </p>
+
+    <h3 style="margin-top:4px">먼저 보면 좋은 것 — 중학교 수업 매뉴얼</h3>
+    <p style="font-size:13.5px;margin:0 0 10px;color:var(--sub)">
+      센서를 사고도 안 쓰게 되는 가장 큰 이유는 <b>"이걸로 무슨 수업을 하지?"</b>입니다.
+      중학교 단원에 맞춘 실험 매뉴얼이 있는지가 실제 활용률을 가장 크게 좌우합니다.
+    </p>
+    <div class="tablewrap">
+      <table style="min-width:640px">
+        <thead><tr>
+          <th style="width:110px">업체</th>
+          <th style="width:96px">중학교 매뉴얼</th>
+          <th>내용</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="name">이지메이커</td>
+            <td><span class="cheap">충실</span></td>
+            <td style="white-space:normal">『AI-STEAM교육을 위한 디지털 과학실험 따라하기』 — 중학교 실험 <b>30건</b>. 성취기준·교과서 쪽수·블록코딩 화면·결과 예시까지 수록</td>
+          </tr>
+          <tr>
+            <td class="name">사이언스큐브</td>
+            <td><span class="cheap">충실</span></td>
+            <td style="white-space:normal">서울시교육청 자료집에 <b>수업 사례 5건</b>(교사용+학생용 활동지) 수록. 자사 실험 매뉴얼과 지능형 과학실 연동 안내 제공</td>
+          </tr>
+          <tr>
+            <td class="name">파스코</td>
+            <td><span class="cheap">충실</span></td>
+            <td style="white-space:normal">파스코코리아 중학 과학 페이지에 중1~3 실험 <b>25종</b>, 각 실험마다 <b>E-BOOK 실험 매뉴얼</b> 제공</td>
+          </tr>
+          <tr>
+            <td class="name">버니어</td>
+            <td style="color:var(--warn);font-weight:700">보통</td>
+            <td style="white-space:normal">본사 실험 자료는 방대하나 <b>국내 중학교 단원에 맞춘 한글 매뉴얼은 상대적으로 적음</b>. 영문 자료를 교사가 재구성해야 하는 경우가 있음</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note" style="margin-top:12px">
+      매뉴얼이 있다고 좋은 제품, 없다고 나쁜 제품이 아닙니다. 다만 <b>교사가 혼자 실험을 설계할 시간이 없을수록</b> 매뉴얼 유무가 실제 수업 실행률을 가릅니다.
+      특히 센서를 처음 도입하는 학교라면 이 항목의 가중치를 높게 두시길 권합니다.
+    </div>
+
+    <h3>업체별 상세</h3>
+    <p style="font-size:13px;color:var(--sub);margin:0 0 12px">항목을 누르면 자세한 설명이 열립니다.</p>
 
     <div class="vgrid">
       <div class="vcard bar-ez">
         <div class="vname">이지메이커</div>
         <div class="vtag">국내 · 아두이노 기반 · EZON 웹 플랫폼</div>
         <div class="vprice">센서 <b>1.5만~15.4만원</b><br><span style="color:#5c636d">보드 별도 4만~6만원</span></div>
+        <div class="manual good">
+          <div class="mtitle">중학교 매뉴얼 — 충실</div>
+          중학교 실험 30건 수록. 성취기준·교과서 쪽수·블록코딩 화면까지 그대로 따라 할 수 있음
+        </div>
+
         <div class="vlabel p">장점</div>
-        <ul class="pro">
-          <li>단가가 가장 낮아 <b>모둠 수만큼 보급</b>이 현실적</li>
-          <li>유선 메인보드 1개에 센서 <b>최대 8~9개 동시</b> 연결(D0~D4·A0·A1·I2C·UART)</li>
-          <li>메인보드+SD카드로 <b>케이블 없이 독립 기록</b> 가능(감압용기 등)</li>
-          <li>EZON이 순수 웹앱이라 <b>크롬북에서 별도 설치 없이</b> 동작</li>
-          <li>구글 시트 전송 · 지능형 과학실 연동</li>
-        </ul>
+        <details class="d p"><summary>모둠 수만큼 살 수 있는 유일한 가격대</summary>
+          <div class="dbody">센서 단가가 <b>1.5만~15.4만원</b>으로 타사 무선의 1/3~1/10 수준입니다. 7모둠 옴의 법칙을 예로 들면 유선 보드 7개+전압 7+전류 7이 <b>66만원</b>인데, 같은 구성을 사이언스큐브 무선으로 하면 262만원입니다. 모둠별 실습이 목표라면 사실상 선택지가 이것뿐인 경우가 많습니다.</div>
+        </details>
+        <details class="d p"><summary>보드 1개에 센서 8~9개 동시 연결</summary>
+          <div class="dbody">유선 메인보드에 <b>D0~D4 · A0 · A1 · I2C(2채널) · UART</b> 포트가 있어 센서를 여러 개 한 번에 꽂습니다. 실제 사례집에서 <b>수권의 층상구조는 온도센서 5개, 단열재 비교는 4개</b>를 한 보드에 연결합니다. 무선 방식으로는 보드를 5개 쌓아야 하는 실험이 한 보드로 끝납니다.</div>
+        </details>
+        <details class="d p"><summary>SD카드로 케이블 없이 독립 기록</summary>
+          <div class="dbody">메인보드에 SD카드와 배터리를 끼우면 노트북 연결 없이 <b>보드 혼자 데이터를 기록</b>합니다. 감압용기 안처럼 케이블을 뺄 수 없는 밀폐 공간에 보드째 넣을 수 있습니다. 다만 실험 중 실시간 그래프는 볼 수 없고, 끝난 뒤 데이터를 꺼내 봅니다.</div>
+        </details>
+        <details class="d p"><summary>EZON이 웹앱 — 크롬북에서 설치 없이 동작</summary>
+          <div class="dbody">전용 프로그램을 깔지 않고 <b>브라우저에서 바로</b> 씁니다. 디벗 크롬북처럼 설치 권한이 막힌 기기에서도 동작할 가능성이 높아, 학교 기기 환경이 불확실할 때 안전한 선택입니다. 구글 시트 전송과 지능형 과학실 연동도 지원합니다.</div>
+        </details>
+
         <div class="vlabel c">단점</div>
-        <ul class="con">
-          <li>유선은 <b>블록 코딩이 필요</b>해 준비 부담이 있음</li>
-          <li>보드 연결·포트 확인 과정에서 <b>탐구 본질에서 멀어질 위험</b></li>
-          <li>무선(나노)은 <b>보드 1개당 센서 1개</b> — 다중 측정에 불리</li>
-          <li>측정 정밀도·내구성은 상위 업체 대비 낮음</li>
-        </ul>
+        <details class="d c"><summary>유선은 블록 코딩이 필요</summary>
+          <div class="dbody">센서를 꽂는다고 바로 값이 나오지 않고, 어느 포트에 무슨 센서를 연결했는지 <b>블록으로 지정해 보드에 업로드</b>해야 합니다. 다만 교사가 한 번 만들어 조별 보드에 미리 업로드해 두면 학생은 코딩 없이 바로 실험합니다 — 사례집이 권장하는 방식입니다.</div>
+        </details>
+        <details class="d c"><summary>연결 과정에서 탐구 본질이 흐려질 위험</summary>
+          <div class="dbody">포트 확인, 케이블 연결, 업로드 오류 대응에 시간이 쏠리면 <b>정작 데이터 해석을 못 하고 수업이 끝납니다</b>. 학생과 교사 모두 지치기 쉬운 지점입니다. 사전 세팅과 연결 가이드 인쇄물이 사실상 필수입니다.</div>
+        </details>
+        <details class="d c"><summary>무선(나노)은 보드 1개당 센서 1개</summary>
+          <div class="dbody">나노보드는 <b>센서를 하나만</b> 물립니다. 전압+전류를 동시에 재는 옴의 법칙은 모둠당 보드가 2개, 7모둠이면 14개가 필요합니다. 무선의 편의를 얻는 대신 다중 측정 실험에서 비용이 급격히 올라갑니다.</div>
+        </details>
+        <details class="d c"><summary>측정 정밀도·내구성은 상위 업체 대비 낮음</summary>
+          <div class="dbody">교육용 아두이노 기반이라 정량 정밀도와 장기 내구성은 파스코·버니어 대비 떨어집니다. 경향성을 읽는 중학교 탐구에는 충분하지만, <b>영재·연구 활동이나 정밀 측정</b>이 목적이라면 상위 라인을 검토하는 편이 낫습니다.</div>
+        </details>
       </div>
 
       <div class="vcard bar-sc">
         <div class="vname">사이언스큐브</div>
         <div class="vtag">국내(코리아디지탈) · 무선 MBL · Science# 프로그램</div>
         <div class="vprice">무선 <b>11만~99만원</b> · 유선 <b>1.5만~55만원</b><br><span style="color:#5c636d">무선은 보드 불필요</span></div>
+        <div class="manual good">
+          <div class="mtitle">중학교 매뉴얼 — 충실</div>
+          서울시교육청 자료집에 수업 사례 5건. 교사용 지도자료와 학생용 활동지가 한 세트
+        </div>
+
         <div class="vlabel p">장점</div>
-        <ul class="pro">
-          <li>무선 센서는 <b>전원만 켜면 연결</b> — 보드·배선 없음</li>
-          <li>Science#의 <b>데이터 변환·회귀분석·R²</b> 기능이 강력</li>
-          <li>수동 수집 모드로 학생 입력 변인 처리 용이</li>
-          <li>지능형 과학실 연동 · 국내 보급률 높음</li>
-          <li>국내 A/S와 연수 지원이 안정적</li>
-        </ul>
+        <details class="d p"><summary>전원만 켜면 연결 — 보드·배선이 없음</summary>
+          <div class="dbody">무선 센서 자체에 블루투스가 들어 있어 <b>보드도 인터페이스도 필요 없습니다</b>. 전원 버튼을 짧게 누르고 프로그램에서 페어링하면 끝이라, 수업 시작 5분 안에 그래프를 띄우기 가장 쉬운 구성입니다. 코딩도 없습니다.</div>
+        </details>
+        <details class="d p"><summary>Science#의 데이터 변환·회귀분석이 강력</summary>
+          <div class="dbody">x축을 시간에서 다른 센서 값으로 <b>바꿔 그리기</b>(전압–전류 그래프), 거리를 1/r²로 <b>변환해 직선화</b>, 추세선과 <b>결정계수 R²</b> 확인까지 프로그램 안에서 됩니다. 단순히 그래프를 보여주는 수준을 넘어 데이터를 다루는 수업을 설계할 수 있습니다.</div>
+        </details>
+        <details class="d p"><summary>수동 수집 모드 — 학생이 변인을 직접 입력</summary>
+          <div class="dbody">센서가 모르는 값(주사기 부피, 광원까지의 거리, 용수철이 늘어난 길이)을 <b>학생이 직접 입력</b>하면서 측정하는 모드입니다. 자동 수집만 쓰면 학생이 할 일이 없어지는데, 이 모드가 탐구 과정을 학생에게 되돌려 줍니다.</div>
+        </details>
+        <details class="d p"><summary>국내 보급률과 A/S가 안정적</summary>
+          <div class="dbody">국내 교육기관 보급이 넓어 <b>주변 학교에 물어볼 사람이 있고</b>, 고장 시 A/S와 대여 지원을 국내에서 받습니다. 지능형 과학실 연동도 지원합니다. 학교 예산 집행과 사후 관리 측면에서 부담이 가장 적은 편입니다.</div>
+        </details>
+
         <div class="vlabel c">단점</div>
-        <ul class="con">
-          <li>무선 단가가 높아 <b>모둠 전체 보급 시 예산 부담</b></li>
-          <li>유선은 인터페이스가 필요할 수 있어 사전 확인 요망</li>
-          <li>제품군(무선·MBL·Smart MBL)이 나뉘어 <b>연결 방식이 상이</b></li>
-          <li>전용 프로그램 설치가 필요해 <b>크롬북 호환 사전 확인</b> 필수</li>
-        </ul>
+        <details class="d c"><summary>무선 단가가 높아 전 모둠 보급이 어려움</summary>
+          <div class="dbody">무선 센서가 <b>11만~99만원</b>대입니다. 7모둠 기준으로 전압·전류 세트를 갖추면 262만원, CO₂를 갖추면 347만원이 듭니다. 400만원 안팎 예산으로는 한두 종류만 전 모둠 보급이 가능하므로, <b>핵심 센서만 무선으로</b> 잡는 판단이 필요합니다.</div>
+        </details>
+        <details class="d c"><summary>제품군이 나뉘어 연결 방식이 서로 다름</summary>
+          <div class="dbody">무선 센서, 기존 MBL, Smart MBL이 각각 존재하고 <b>연결 방식과 필요 장비가 다릅니다</b>. 같은 회사 제품이라도 기존 보유분과 새로 살 제품이 호환되지 않을 수 있어, 발주 전 모델명 단위로 대조해야 합니다.</div>
+        </details>
+        <details class="d c"><summary>전용 프로그램 설치 — 크롬북은 사전 확인 필수</summary>
+          <div class="dbody">Science#는 <b>Windows·Android 버전</b>으로 안내되며 ChromeOS 지원은 별도 확인이 필요합니다. 디벗 크롬북은 관리자 정책으로 Play 스토어와 확장 프로그램이 막힌 경우가 많아, <b>연수·수업 전 학교 기기 1대로 반드시 테스트</b>해야 합니다.</div>
+        </details>
+        <details class="d c"><summary>유선 센서는 인터페이스가 필요할 수 있음</summary>
+          <div class="dbody">유선 라인은 데이터로거·인터페이스를 경유하는 경우가 있고, 인터페이스 가격이 <b>49만원대</b>입니다. 유선 센서 단가만 보고 저렴하다고 판단하면 안 되며, 기존 보유 인터페이스와 커넥터 규격이 맞는지 확인해야 합니다.</div>
+        </details>
+      </div>
+
+      <div class="vcard bar-ps">
+        <div class="vname">파스코 (PASCO)</div>
+        <div class="vtag">미국 · 무선 센서 · 국내 총판 견적</div>
+        <div class="vprice"><b>가격 비공개</b><br><span style="color:#5c636d">국내 총판 견적 — 고가 대역</span></div>
+        <div class="manual good">
+          <div class="mtitle">중학교 매뉴얼 — 충실</div>
+          파스코코리아 중학 과학 페이지에 중1~3 실험 25종, 실험마다 E-BOOK 매뉴얼 제공
+        </div>
+
+        <div class="vlabel p">장점</div>
+        <details class="d p"><summary>중학교 실험 25종 + 실험별 E-BOOK 매뉴얼</summary>
+          <div class="dbody">파스코코리아가 <b>중1~중3 실험 25종</b>을 단원별로 정리해 두었고, 각 실험을 누르면 <b>E-BOOK 형태의 실험 매뉴얼</b>이 열립니다. 비열 비교, 보일의 법칙, 빛의 합성, 광합성, 옴의 법칙, 구름생성, 자유낙하, 무조건 반사까지 중학교 전 학년·전 영역을 덮습니다. 해외 제품이지만 <b>국내 중학교 단원에 맞춰 정리된 자료가 있다는 점</b>이 큰 강점입니다.</div>
+        </details>
+        <details class="d p"><summary>센서 라인업이 가장 넓음</summary>
+          <div class="dbody">일반 센서는 물론 <b>편광·방사선·융점측정</b> 같은 특수 센서까지 갖추고 있어, 심화·영재 활동이나 학생 자율 탐구에서 주제 제약이 적습니다. 고교 과정까지 이어 쓸 것을 고려하면 확장성이 가장 좋습니다.</div>
+        </details>
+        <details class="d p"><summary>SPARKvue·Capstone의 분석 기능</summary>
+          <div class="dbody">전용 소프트웨어에서 <b>실시간 그래프·통계·곡선 맞춤·영상 동기화</b>까지 지원합니다. 데이터를 다루는 수준 높은 탐구 수업을 설계하기에 적합합니다.</div>
+        </details>
+        <details class="d p"><summary>스마트카트 등 역학 실험 장비가 우수</summary>
+          <div class="dbody">힘·위치·속도·가속도를 <b>카트 자체가 측정</b>하는 스마트카트가 대표적입니다. 중3 운동·역학적 에너지 보존 단원에서 기존 도구로는 얻기 어려운 데이터를 바로 뽑을 수 있습니다. 방진·방수 등 내구 설계도 강점입니다.</div>
+        </details>
+
+        <div class="vlabel c">단점</div>
+        <details class="d c"><summary>홈페이지에 가격 미표시 — 매번 견적 필요</summary>
+          <div class="dbody">공식 사이트에 가격이 공개되지 않아 <b>총판 견적을 받아야</b> 대략의 규모를 알 수 있습니다. 예산 계획을 세우는 단계에서 다른 업체와 즉시 비교하기 어렵고, 품의 일정에 견적 대기 시간을 더해야 합니다.</div>
+        </details>
+        <details class="d c"><summary>고가 대역 — 일반 교구 예산으로 다수 확보 곤란</summary>
+          <div class="dbody">단가가 높아 400만원 안팎 예산으로는 <b>모둠 수만큼 갖추기 어렵습니다</b>. 지능형 과학실 구축처럼 1천만원 이상 예산이 확보된 경우에 적합하고, 일반 예산에서는 교사 시연용 소수만 검토하는 편이 현실적입니다.</div>
+        </details>
+        <details class="d c"><summary>국내 연수·커뮤니티 사례가 상대적으로 적음</summary>
+          <div class="dbody">제품 매뉴얼은 잘 갖춰져 있으나, <b>국내 교사들이 공유하는 수업 사례나 연수 자료</b>는 국내 업체보다 적은 편입니다. 문제가 생겼을 때 주변에 물어볼 사람을 찾기가 상대적으로 어렵습니다.</div>
+        </details>
       </div>
 
       <div class="vcard bar-vn">
         <div class="vname">버니어 (Vernier)</div>
         <div class="vtag">미국 · Go Direct 무선 · 국내 유통사 경유</div>
-        <div class="vprice">무선 <b>20.7만~139만원</b><br><span style="color:#5c636d">교과서 표준 채택 다수</span></div>
-        <div class="vlabel p">장점</div>
-        <ul class="pro">
-          <li><b>교과서에 가장 많이 실린</b> 제품 — 지도서와 바로 호환</li>
-          <li>측정 정확도·데이터 전송 안정성이 우수</li>
-          <li>Graphical Analysis가 직관적, 다기기 지원</li>
-          <li>국제 표준이라 <b>영재·연구 활동</b>에 적합</li>
-        </ul>
-        <div class="vlabel c">단점</div>
-        <ul class="con">
-          <li>단가가 높아 <b>모둠 보급에 큰 예산</b> 필요</li>
-          <li>CO₂ 센서는 <b>전용 용기</b>가 별도로 필요한 경우가 있음</li>
-          <li>일부 센서는 유입부 위치 때문에 <b>거치 방식에 제약</b></li>
-          <li>부품·소모품 조달에 시간이 걸릴 수 있음</li>
-        </ul>
-      </div>
+        <div class="vprice">무선 <b>20.7만~139만원</b><br><span style="color:#5c636d">국내 유통사 표시가</span></div>
+        <div class="manual mid">
+          <div class="mtitle">중학교 매뉴얼 — 보통</div>
+          본사 자료는 방대하나 국내 중학교 단원에 맞춘 한글 매뉴얼은 상대적으로 적음
+        </div>
 
-      <div class="vcard bar-ps">
-        <div class="vname">파스코 (PASCO)</div>
-        <div class="vtag">미국 · 무선 센서 · 총판 견적 방식</div>
-        <div class="vprice"><b>가격 비공개</b><br><span style="color:#5c636d">국내 총판 견적 — 버니어와 유사 대역</span></div>
         <div class="vlabel p">장점</div>
-        <ul class="pro">
-          <li>센서 <b>라인업이 가장 넓음</b>(융점측정·편광·방사선 등)</li>
-          <li>SPARKvue·Capstone의 분석 기능이 강력</li>
-          <li>스마트카트 등 <b>역학 실험 장비</b>가 특히 우수</li>
-          <li>방진·방수 등 내구 설계</li>
-        </ul>
+        <details class="d p"><summary>Graphical Analysis가 직관적, 다기기 지원</summary>
+          <div class="dbody">전용 분석 앱 <b>Graphical Analysis</b>가 화면 구성이 단순해 처음 쓰는 학생도 헤매지 않습니다. <b>Windows·macOS·크롬북·iOS·안드로이드</b>를 모두 지원해 학교 기기가 무엇이든 대응됩니다. 크롬북 학교에서 특히 유리한 부분입니다.</div>
+        </details>
+        <details class="d p"><summary>측정 정확도와 데이터 전송 안정성</summary>
+          <div class="dbody">센서 정밀도와 무선 전송 지연이 적어 <b>측정값을 그대로 신뢰</b>하고 해석에 들어갈 수 있습니다. 반복 측정에서 값이 흔들리지 않아 오차 논의가 산으로 가지 않습니다.</div>
+        </details>
+        <details class="d p"><summary>국제 표준 — 영재·연구 활동에 적합</summary>
+          <div class="dbody">전 세계 학교·대학에서 널리 쓰여 <b>실험 프로토콜과 논문 자료가 풍부</b>합니다. 영재학급, 과학 동아리, 대회 출품 연구처럼 중학교 교과를 넘어서는 활동에서 강점을 발휘합니다.</div>
+        </details>
+
         <div class="vlabel c">단점</div>
-        <ul class="con">
-          <li>홈페이지에 <b>가격 미표시</b> — 매번 견적 필요</li>
-          <li>고가 대역이라 일반 학교 예산으로 다수 확보 어려움</li>
-          <li>중학교 교과서 연계 사례가 상대적으로 적음</li>
-          <li>국내 자료·연수 사례가 적어 자체 학습 부담</li>
-        </ul>
+        <details class="d c"><summary>국내 중학교용 한글 수업자료가 부족</summary>
+          <div class="dbody">본사 실험 라이브러리는 방대하지만 대부분 <b>영문이고 미국 교육과정 기준</b>입니다. 국내 중학교 단원·성취기준에 맞춰 정리된 한글 매뉴얼은 이지메이커·사이언스큐브·파스코에 비해 적어, <b>교사가 직접 재구성해야 하는 부담</b>이 생깁니다. 센서를 처음 도입하는 학교에는 이 점이 가장 큰 진입 장벽입니다.</div>
+        </details>
+        <details class="d c"><summary>단가가 높아 모둠 보급에 큰 예산 필요</summary>
+          <div class="dbody">무선 센서가 <b>20.7만~139만원</b>대입니다. 7모둠 기준으로 한 종류를 갖추는 데만 145만원 이상이 들어, 일반 교구 예산에서는 전 모둠 보급이 어렵습니다.</div>
+        </details>
+        <details class="d c"><summary>CO₂ 등 일부 센서는 전용 용기·거치가 필요</summary>
+          <div class="dbody">CO₂ 센서는 기체 유입부가 <b>센서 바닥</b>에 있어 세워서 띄운 상태로 써야 하고, 이에 맞는 <b>전용 광합성 용기</b>를 따로 갖춰야 하는 경우가 있습니다. 일반 밀폐용기를 쓰기 어려워 부대 비용과 준비 단계가 늘어납니다.</div>
+        </details>
+        <details class="d c"><summary>부품·소모품 조달에 시간이 걸림</summary>
+          <div class="dbody">해외 본사 제품이라 <b>결품·단종 시 대체품 확보나 수리에 시간</b>이 걸릴 수 있습니다. 학기 중 고장이 나면 그 차시 수업을 대체해야 하는 상황이 생깁니다.</div>
+        </details>
       </div>
     </div>
 
     <div class="note info">
       <b>예산 규모별 판단 기준</b><br>
-      · <b>지능형 과학실 구축 등 고예산(1천만원 이상)</b> — 사이언스큐브 무선, 파스코, 버니어를 우선 검토. 정밀도와 교과서 연계가 확보됩니다.<br>
-      · <b>400만원 안팎의 일반 교구 예산</b> — 전 모둠 보급이 목표라면 이지메이커 비중을 높이고, 분석 기능이 필요한 핵심 센서만 사이언스큐브로 확보하는 혼합 구성이 현실적입니다.<br>
-      · <b>센서가 전무한 학교</b> — 센서가 없으면 아예 불가능한 실험(압력·힘)부터 확보하는 편이 활용률이 높습니다.
+      · <b>지능형 과학실 구축 등 고예산(1천만원 이상)</b> — 사이언스큐브 무선, 파스코를 우선 검토. 정밀도와 확장성이 확보되고, 두 업체 모두 중학교 실험 매뉴얼이 갖춰져 있어 도입 후 활용까지 이어집니다.<br>
+      · <b>400만원 안팎의 일반 교구 예산</b> — 전 모둠 보급이 목표라면 이지메이커 비중을 높이고, 분석 기능이 필요한 핵심 센서만 사이언스큐브 무선으로 확보하는 혼합 구성이 현실적입니다.<br>
+      · <b>센서가 전무한 학교</b> — 센서가 없으면 아예 불가능한 실험(압력·힘)부터 확보하고, <b>매뉴얼이 갖춰진 업체</b>를 고르는 편이 활용률이 높습니다. 첫 도입에서 가장 흔한 실패가 "사놓고 안 쓰는 것"입니다.<br>
+      · <b>영재·연구 활동 비중이 높은 학교</b> — 버니어·파스코의 정밀도와 특수 센서 라인업이 유리합니다. 단 버니어는 국내 중학교용 한글 매뉴얼이 적어 교사의 재구성 부담을 감안해야 합니다.
     </div>
 
     <div class="note">
@@ -285,14 +442,20 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
     </div>
     <div class="tablewrap">
       <table id="ptable">
+        <colgroup>
+          <col style="width:22%">
+          <col style="width:13%"><col style="width:13%">
+          <col style="width:13%"><col style="width:13%">
+          <col style="width:13%"><col style="width:13%">
+        </colgroup>
         <thead><tr>
           <th>센서</th>
-          <th style="color:var(--ez)">이지 유선</th>
-          <th style="color:var(--ez)">이지 나노(무선)</th>
-          <th style="color:var(--sc)">큐브 유선</th>
-          <th style="color:var(--sc)">큐브 무선</th>
-          <th style="color:var(--vn)">버니어 무선</th>
-          <th style="color:var(--ps)">파스코</th>
+          <th class="num sep" style="color:var(--ez)">이지메이커<small>유선</small></th>
+          <th class="num" style="color:var(--ez)">이지메이커<small>나노(무선)</small></th>
+          <th class="num sep" style="color:var(--sc)">사이언스큐브<small>유선</small></th>
+          <th class="num" style="color:var(--sc)">사이언스큐브<small>무선</small></th>
+          <th class="num sep" style="color:var(--vn)">버니어<small>무선</small></th>
+          <th class="num sep" style="color:var(--ps)">파스코<small>견적</small></th>
         </tr></thead>
         <tbody id="ptbody"></tbody>
       </table>
@@ -460,6 +623,37 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
   </div>
 </section>
 
+<section class="credits">
+  <h3>참고 자료 출처</h3>
+  <p class="lead">이 페이지는 아래 자료를 근거로 만들었습니다. 좋은 자료를 정리해 공유해 주신 덕분에 이 가이드가 나올 수 있었습니다.</p>
+  <ul>
+    <li>
+      <b>『2026 교구 및 디지털 도구 활용 과학 교수학습자료』(중등 과학)</b><br>
+      서울특별시교육청 창의미래교육과 발행 · 2026년 7월<br>
+      <span class="who">집필: 김지연(원묵중학교) · 이승윤(선덕중학교) · 이차은(광희중학교) · 오유리(동대문중학교) · 최효석(영서중학교)</span>
+    </li>
+    <li>
+      <b>『AI-STEAM교육을 위한 디지털 과학실험 따라하기』</b><br>
+      이지메이커 활용 과학실험 사례 (중학교 과학실험 중심)<br>
+      <span class="who">수업사례 개발: 최효석(영서중학교 교사)</span>
+    </li>
+    <li>
+      <b>파스코코리아 — 중학 과학 실험 자료</b><br>
+      <span class="who">중1~중3 실험 25종 및 실험별 E-BOOK 매뉴얼</span><br>
+      <a href="https://pascokorea.com/%EC%A4%91%ED%95%99-%EA%B3%BC%ED%95%99" target="_blank" rel="noopener">https://pascokorea.com/중학-과학</a>
+    </li>
+    <li>
+      <b>가격 정보</b><br>
+      <span class="who">이지메이커 공식몰 · 사이언스큐브 공식몰 · 버니어 국내 유통사 표시가 (2026년 8월 기준)</span>
+    </li>
+  </ul>
+  <p class="thanks">
+    두 자료집은 성취기준·실험 절차·데이터 해석·수업 운영 팁까지 꼼꼼히 정리되어 있어, 센서별 활용 사례와 구매 우선순위를 근거 있게 정리할 수 있었습니다.
+    자료를 만들어 공유해 주신 선생님들과 서울특별시교육청 창의미래교육과에 감사드립니다.<br>
+    이 페이지의 수업 사례·성취기준·동시 사용 센서 수는 위 자료들을 근거로 정리한 것이며, <b>가격과 제품 구성은 조사 시점 기준이므로 실제 견적서가 우선</b>합니다.
+  </p>
+</section>
+
 </div>
 
 <footer id="app-credit">
@@ -550,11 +744,13 @@ function renderPrices(filter){
     if(filter && !name.toLowerCase().includes(filter.toLowerCase())) return;
     const vals=p.filter(v=>v!==null);
     const min=vals.length?Math.min(...vals):null;
+    const SEP=[0,2,4,5]; // 업체 경계 열(이지유선·큐브유선·버니어·파스코)
     const tr=document.createElement('tr');
     tr.innerHTML='<td class="name">'+name+'</td>'+
-      p.map(v=>v===null
-        ? '<td class="num dash">—</td>'
-        : '<td class="num'+(v===min?' cheap':'')+'">'+v.toLocaleString('ko-KR')+'</td>').join('');
+      p.map((v,i)=>{
+        const cls='num'+(SEP.includes(i)?' sep':'')+(v!==null&&v===min?' cheap':'')+(v===null?' dash':'');
+        return '<td class="'+cls+'">'+(v===null?'—':v.toLocaleString('ko-KR'))+'</td>';
+      }).join('');
     tb.appendChild(tr);
   });
 }
