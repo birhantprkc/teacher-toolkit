@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학습지 스튜디오 — 홍보 영상용 데모</title>
+<style>
+:root{
+  --mint:#0e8a80; --mint-d:#0b6b63; --accent:#e0563f; --navy:#1e3a5f;
+  --ink:#24292d; --sub:#8a939c; --line:#dde3e8; --paper:#fffdf7;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html,body{height:100%; background:#0d0f12; overflow:hidden;
+  font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased}
+
+/* 9:16 무대 — 창 크기에 맞춰 통째로 축소된다. 녹화는 이 영역만 잡으면 됨 */
+#stage{position:absolute; top:50%; left:50%; width:1080px; height:1920px;
+  transform-origin:center center; background:#fff; overflow:hidden}
+#stage.rec{outline:2px solid #ff3b30}
+.scene{position:absolute; inset:0; opacity:0; pointer-events:none}
+.scene.on{opacity:1}
+@keyframes up{to{opacity:1; transform:none}}
+@keyframes pop{from{opacity:0; transform:scale(.86)} to{opacity:1; transform:none}}
+@keyframes slideL{from{opacity:0; transform:translateX(46px)} to{opacity:1; transform:none}}
+
+/* ── 1) 훅 ── */
+#s1{background:#0d0f12; display:flex; flex-direction:column; justify-content:center; padding:0 96px}
+#s1 .lead{font-size:34px; color:#7e858e; font-weight:700; margin-bottom:70px; letter-spacing:-.5px; opacity:0}
+#s1.on .lead{animation:up .6s .1s cubic-bezier(.22,1,.36,1) forwards}
+#s1 .qq{display:flex; gap:30px; align-items:flex-start; margin-bottom:58px; opacity:0; transform:translateY(28px)}
+#s1.on .qq{animation:up .75s cubic-bezier(.22,1,.36,1) forwards; animation-delay:var(--d)}
+#s1 .qq .no{flex:none; width:72px; height:72px; border-radius:50%; background:var(--c);
+  display:flex; align-items:center; justify-content:center; font-size:38px; margin-top:4px}
+#s1 .qq .tx{font-size:52px; font-weight:800; color:#fff; line-height:1.42; letter-spacing:-1.6px}
+#s1 .qq .tx em{font-style:normal; color:var(--c)}
+
+/* 본문 씬은 세로 가운데 정렬 — 9:16 화면에서 아래가 비어 보이지 않게.
+   자막(하단 86px)과 겹치지 않도록 아래쪽 공간을 비워 둔다 */
+#s2,#s3,#s4,#s5{display:flex; flex-direction:column; justify-content:center; padding-bottom:290px}
+
+/* ── 공통 헤더 ── */
+.head{display:flex; align-items:center; gap:18px; padding:0 72px; margin-bottom:6px}
+.head .badge{background:var(--mint); color:#fff; font-size:26px; font-weight:800;
+  padding:8px 20px; border-radius:30px; letter-spacing:-.5px}
+.head .t{font-size:44px; font-weight:800; letter-spacing:-1.6px; color:var(--ink)}
+
+/* ── 2) 3단계 ── */
+#s2{background:#f6f8f9}
+#s2 .steps{padding:40px 72px 0; display:flex; flex-direction:column; gap:40px}
+#s2 .st{display:flex; gap:32px; align-items:center; background:#fff; border-radius:26px;
+  padding:48px 38px; box-shadow:0 10px 30px rgba(20,40,60,.07); opacity:0; transform:translateY(30px)}
+#s2.on .st{animation:up .7s cubic-bezier(.22,1,.36,1) forwards; animation-delay:var(--d)}
+#s2 .st .n{flex:none; width:78px; height:78px; border-radius:22px; background:var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:800}
+#s2 .st.go .n{background:var(--mint)}
+#s2 .st .b .h2{font-size:40px; font-weight:800; letter-spacing:-1.2px; color:var(--ink)}
+#s2 .st .b .d{font-size:29px; color:#67707a; margin-top:8px; line-height:1.45; letter-spacing:-.5px}
+#s2 .arrow{font-size:40px; color:var(--sub); text-align:center; margin:-16px 0}
+
+/* ── 3) 변환 : 텍스트 → 학습지 ── */
+#s3{background:#eef2f4}
+#s3 .wrap{display:flex; gap:34px; padding:44px 60px 0; align-items:flex-start}
+.codebox{flex:none; width:430px; background:#151a20; border-radius:22px; padding:30px 26px;
+  font-family:'D2Coding','Consolas',monospace; font-size:24px; line-height:1.72; color:#c9d3de}
+.codebox .l{opacity:0; transform:translateY(10px); white-space:pre-wrap; word-break:break-all}
+#s3.on .codebox .l{animation:up .34s forwards; animation-delay:var(--d)}
+.codebox .k{color:#5ed3c4} .codebox .b{color:#ffd479} .codebox .q{color:#ff9d8a}
+
+/* A4 종이 */
+.paper{flex:1; background:var(--paper); border-radius:14px; padding:34px 32px;
+  box-shadow:0 18px 44px rgba(20,40,60,.16); min-height:1060px}
+.pblk{opacity:0; transform:translateY(18px)}
+#s3.on .pblk{animation:up .45s cubic-bezier(.22,1,.36,1) forwards; animation-delay:var(--d)}
+.p-title{display:inline-block; background:var(--mint); color:#fff; font-size:30px; font-weight:800;
+  padding:10px 26px; border-radius:26px; box-shadow:3px 3px 0 #b9e0da; margin-bottom:22px}
+.p-goal{border-left:8px solid var(--mint); background:#eef7f5; border-radius:0 12px 12px 0;
+  padding:16px 18px; margin-bottom:22px}
+.p-goal div{font-size:24px; color:#39424b; line-height:1.6}
+.p-para{font-size:25px; color:#2b3238; line-height:1.9; margin-bottom:20px}
+.blank{display:inline-block; width:120px; height:38px; border:2px solid #2b3238; border-radius:5px;
+  background:#fff; vertical-align:-9px}
+.blank.f{background:#fdeceb; border-color:var(--accent); color:var(--accent);
+  font-size:24px; font-weight:800; text-align:center; line-height:34px; width:auto; padding:0 14px}
+.p-table{width:100%; border-collapse:collapse; margin-bottom:22px; font-size:23px}
+.p-table th{background:#e7f2f0; color:var(--mint-d); font-weight:800}
+.p-table th,.p-table td{border:1.5px solid #cfdad8; padding:11px 12px; text-align:center; color:#2b3238}
+.p-q{border:2px solid #dbe2e8; border-radius:14px; padding:18px 20px; background:#fff}
+.p-q .tag{display:inline-block; background:var(--accent); color:#fff; font-size:19px; font-weight:800;
+  padding:4px 12px; border-radius:6px; margin-right:10px}
+.p-q .topic{display:inline-block; border:1.5px solid #b9d4e6; background:#eff6fb; color:var(--navy);
+  font-size:19px; font-weight:700; padding:4px 14px; border-radius:20px; margin-bottom:12px}
+.p-q .qt{font-size:25px; font-weight:700; color:#2b3238; line-height:1.5}
+.p-q .ch{font-size:23px; color:#414a52; margin-top:10px; line-height:1.75}
+
+/* ── 4) 한 문서 → 세 벌 ── */
+#s4{background:#0d0f12}
+#s4 .cards{display:flex; gap:26px; padding:60px 56px 0; align-items:flex-start}
+#s4 .card{flex:1; background:#fff; border-radius:20px; overflow:hidden; opacity:0; transform:translateY(34px);
+  box-shadow:0 16px 40px rgba(0,0,0,.4)}
+#s4.on .card{animation:up .7s cubic-bezier(.22,1,.36,1) forwards; animation-delay:var(--d)}
+#s4 .card .cap{font-size:27px; font-weight:800; color:#fff; padding:16px 18px; text-align:center; letter-spacing:-.6px}
+#s4 .c1 .cap{background:#b45309} #s4 .c2 .cap{background:#1d4ed8} #s4 .c3 .cap{background:#0f766e}
+#s4 .card .body{padding:26px 20px; min-height:680px; background:var(--paper)}
+#s4 .ln{height:13px; border-radius:7px; background:#dfe5ea; margin-bottom:15px}
+#s4 .ln.s{width:62%} #s4 .ln.m{width:84%}
+#s4 .ans{display:inline-block; background:#fdeceb; border-bottom:4px solid var(--accent); color:var(--accent);
+  font-size:21px; font-weight:800; padding:2px 12px; border-radius:4px; margin-bottom:15px}
+#s4 .bx{display:inline-block; width:112px; height:34px; border:2px solid #2b3238; border-radius:5px; margin-bottom:15px}
+#s4 .num{font-size:22px; color:#2b3238; margin-bottom:13px}
+#s4 .num b{color:var(--mint-d); margin-right:10px}
+#s4 .oneline{font-size:40px; font-weight:800; color:#fff; text-align:center; margin-top:54px; letter-spacing:-1.4px; opacity:0}
+#s4.on .oneline{animation:up .7s 1.5s forwards}
+#s4 .oneline em{font-style:normal; color:#5ed3c4}
+
+/* ── 5) 기능 ── */
+#s5{background:#f6f8f9}
+#s5 .grid{display:grid; grid-template-columns:1fr 1fr; gap:28px; padding:44px 66px 0}
+#s5 .f{background:#fff; border-radius:22px; padding:42px 30px; box-shadow:0 10px 26px rgba(20,40,60,.07);
+  opacity:0; transform:scale(.9)}
+#s5.on .f{animation:pop .6s cubic-bezier(.22,1,.36,1) forwards; animation-delay:var(--d)}
+#s5 .f .i{font-size:52px; line-height:1}
+#s5 .f .t{font-size:34px; font-weight:800; color:var(--ink); margin-top:14px; letter-spacing:-1px}
+#s5 .f .d{font-size:25px; color:#67707a; margin-top:8px; line-height:1.5; letter-spacing:-.4px}
+
+/* ── 6) 마무리 ── */
+#s6{background:linear-gradient(160deg,#0e8a80,#0b5f59); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center; padding:0 80px}
+#s6 .logo{width:190px; height:190px; border-radius:44px; background:#fff; display:flex; align-items:center;
+  justify-content:center; box-shadow:0 20px 50px rgba(0,0,0,.25); opacity:0; transform:scale(.8)}
+#s6.on .logo{animation:pop .8s cubic-bezier(.22,1,.36,1) forwards}
+#s6 .logo .sheet{width:96px; height:128px; background:var(--paper); border-radius:10px; padding:14px 12px}
+#s6 .logo .sheet i{display:block; height:9px; border-radius:5px; background:#2b3238; margin-bottom:9px}
+#s6 .logo .sheet i:first-child{background:var(--mint); height:16px; border-radius:8px}
+#s6 .logo .sheet i.o{background:var(--accent); width:52%}
+#s6 h1{font-size:80px; font-weight:800; color:#fff; letter-spacing:-2.6px; margin-top:40px; opacity:0}
+#s6.on h1{animation:up .7s .25s forwards}
+#s6 .sub{font-size:34px; color:#cdeee8; margin-top:20px; line-height:1.55; letter-spacing:-.6px; opacity:0}
+#s6.on .sub{animation:up .7s .45s forwards}
+#s6 .url{margin-top:52px; background:#fff; color:#0b5f59; font-size:31px; font-weight:800;
+  padding:22px 40px; border-radius:20px; letter-spacing:-.4px; opacity:0}
+#s6.on .url{animation:up .7s .65s forwards}
+#s6 .free{margin-top:26px; font-size:27px; color:#a9ded6; opacity:0}
+#s6.on .free{animation:up .7s .85s forwards}
+
+/* 자막 + 진행바 */
+#cc{position:absolute; left:56px; right:56px; bottom:86px; text-align:center; font-size:33px;
+  font-weight:700; color:#fff; background:rgba(13,15,18,.82); padding:20px 26px; border-radius:18px;
+  letter-spacing:-.7px; opacity:0; transition:opacity .3s}
+#cc.on{opacity:1}
+#cc.dark{background:rgba(13,15,18,.9)}
+#bar{position:absolute; left:0; bottom:0; height:8px; width:0; background:var(--mint)}
+#hint{position:fixed; left:14px; bottom:12px; color:#8b949e; font-size:12px; line-height:1.6;
+  font-family:system-ui; background:rgba(0,0,0,.5); padding:8px 12px; border-radius:8px}
+body.recording #hint{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1) 훅 -->
+  <section class="scene" id="s1">
+    <div class="lead">학습지 한 장 만들 때마다</div>
+    <div class="qq" style="--c:#ff6b6b; --d:.5s">
+      <span class="no">😵</span>
+      <span class="tx">표 만들다 <em>줄이 밀리고</em></span>
+    </div>
+    <div class="qq" style="--c:#ffa94d; --d:1.1s">
+      <span class="no">🌙</span>
+      <span class="tx">정답본을 <em>따로 또 만들고</em></span>
+    </div>
+    <div class="qq" style="--c:#4dabf7; --d:1.7s">
+      <span class="no">🔁</span>
+      <span class="tx">내년에 <em>처음부터 다시</em></span>
+    </div>
+  </section>
+
+  <!-- 2) 3단계 -->
+  <section class="scene" id="s2">
+    <div class="head"><span class="badge">학습지 스튜디오</span><span class="t">이렇게 끝납니다</span></div>
+    <div class="steps">
+      <div class="st" style="--d:.15s"><span class="n">1</span><span class="b">
+        <span class="h2">주제만 고르기</span>
+        <span class="d">학년 · 단원 · 용도를 고르면<br>AI 지시문이 자동으로 완성</span></span></div>
+      <div class="arrow">▼</div>
+      <div class="st" style="--d:.7s"><span class="n">2</span><span class="b">
+        <span class="h2">AI에 붙여넣기</span>
+        <span class="d">챗GPT · 클로드 · 제미나이<br>어디든 붙여넣으면 원고가 나옵니다</span></span></div>
+      <div class="arrow">▼</div>
+      <div class="st go" style="--d:1.25s"><span class="n">3</span><span class="b">
+        <span class="h2">그대로 붙여넣기</span>
+        <span class="d">A4 학습지로 <b>바로</b> 조판<br>손볼 것은 클릭 몇 번</span></span></div>
+    </div>
+  </section>
+
+  <!-- 3) 텍스트 → 학습지 -->
+  <section class="scene" id="s3">
+    <div class="head"><span class="badge">핵심</span><span class="t">붙여넣으면, 학습지가 됩니다</span></div>
+    <div class="wrap">
+      <div class="codebox">
+        <div class="l" style="--d:.1s">물질의 상태 변화</div>
+        <div class="l" style="--d:.3s">&nbsp;</div>
+        <div class="l" style="--d:.4s">- 세 가지 상태를 구분한다</div>
+        <div class="l" style="--d:.55s">- 상태 변화의 예를 든다</div>
+        <div class="l" style="--d:.7s">&nbsp;</div>
+        <div class="l" style="--d:.85s">물질은 <span class="k">{{입자}}</span>의 배열에 따라</div>
+        <div class="l" style="--d:1s">상태가 달라진다.</div>
+        <div class="l" style="--d:1.2s">&nbsp;</div>
+        <div class="l" style="--d:1.35s">| 상태 | 모양 | 부피 |</div>
+        <div class="l" style="--d:1.5s">| --- | --- | --- |</div>
+        <div class="l" style="--d:1.65s">| 고체 | 일정 | 일정 |</div>
+        <div class="l" style="--d:1.8s">&nbsp;</div>
+        <div class="l" style="--d:1.95s"><span class="b">[문항 중요]</span> 융해는?</div>
+        <div class="l" style="--d:2.1s">① 얼음이 물이 된다</div>
+        <div class="l" style="--d:2.25s">② 물이 수증기가 된다</div>
+        <div class="l" style="--d:2.4s"><span class="q">정답: ①</span></div>
+        <div class="l" style="--d:2.55s"><span class="q">배점: 5</span></div>
+      </div>
+      <div class="paper">
+        <div class="pblk" style="--d:1.1s"><span class="p-title">물질의 상태 변화</span></div>
+        <div class="pblk p-goal" style="--d:1.5s">
+          <div>☑ 세 가지 상태를 구분한다</div><div>☑ 상태 변화의 예를 든다</div>
+        </div>
+        <div class="pblk p-para" style="--d:1.9s">물질은 <span class="blank"></span> 의 배열에 따라 상태가 달라진다.</div>
+        <table class="p-table pblk" style="--d:2.3s">
+          <tr><th>상태</th><th>모양</th><th>부피</th></tr>
+          <tr><td>고체</td><td>일정</td><td>일정</td></tr>
+          <tr><td>액체</td><td>변함</td><td>일정</td></tr>
+        </table>
+        <div class="pblk p-q" style="--d:2.75s">
+          <span class="topic">상태 변화 — 융해</span><br>
+          <span class="tag">중요!</span><span class="qt">1. 다음 중 융해에 해당하는 것은?</span>
+          <div class="ch">① 얼음이 물이 된다<br>② 물이 수증기가 된다</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4) 한 문서 → 세 벌 -->
+  <section class="scene" id="s4">
+    <div class="head"><span class="badge">한 번 만들면</span>
+      <span class="t" style="color:#fff">세 벌이 나옵니다</span></div>
+    <div class="cards">
+      <div class="card c1" style="--d:.2s"><div class="cap">🧑‍🏫 교사용</div><div class="body">
+        <div class="ln m"></div><div class="ln"></div>
+        <div><span class="ans">굴절</span></div>
+        <div class="ln s"></div><div class="ln m"></div>
+        <div><span class="ans">입사각</span></div>
+        <div class="ln"></div><div class="ln s"></div><div class="ln m"></div>
+      </div></div>
+      <div class="card c2" style="--d:.5s"><div class="cap">🎒 학생용</div><div class="body">
+        <div class="ln m"></div><div class="ln"></div>
+        <div><span class="bx"></span></div>
+        <div class="ln s"></div><div class="ln m"></div>
+        <div><span class="bx"></span></div>
+        <div class="ln"></div><div class="ln s"></div><div class="ln m"></div>
+      </div></div>
+      <div class="card c3" style="--d:.8s"><div class="cap">✅ 정답지</div><div class="body">
+        <div class="num"><b>1</b>굴절</div><div class="num"><b>2</b>입사각</div>
+        <div class="num"><b>3</b>작아진다</div><div class="num"><b>4</b>②</div>
+        <div class="num"><b>5</b>느려서</div><div class="num"><b>6</b>커진다</div>
+      </div></div>
+    </div>
+    <div class="oneline">정답은 학생용에 <em>아예 존재하지 않습니다</em></div>
+  </section>
+
+  <!-- 5) 기능 -->
+  <section class="scene" id="s5">
+    <div class="head"><span class="badge">더 있습니다</span><span class="t">수업이 편해지는 것들</span></div>
+    <div class="grid">
+      <div class="f" style="--d:.1s"><div class="i">🎨</div><div class="t">테마 8종</div>
+        <div class="d">교과서형 · 문제집형<br>손글씨형 · 흑백 복사형</div></div>
+      <div class="f" style="--d:.25s"><div class="i">✍</div><div class="t">문제집형 출제</div>
+        <div class="d">중요·낚시·도전 배지<br>보기 상자 · 선지별 근거칸</div></div>
+      <div class="f" style="--d:.4s"><div class="i">📓</div><div class="t">오답 정리칸</div>
+        <div class="d">개념 · 틀린 까닭<br>다음엔 이렇게 푼다</div></div>
+      <div class="f" style="--d:.55s"><div class="i">🧩</div><div class="t">노션식 편집</div>
+        <div class="d">끌어서 옮기고<br>옆으로 밀면 2단</div></div>
+      <div class="f" style="--d:.7s"><div class="i">📥</div><div class="t">설치해서 오프라인</div>
+        <div class="d">학교 PC에 앱으로 설치<br>인터넷 없어도 실행</div></div>
+      <div class="f" style="--d:.85s"><div class="i">🔒</div><div class="t">내 컴퓨터에만</div>
+        <div class="d">가입 없음 · 서버 전송 없음<br>파일로 백업</div></div>
+    </div>
+  </section>
+
+  <!-- 6) 마무리 -->
+  <section class="scene" id="s6">
+    <div class="logo"><div class="sheet"><i></i><i></i><i class="o"></i><i></i><i></i></div></div>
+    <h1>학습지 스튜디오</h1>
+    <div class="sub">수업 내용을 붙여넣으면<br>교사용 · 학생용 · 정답지가 한 번에</div>
+    <div class="url">scienceisjo.github.io/teacher-toolkit</div>
+    <div class="free">무료 · 설치 없이 브라우저에서 · 회원가입 없음</div>
+  </section>
+
+  <div id="cc"></div>
+  <div id="bar"></div>
+</div>
+
+<div id="hint">스페이스: 재생 / R: 녹화 준비 / P: 9:16 창으로 열기</div>
+
+<script>
+/* ───────── 무대 맞추기 (9:16 고정, 창에 맞춰 축소) ───────── */
+const W = 1080, H = 1920, stage = document.getElementById('stage');
+function fit(){
+  // 백그라운드 탭에서 열리면 창 크기를 0으로 읽어 scale(0)이 되어 화면이 비어 버린다 → 건너뛰고 나중에 다시
+  const vw = innerWidth || document.documentElement.clientWidth;
+  const vh = innerHeight || document.documentElement.clientHeight;
+  if (!vw || !vh) return;
+  stage.style.transform = `translate(-50%,-50%) scale(${Math.min(vw / W, vh / H)})`;
+  showRegion();
+}
+addEventListener('resize', fit);
+addEventListener('pageshow', fit);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) fit(); });
+fit();
+// 탭이 뒤에서 열린 경우를 대비해 잠깐 동안 다시 시도
+let fitTries = 0;
+const fitTimer = setInterval(() => { fit(); if (++fitTries > 20 || stage.style.transform) clearInterval(fitTimer); }, 250);
+
+/* ───────── 자막 ───────── */
+const cc = document.getElementById('cc');
+const say = (t) => { cc.textContent = t; cc.classList.add('on'); };
+const hush = () => cc.classList.remove('on');
+
+/* ───────── 재생 시퀀스 ───────── */
+const DUR = 27000;
+let timers = [];
+const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+function show(id){
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('on'));
+  const el = document.getElementById(id);
+  // 애니메이션을 매번 처음부터 다시 재생시키기 위한 리플로
+  el.style.display = 'none'; void el.offsetWidth; el.style.display = '';
+  el.classList.add('on');
+}
+function reset(){
+  timers.forEach(clearTimeout); timers = [];
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('on'));
+  hush();
+  const bar = document.getElementById('bar');
+  bar.style.transition = 'none'; bar.style.width = '0'; void bar.offsetWidth;
+}
+
+function play(){
+  reset();
+  const bar = document.getElementById('bar');
+  bar.style.transition = `width ${DUR}ms linear`; bar.style.width = '100%';
+
+  show('s1');                                              // 0.0s 훅
+  at(4200,  () => { show('s2'); say('세 단계면 끝납니다'); });
+  at(9200,  () => { show('s3'); say('AI가 준 글을 그대로 붙여넣으면'); });
+  at(12200, () => say('제목·표·빈칸·문항까지 알아서 조판됩니다'));
+  at(16000, () => { show('s4'); say('한 문서에서 교사용·학생용·정답지'); });
+  at(19200, () => hush());
+  at(20200, () => { show('s5'); say('수업이 편해지는 기능들'); });
+  at(24000, () => { show('s6'); hush(); });
+  at(DUR + 900, play);                                     // 반복
+}
+
+/* ───────── 9:16 창으로 열기 (녹화 시 잘라낼 필요가 없게) ───────── */
+function popout(){
+  const h = Math.min(960, screen.availHeight - 120);
+  const w = Math.round(h * 9 / 16);
+  const win = open(location.href, 'wsReel',
+    `width=${w},height=${h},left=${Math.round((screen.availWidth - w) / 2)},top=40,menubar=no,toolbar=no,location=no,status=no`);
+  if (!win) alert('팝업이 막혀 있습니다. 주소창 오른쪽의 팝업 허용을 눌러 주세요.');
+}
+
+/* 촬영 영역 안내 (OBS 등에서 영역 지정용) */
+function showRegion(){
+  const el = document.getElementById('hint');
+  if (!el) return;
+  const r = stage.getBoundingClientRect();
+  el.innerHTML = '스페이스: 재생 / R: 녹화 준비 / P: 9:16 창<br>촬영 영역 <b>'
+    + Math.round(r.width) + '×' + Math.round(r.height) + '</b> (창 안 좌표 '
+    + Math.round(r.left) + ', ' + Math.round(r.top) + ')';
+}
+
+/* 녹화 준비 — 안내를 감추고 1.2초 뒤 자동 재생 */
+function rec(){
+  document.body.classList.add('recording');
+  stage.classList.add('rec');
+  setTimeout(() => { stage.classList.remove('rec'); play(); }, 1200);
+}
+
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); play(); }
+  if (e.key === 'r' || e.key === 'R') rec();
+  if (e.key === 'p' || e.key === 'P') popout();
+  if (e.key === 'Escape') { document.body.classList.remove('recording'); reset(); }
+});
+
+play();
+</script>
+</body>
+</html>
