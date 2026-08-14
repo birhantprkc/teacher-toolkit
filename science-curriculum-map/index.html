@@ -289,7 +289,8 @@ body.v-hub #homeBtn{display:none}
 body.railHid #lineage, body.railHid #splitter{display:none}
 body.railHid #railOpen{display:flex}
 /* 연결선 클릭 → 어떤 부분이 이어지는지 */
-#cmap .ehit{fill:none; stroke:transparent; stroke-width:18; cursor:pointer}
+#cmap .ehit{fill:none; stroke:transparent; stroke-width:26; cursor:pointer}
+#cmap .elabel[data-e]{cursor:pointer}          /* 라벨도 그 선의 클릭 대상 */
 #cmap .edge.hl{stroke-width:4.5}
 /* 고정 헤더에 섹션 제목이 가리지 않게 */
 #brief section[id^="sec-"]{scroll-margin-top:var(--stick,132px)}
@@ -1629,9 +1630,21 @@ function renderLineage(u){
   let ed = '', eh = '';
   EDGES = [];
   const labelReqs = [];          // 라벨은 모아뒀다가 겹치지 않는 자리를 찾아 마지막에 배치한다
-  const edge = (from, to, cls, label, info) => {
-    const x1 = from.x + from.w/2, y1 = from.y + from.h;
-    const x2 = to.x + to.w/2,   y2 = to.y;
+  // 한 칸에서 여러 선이 나가면 시작점이 한 점에 모여, 그 부근에서는 클릭 영역이
+  // 통째로 겹쳐 원하는 선을 누를 수 없다. 칸의 변을 따라 시작·도착점을 벌린다.
+  const spread = (node, i, n) => {
+    const c = node.x + node.w/2;
+    if(n <= 1) return c;
+    // 선이 많을수록 칸 폭을 거의 다 쓴다. 간격이 좁으면 갈래 부근에서 클릭이 안 갈린다.
+    const span = Math.min(node.w - 10, 30 * (n - 1));
+    return c - span/2 + span * i / (n - 1);
+  };
+  const edge = (from, to, cls, label, info, anchor) => {
+    const x1 = (anchor && anchor.fromX != null) ? anchor.fromX : from.x + from.w/2;
+    // 선이 많으면 칸 폭만으로는 못 벌린다. 출발 높이를 번갈아 어긋내 갈래를 더 벌린다.
+    const y1 = from.y + from.h + ((anchor && anchor.dy1) || 0);
+    const x2 = (anchor && anchor.toX   != null) ? anchor.toX   : to.x + to.w/2;
+    const y2 = to.y;
     const dy = Math.max(18, (y2 - y1) * 0.55);
     const d = `M${x1},${y1} C${x1},${y1+dy} ${x2},${y2-dy} ${x2},${y2}`;
     const len = Math.hypot(x2-x1, y2-y1) + dy;
@@ -1642,32 +1655,44 @@ function renderLineage(u){
       eh += `<path class="ehit" data-e="${idx}" d="${d}"><title>눌러서 어떻게 이어지는지 보기</title></path>`;
     }
     ed += `<path class="edge ${cls}"${idx>=0?` data-e="${idx}"`:''} d="${d}" style="--len:${len.toFixed(0)}"/>`;
-    if(label) labelReqs.push({text: label, x1, y1, x2, y2, dy});
+    if(label) labelReqs.push({text: label, x1, y1, x2, y2, dy, e: idx});
   };
   // 팝오버에 쓸 정보. a→b는 배우는 순서대로, to는 눌렀을 때 열 상대 단원.
   const EI = (kind, aId, bId, other, li, color) => li && ({
     kind, a: byId[aId].title, b: byId[bId].title, to: other,
     label: li.label || '', why: li.why || '', color,
   });
-  for(const n of pn){
+  // 위로 들어오는 선 — 현재 칸의 윗변에 벌려 꽂는다
+  pn.forEach((n, i) => {
     const li = linkInfo(u.id, n.id);
-    edge(n, cur, 'p', li ? li.label : '', EI('학생이 배우고 오는 곳', n.id, u.id, n.id, li, 'var(--amber)'));
-  }
-  for(const n of nn){
-    const li = linkInfo(u.id, n.id);
-    edge(cur, n, 'n', li ? li.label : '', EI('여기서 이어지는 곳', u.id, n.id, n.id, li, 'var(--blue)'));
-  }
-  for(const n of rn){
-    const li = linkInfo(u.id, n.id);
-    edge(cur, n, 'r', '', EI('같은 시기 연계', u.id, n.id, n.id, li, '#adb5bd'));
-  }
-  for(const n of inNodes){
-    const k = ins.find(x => x.other === n.id);
-    edge(cur, n, 'i', k ? k.concept : '', k && {
-      kind: '문서엔 없지만 이어지는 개념', a: u.title, b: byId[n.id].title, to: n.id,
-      label: k.concept || '', why: k.why || '', color: '#9c36b5',
-    });
-  }
+    edge(n, cur, 'p', li ? li.label : '', EI('학생이 배우고 오는 곳', n.id, u.id, n.id, li, 'var(--amber)'),
+         {toX: spread(cur, i, pn.length)});
+  });
+  // 아래로 나가는 선 — 후속·같은시기·통찰을 한 묶음으로 보고 아랫변에 고루 벌린다.
+  // (따로 벌리면 서로 겹쳐서 벌린 의미가 없다)
+  const down = [
+    ...nn.map(n => ({n, kind: 'n'})),
+    ...rn.map(n => ({n, kind: 'r'})),
+    ...inNodes.map(n => ({n, kind: 'i'})),
+  ];
+  down.forEach((d, i) => {
+    const fromX = spread(cur, i, down.length);
+    // 이웃한 선끼리 출발 높이를 어긋내면 갈래 부근에서 서로 더 멀어진다
+    const dy1 = down.length > 4 ? (i % 2) * 9 : 0;
+    if(d.kind === 'n'){
+      const li = linkInfo(u.id, d.n.id);
+      edge(cur, d.n, 'n', li ? li.label : '', EI('여기서 이어지는 곳', u.id, d.n.id, d.n.id, li, 'var(--blue)'), {fromX, dy1});
+    } else if(d.kind === 'r'){
+      const li = linkInfo(u.id, d.n.id);
+      edge(cur, d.n, 'r', '', EI('같은 시기 연계', u.id, d.n.id, d.n.id, li, '#adb5bd'), {fromX, dy1});
+    } else {
+      const k = ins.find(x => x.other === d.n.id);
+      edge(cur, d.n, 'i', k ? k.concept : '', k && {
+        kind: '문서엔 없지만 이어지는 개념', a: u.title, b: byId[d.n.id].title, to: d.n.id,
+        label: k.concept || '', why: k.why || '', color: '#9c36b5',
+      }, {fromX, dy1});
+    }
+  });
 
   // ---- 연결선 라벨 배치 ----
   // 연결이 많은 단원은 라벨이 서로 겹치거나 칸에 가려 잘렸다.
@@ -1710,7 +1735,7 @@ function renderLineage(u){
       if(put) break;
     }
     if(!put) continue;                                    // 끝내 자리가 없으면 생략(선을 누르면 전체가 뜬다)
-    el += `<text class="elabel" x="${put.x.toFixed(1)}" y="${(put.y + 3.2).toFixed(1)}" text-anchor="middle">${esc(used)}</text>`;
+    el += `<text class="elabel"${r.e >= 0 ? ` data-e="${r.e}"` : ''} x="${put.x.toFixed(1)}" y="${(put.y + 3.2).toFixed(1)}" text-anchor="middle">${esc(used)}</text>`;
   }
 
   // 노드
@@ -1737,7 +1762,7 @@ function renderLineage(u){
   svg.innerHTML = tl + ed + eh + nd + el;
   hideEdge();
   const box = document.getElementById('cmapBox');
-  svg.querySelectorAll('.ehit').forEach(p=>{
+  svg.querySelectorAll('.ehit, .elabel[data-e]').forEach(p=>{
     const i = +p.dataset.e;
     p.addEventListener('click', ev=>{
       ev.stopPropagation();
