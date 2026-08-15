@@ -165,6 +165,16 @@ input[type=number]:focus,select:focus{outline:2px solid var(--accent);border-col
 .rline{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);flex-wrap:wrap}
 .rline .rn{color:var(--ink);flex:1 1 60%}
 .rline .rv{font-variant-numeric:tabular-nums;color:var(--sub);flex:0 0 auto;font-weight:600}
+.vendorsel{display:block;width:100%;margin-top:6px;font-size:11.5px;padding:4px 6px;
+  border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);
+  font-family:inherit;cursor:pointer}
+.vendorsel:focus{outline:2px solid var(--accent);border-color:transparent}
+.vendorsel.manual{border-color:var(--accent);color:var(--accent);font-weight:700;background:var(--accent-soft)}
+.pickbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.3px;color:var(--sub);
+  background:var(--accent-soft);border:1px solid #bfdbfe;border-radius:8px;padding:7px 10px;margin-bottom:10px}
+.pickbar b{color:var(--accent)}
+.pickbar button{margin-left:auto;border:1px solid #bfdbfe;background:#fff;border-radius:6px;
+  font-size:11.5px;padding:3px 9px;cursor:pointer;font-family:inherit;color:var(--accent);font-weight:700}
 .scale{display:flex;gap:3px;margin-top:5px}
 .scale button{border:1px solid var(--line);background:#fff;border-radius:6px;font-size:10.5px;
   padding:2px 7px;cursor:pointer;font-family:inherit;color:var(--sub);line-height:1.5}
@@ -520,7 +530,10 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
 <section class="panel" id="p3">
   <div class="card">
     <h2>구매 계획 생성기</h2>
-    <p class="lead">예산과 모둠 수를 넣고 <b>하려는 수업</b>을 고르면 필요한 센서와 수량, 업체별 총액이 계산됩니다.</p>
+    <p class="lead">
+      예산과 모둠 수를 넣고 <b>하려는 수업</b>을 고르면 필요한 센서와 수량, 업체별 총액이 계산됩니다.
+      아래 프리셋으로 한 번에 배치한 뒤, 결과 목록에서 <b>센서마다 판매사를 직접 바꿀 수 있습니다</b>.
+    </p>
 
     <div class="gengrid">
       <div>
@@ -816,11 +829,12 @@ document.querySelectorAll('#modeseg button').forEach(b=>{
   b.onclick=()=>{
     document.querySelectorAll('#modeseg button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on'); mode=b.dataset.m;
+    picks={};   // 프리셋을 바꾸면 개별 선택은 초기화
     document.getElementById('modedesc').textContent={
       mix:'센서마다 국내 두 업체 중 유리한 쪽을 자동 선택합니다. 같은 종류는 한 업체로 통일합니다.',
       wireless:'보드·배선 없이 쓰는 무선 제품을 우선합니다. 관리가 단순한 대신 총액이 올라갑니다.',
       cheap:'최저가 라인을 우선합니다. 이지메이커 유선 비중이 높아져 블록 코딩 준비가 필요합니다.',
-      premium:'버니어 등 정밀도 우선 제품을 먼저 배치합니다. 고예산 사업용 구성입니다.'
+      premium:'파스코·버니어 등 정밀도 우선 제품을 먼저 배치합니다. 고예산 사업용 구성입니다.'
     }[mode];
     calc();
   };
@@ -854,24 +868,32 @@ function pick(w){
   calc();
 }
 
-// 라인 선택 우선순위 (인덱스: 0이지유선 1이지나노 2큐브유선 3큐브무선 4버니어)
+// 라인 (인덱스: 0이지유선 1이지나노 2큐브유선 3큐브무선 4버니어 5파스코)
 const LINE=[
   {i:0,label:'이지메이커 유선',v:'ez',board:'wired'},
   {i:1,label:'이지메이커 나노(무선)',v:'ez',board:'nano'},
   {i:2,label:'사이언스큐브 유선',v:'sc',board:null},
   {i:3,label:'사이언스큐브 무선',v:'sc',board:null},
-  {i:4,label:'버니어 무선',v:'vn',board:null}
+  {i:4,label:'버니어 무선',v:'vn',board:null},
+  {i:5,label:'파스코 무선',v:'ps',board:null}
 ];
+const VNAME={ez:'이지메이커',sc:'사이언스큐브',vn:'버니어',ps:'파스코'};
 const ORDER={
-  mix:[0,3,2,1,4],
-  wireless:[3,1,4],
-  cheap:[0,2,1,3,4],
-  premium:[4,3,2,1,0]
+  mix:[0,3,2,1,4,5],
+  wireless:[3,1,5,4],
+  cheap:[0,2,1,3,4,5],
+  premium:[5,4,3,2,1,0]
 };
 
 let lastPlan=null;
 let scales={};   // 센서key -> 'full' | 'half' | 'demo'
+let picks={};    // 센서key -> 라인 인덱스 (사용자가 직접 고른 경우)
 function setScale(k,v){ scales[k]=v; calc(); }
+function setPick(k,v){
+  if(v==='') delete picks[k]; else picks[k]=+v;
+  calc();
+}
+function resetPicks(){ picks={}; calc(); }
 
 function calc(){
   const groups=Math.max(1,+document.getElementById('groups').value||1);
@@ -895,16 +917,19 @@ function calc(){
     Object.entries(L[4]).forEach(([k,n])=>{ need[k]=Math.max(need[k]||0,n); });
   });
 
-  const items=[]; const vt={ez:0,sc:0,vn:0};
+  const items=[]; const vt={ez:0,sc:0,vn:0,ps:0};
   let ezWiredBoards=0, ezNanoUnits=0;
 
   Object.entries(need).forEach(([key,per])=>{
     const S=SENSORS.find(s=>s[0]===key); if(!S) return;
     const price=S.slice(2);
-    let chosen=null;
-    for(const idx of ORDER[mode]){ if(price[idx]!==null){ chosen=idx; break; } }
+    let chosen=null, manual=false;
+    if(picks[key]!==undefined && price[picks[key]]!==null){ chosen=picks[key]; manual=true; }
     if(chosen===null){
-      for(let i=0;i<5;i++){ if(price[i]!==null){ chosen=i; break; } }
+      for(const idx of ORDER[mode]){ if(price[idx]!==null){ chosen=idx; break; } }
+    }
+    if(chosen===null){
+      for(let i=0;i<price.length;i++){ if(price[i]!==null){ chosen=i; break; } }
     }
     if(chosen===null) return;
     const sc=scales[key]||'full';
@@ -912,7 +937,7 @@ function calc(){
     const qty=per*sets;
     const unit=price[chosen];
     const meta=LINE.find(l=>l.i===chosen);
-    items.push({key,name:S[1],line:meta.label,qty,unit,sum:unit*qty,v:meta.v,sc,sets});
+    items.push({key,name:S[1],line:meta.label,qty,unit,sum:unit*qty,v:meta.v,sc,sets,chosen,price,manual});
     vt[meta.v]=(vt[meta.v]||0)+unit*qty;
     if(meta.board==='wired') ezWiredBoards=Math.max(ezWiredBoards,sets);
     if(meta.board==='nano') ezNanoUnits+=qty;
@@ -934,24 +959,40 @@ function calc(){
   lastPlan={items,total,groups,budget,vt};
 
   // 출력
-  let html='<div class="rlist">';
+  const manualCount=items.filter(i=>i.manual).length;
+  let html='';
+  if(manualCount){
+    html+='<div class="pickbar">판매사 <b>'+manualCount+'개</b> 직접 선택함'+
+      '<button onclick="resetPicks()">전체 자동으로</button></div>';
+  }
+  html+='<div class="rlist">';
   items.forEach(it=>{
-    let sb='';
+    let sb='', vsel='';
     if(!it.fixed){
       const b=(v,t,ti)=>'<button class="'+(it.sc===v?'on':'')+'" title="'+ti+'" onclick="setScale(\''+it.key+'\',\''+v+'\')">'+t+'</button>';
       sb='<span class="scale">'+b('full','전 모둠','모둠마다 1세트')+
          b('half','2모둠당 1','두 모둠이 공유하며 순환')+
          b('demo','시연 1세트','교사 시연 또는 순환 실습')+'</span>';
+
+      const avail=LINE.filter(l=>it.price[l.i]!==null);
+      const cheapest=Math.min(...avail.map(l=>it.price[l.i]));
+      const opts=avail.map(l=>{
+        const p=it.price[l.i];
+        return '<option value="'+l.i+'"'+(l.i===it.chosen?' selected':'')+'>'+
+          l.label+' · '+p.toLocaleString('ko-KR')+'원'+(p===cheapest?' (최저)':'')+'</option>';
+      }).join('');
+      vsel='<select class="vendorsel'+(it.manual?' manual':'')+'" title="판매사·제품 라인 변경" '+
+        'onchange="setPick(\''+it.key+'\',this.value)">'+opts+
+        (it.manual?'<option value="">↺ 자동 선택으로</option>':'')+'</select>';
     }
     html+='<div class="rline"><span class="rn">'+it.name+
       ' <span class="mini">'+it.line+'</span><br><span class="lmeta" style="font-size:11.5px;color:var(--sub)">'+
-      it.qty+'개 × '+it.unit.toLocaleString('ko-KR')+'</span>'+sb+'</span>'+
+      it.qty+'개 × '+it.unit.toLocaleString('ko-KR')+'</span>'+vsel+sb+'</span>'+
       '<span class="rv">'+it.sum.toLocaleString('ko-KR')+'</span></div>';
   });
   html+='</div>';
-  const vn={ez:'이지메이커',sc:'사이언스큐브',vn:'버니어'};
   Object.entries(vt).forEach(([k,v])=>{ if(v>0)
-    html+='<div class="vsum"><span>'+vn[k]+'</span><span>'+won(v)+'</span></div>'; });
+    html+='<div class="vsum"><span>'+VNAME[k]+'</span><span>'+won(v)+'</span></div>'; });
 
   const diff=budget-total;
   html+='<div style="margin-top:12px;font-size:13px;padding:10px 12px;border-radius:9px;'+
@@ -987,8 +1028,11 @@ function copyPlan(){
   if(!lastPlan){ alert('수업을 먼저 선택해 주세요.'); return; }
   let t='■ 센서 구매 계획 ('+lastPlan.groups+'모둠 기준)\n\n';
   lastPlan.items.forEach(i=>{
-    t+='· '+i.name+' ['+i.line+'] '+i.qty+'개 × '+i.unit.toLocaleString('ko-KR')+' = '+i.sum.toLocaleString('ko-KR')+'원\n';
+    t+='· '+i.name.replace(/<[^>]*>/g,'').trim()+' ['+i.line+'] '+
+       i.qty+'개 × '+i.unit.toLocaleString('ko-KR')+' = '+i.sum.toLocaleString('ko-KR')+'원\n';
   });
+  t+='\n[판매사별 합계]\n';
+  Object.entries(lastPlan.vt).forEach(([k,v])=>{ if(v>0) t+='· '+VNAME[k]+' '+won(v)+'\n'; });
   t+='\n합계 '+won(lastPlan.total)+' / 예산 '+won(lastPlan.budget);
   navigator.clipboard.writeText(t).then(
     ()=>alert('구매 계획을 복사했습니다.'),
