@@ -175,6 +175,38 @@ input[type=number]:focus,select:focus{outline:2px solid var(--accent);border-col
 .pickbar b{color:var(--accent)}
 .pickbar button{margin-left:auto;border:1px solid #bfdbfe;background:#fff;border-radius:6px;
   font-size:11.5px;padding:3px 9px;cursor:pointer;font-family:inherit;color:var(--accent);font-weight:700}
+.pickbar.off{background:#f4f5f7;border-color:#d8dce2;color:var(--sub)}
+.pickbar.off b{color:var(--ink)}
+.pickbar.off button{border-color:#d8dce2;color:var(--ink)}
+
+/* 제외 버튼 */
+.xbtn{margin-left:7px;border:1px solid var(--line);background:#fff;border-radius:6px;
+  width:22px;height:22px;line-height:1;cursor:pointer;font-family:inherit;font-size:12px;
+  color:#9aa2ad;padding:0;vertical-align:middle}
+.xbtn:hover{border-color:var(--bad);color:var(--bad)}
+.xbtn.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+.rline.off{opacity:.55}
+.rline.off .rn{text-decoration:line-through;text-decoration-color:#c3c9d1}
+.rline.off .mini{text-decoration:none}
+
+/* 실험 자료 위치 */
+.lwrap{display:flex;align-items:flex-start;gap:4px}
+.lwrap .lrow{flex:1 1 auto}
+.refbtn{flex:0 0 auto;margin:9px 8px 0 0;border:1px solid var(--line);background:#fff;
+  border-radius:6px;font-size:11px;padding:2px 7px;cursor:pointer;font-family:inherit;
+  color:var(--sub);white-space:nowrap}
+.refbtn:hover{border-color:var(--accent);color:var(--accent)}
+.refbtn.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.refbox{margin:0 10px 8px 36px;padding:10px 12px;background:#f8fafc;
+  border:1px solid var(--line);border-radius:9px;font-size:12.3px;line-height:1.6}
+.refhead{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.3px;margin-bottom:7px}
+.refrow{padding:5px 0;border-top:1px dashed var(--line)}
+.refrow:first-of-type{border-top:none}
+.refrow b{font-size:12px}
+.pdfp{display:inline-block;background:#eef1f5;color:var(--sub);border-radius:5px;
+  padding:0 6px;font-size:11px;margin-left:4px}
+.refnote{color:var(--sub);font-size:11.5px;margin-top:1px}
+.refbox a{color:var(--accent);font-weight:600;word-break:break-all}
 .scale{display:flex;gap:3px;margin-top:5px}
 .scale button{border:1px solid var(--line);background:#fff;border-radius:6px;font-size:10.5px;
   padding:2px 7px;cursor:pointer;font-family:inherit;color:var(--sub);line-height:1.5}
@@ -532,7 +564,9 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
     <h2>구매 계획 생성기</h2>
     <p class="lead">
       예산과 모둠 수를 넣고 <b>하려는 수업</b>을 고르면 필요한 센서와 수량, 업체별 총액이 계산됩니다.
-      아래 프리셋으로 한 번에 배치한 뒤, 결과 목록에서 <b>센서마다 판매사를 직접 바꿀 수 있습니다</b>.
+      아래 프리셋으로 한 번에 배치한 뒤, 결과 목록에서 <b>센서마다 판매사를 바꾸거나</b>
+      이미 보유한 품목은 <b>✕ 로 제외</b>할 수 있습니다. 수업 이름 옆 <b>자료</b> 버튼을 누르면
+      그 실험의 <b>매뉴얼이 어느 자료집 몇 쪽에 있는지</b> 바로 확인됩니다.
     </p>
 
     <div class="gengrid">
@@ -601,7 +635,7 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
     <div class="tablewrap">
       <table>
         <thead><tr>
-          <th>학년</th><th>단원</th><th>수업</th><th>성취기준</th><th>필요 센서</th><th>출처</th>
+          <th>학년</th><th>단원</th><th>수업</th><th>성취기준</th><th>필요 센서</th><th>매뉴얼 위치</th>
         </tr></thead>
         <tbody id="ltbody"></tbody>
       </table>
@@ -777,6 +811,40 @@ const SENSORS = [
 ];
 
 // 수업 데이터 — grade, 단원, 제목, 성취기준, {센서key:동시개수}, 출처, core(필수추천)
+/* 실험별 매뉴얼 위치
+   s = 서울시교육청 자료집 인쇄쪽 (PDF쪽 = 인쇄쪽+4)
+   e = 이지메이커 사례집 [인쇄쪽, 제목]  (PDF쪽 = 인쇄쪽+3)
+   p = 파스코코리아 [문서번호, 제목]                                */
+const PS_BASE='https://pascokorea.com/%EC%A4%91%ED%95%99-%EA%B3%BC%ED%95%99/view/';
+const REFS={
+ '물과 식용유의 비열 비교':{s:1,e:[[24,'물과 식용유의 비열 비교 실험'],[17,'모래와 물의 시간에 따른 냉각 곡선 비교하기']],p:[['601933','[중1] 여러 가지 액체의 비열 비교'],['611726','금속의 비열 (심화)']]},
+ '열량계 열평형 실험':{e:[[63,'열량계 열평형 실험']],p:[['601932','[중1] 온도가 다른 두 물체를 접촉할 때 온도 변화']]},
+ '단열재 성능 비교':{e:[[14,'단열재 성능 비교하기']]},
+ '서로 다른 물체의 열전도 비교':{e:[[66,'온도 센서를 이용하여 서로 다른 물체에서 열의 전도 비교하기']]},
+ '종이 색에 따른 복사 에너지 흡수':{e:[[85,'종이 색에 따른 복사 에너지 흡수 차이 비교하기']]},
+ '물의 어는점 측정':{s:13,e:[[34,'물의 어는 점 측정하기']],p:[['601934','[중1] 물질의 상태 변화 곡선']]},
+ '물의 끓는점 측정':{e:[[31,'물의 끓는 점 측정하기']],p:[['601934','[중1] 물질의 상태 변화 곡선']]},
+ '손소독제 증발 실험':{s:23,e:[[52,'손소독제 증발 실험']]},
+ '마찰력에 영향을 주는 요인':{s:35,p:[['601938','[중1] 여러 가지 힘'],['601939','[중1] 힘의 표현과 평형']]},
+ '기체의 압력과 부피(보일의 법칙)':{s:51,e:[[10,'기체의 압력과 부피 관계 알아보기']],p:[['601937','[중1] 기체의 압력과 부피 관계(보일의 법칙)']]},
+ '감압 용기 속 기체의 압력 변화':{e:[[4,'감압 용기 속 기체의 압력 변화']],p:[['611718','[중1] 기체의 압력과 부피 관계(감압 용기)']]},
+ '면적과 압력의 관계':{e:[[88,'주사기와 공기압 센서로 면적과 압력의 관계 알아보기'],[91,'주사기와 공기압 센서로 물체의 무게 측정하기']]},
+ '물과 소금물의 냉각 곡선 비교':{e:[[20,'물과 소금물의 냉각 곡선 비교하기']],p:[['601940','[중2] 물질의 상태가 변하는 온도']]},
+ '물과 에탄올 혼합물 분리':{e:[[27,'물과 에탄올의 혼합물 분리하기']],p:[['601941','[중2] 혼합물의 분리']]},
+ '온도에 따른 기체의 용해도':{e:[[69,'온도에 따른 기체의 용해도 비교하기']],p:[['601935','[중2] 온도에 따른 기체의 용해도']]},
+ '광합성에 필요한 물질 확인':{s:63,e:[[7,'광합성에 필요한 물질 확인하기']],p:[['601944','[중2] 광합성에 필요한 물질과 산물 확인']]},
+ '빛의 세기에 따른 광합성량':{s:77,p:[['601949','[중2] 환경요인과 광합성의 관계 탐구'],['611727','잎의 증산작용 (심화)']]},
+ '전압과 전류의 관계(옴의 법칙)':{s:93,e:[[81,'전압과 전류 사이의 관계 알아보기']],p:[['601948','[중2] 저항, 전류, 전압 사이의 관계']]},
+ '저항과 전류의 관계':{e:[[77,'저항과 전류 사이의 관계 알아보기']],p:[['601948','[중2] 저항, 전류, 전압 사이의 관계'],['611765','[중2] 저항의 직렬연결과 병렬연결']]},
+ '광원 거리에 따른 빛의 세기':{s:109,e:[[48,'빛의 역제곱 법칙 알아보기']],p:[['601946','[중2] 거리에 따른 빛의 세기']]},
+ '불꽃색에 따른 온도 비교':{e:[[44,'불꽃색에 따른 온도 비교하기']]},
+ '수권의 층상 구조 만들기':{e:[[55,'수권의 층상구조 만들어보기']],p:[['601952','[중3] 해수의 연직 수온분포']]},
+ '디지털 도구로 구름 생성 과정':{s:125,p:[['601951','[중3] 구름생성과정']]},
+ '복사 평형 · 온실 효과 관찰':{e:[[41,'복사 평형 상태 관찰하기'],[74,'온실 효과 관찰하기']],p:[['601950','[중3] 복사평형']]},
+ '발열 반응 · 흡열 반응 관찰':{e:[[37,'발열 반응 관찰하기'],[105,'흡열 반응 관찰하기']],p:[['601945','[중3] 화학 반응에서 열의 출입']]},
+ '시각·청각 자극 반응 시간':{e:[[59,'시각 자극 반응 실험'],[98,'청각 자극 반응 실험']],p:[['601931','[중3] 무조건 반사와 의식적 반응']]}
+};
+
 const LESSONS = [
   [1,'Ⅲ. 열','물과 식용유의 비열 비교','9과03-03',{temp:2},'서울시교육청·이지',true],
   [1,'Ⅲ. 열','열량계 열평형 실험','9과03-01',{temp:2},'이지',false],
@@ -847,9 +915,15 @@ document.getElementById('fq2').oninput=e=>renderPrices(e.target.value.trim());
   LESSONS.forEach(L=>{
     const [g,unit,title,std,sens,src]=L;
     const sl=Object.entries(sens).map(([k,n])=>nameOf(k)+' ×'+n).join(', ');
+    const R=REFS[title]||{};
+    const loc=[];
+    if(R.s) loc.push('서울시교육청 <b>'+R.s+'쪽</b>');
+    if(R.e) loc.push('이지메이커 <b>'+R.e.map(x=>x[0]+'쪽').join('·')+'</b>');
+    if(R.p) loc.push(R.p.map(x=>'<a href="'+PS_BASE+x[0]+'" target="_blank" rel="noopener">파스코 ↗</a>').join(' '));
     const tr=document.createElement('tr');
     tr.innerHTML='<td>중'+g+'</td><td>'+unit+'</td><td class="name">'+title+
-      '</td><td>['+std+']</td><td style="white-space:normal">'+sl+'</td><td>'+src+'</td>';
+      '</td><td>['+std+']</td><td style="white-space:normal">'+sl+
+      '</td><td style="white-space:normal;min-width:160px">'+(loc.join('<br>')||'—')+'</td>';
     tb.appendChild(tr);
   });
 })();
@@ -878,15 +952,48 @@ document.querySelectorAll('#modeseg button').forEach(b=>{
     box.appendChild(h);
     LESSONS.forEach((L,i)=>{
       if(L[0]!==g) return;
+      const wrap=document.createElement('div'); wrap.className='lwrap';
       const lab=document.createElement('label'); lab.className='lrow';
       lab.innerHTML='<input type="checkbox" data-i="'+i+'"'+(L[6]?' checked':'')+'>'+
         '<span class="ltxt">'+L[2]+(L[6]?'<span class="mini">추천</span>':'')+
         '<br><span class="lmeta">'+L[1]+' · ['+L[3]+']</span></span>';
-      box.appendChild(lab);
+      wrap.appendChild(lab);
+      if(REFS[L[2]]){
+        const btn=document.createElement('button');
+        btn.className='refbtn'; btn.type='button';
+        btn.title='이 실험의 매뉴얼이 어디에 있는지 보기';
+        btn.textContent='자료';
+        btn.onclick=()=>toggleRef(i,btn);
+        wrap.appendChild(btn);
+      }
+      box.appendChild(wrap);
+      const rb=document.createElement('div');
+      rb.className='refbox'; rb.id='ref-'+i; rb.hidden=true;
+      box.appendChild(rb);
     });
   });
   box.addEventListener('change',calc);
 })();
+
+function refHTML(title){
+  const R=REFS[title]; if(!R) return '';
+  let h='<div class="refhead">이 실험의 매뉴얼 위치</div>';
+  if(R.s) h+='<div class="refrow"><b>서울시교육청 자료집</b><br>'+
+    '<span>'+R.s+'쪽 <span class="pdfp">PDF '+(R.s+4)+'쪽</span></span>'+
+    '<div class="refnote">교사용 지도자료 + 학생용 활동지 한 세트</div></div>';
+  if(R.e) R.e.forEach(([p,t])=>{ h+='<div class="refrow"><b>이지메이커 사례집</b><br>'+
+    '<span>'+p+'쪽 <span class="pdfp">PDF '+(p+3)+'쪽</span></span>'+
+    '<div class="refnote">'+t+'</div></div>'; });
+  if(R.p) R.p.forEach(([id,t])=>{ h+='<div class="refrow"><b>파스코코리아</b><br>'+
+    '<a href="'+PS_BASE+id+'" target="_blank" rel="noopener">'+t+' · E-BOOK 매뉴얼 열기 ↗</a></div>'; });
+  if(!R.s&&!R.e&&!R.p) h+='<div class="refnote">등록된 매뉴얼이 없습니다.</div>';
+  return h;
+}
+function toggleRef(i,btn){
+  const box=document.getElementById('ref-'+i);
+  if(box.hidden){ box.innerHTML=refHTML(LESSONS[i][2]); box.hidden=false; btn.classList.add('on'); }
+  else { box.hidden=true; btn.classList.remove('on'); }
+}
 
 function pick(w){
   document.querySelectorAll('#lessonbox input').forEach(c=>{
@@ -919,7 +1026,10 @@ const ORDER={
 let lastPlan=null;
 let scales={};   // 센서key -> 'full' | 'half' | 'demo'
 let picks={};    // 센서key -> 라인 인덱스 (사용자가 직접 고른 경우)
+let excluded=new Set();  // 이미 보유해서 구매 목록에서 뺄 항목
 function setScale(k,v){ scales[k]=v; calc(); }
+function toggleExclude(k){ excluded.has(k)?excluded.delete(k):excluded.add(k); calc(); }
+function clearExcluded(){ excluded.clear(); calc(); }
 function setPick(k,v){
   if(v==='') delete picks[k]; else picks[k]=+v;
   calc();
@@ -968,8 +1078,8 @@ function calc(){
     const qty=per*sets;
     const unit=price[chosen];
     const meta=LINE.find(l=>l.i===chosen);
-    items.push({key,name:S[1],line:meta.label,qty,unit,sum:unit*qty,v:meta.v,sc,sets,chosen,price,manual});
-    vt[meta.v]=(vt[meta.v]||0)+unit*qty;
+    items.push({key,ek:key,name:S[1],line:meta.label,qty,unit,sum:unit*qty,v:meta.v,sc,sets,chosen,price,manual});
+    if(excluded.has(key)) return;
     if(meta.board==='wired') ezWiredBoards=Math.max(ezWiredBoards,sets);
     if(meta.board==='nano') ezNanoUnits+=qty;
   });
@@ -977,27 +1087,44 @@ function calc(){
   // 보드 산정 — 메인보드 1개에 센서 여러 개 동시 연결 가능
   if(ezWiredBoards>0){
     const b=ezWiredBoards;
-    items.push({name:'이지메이커 메인보드',line:'필수 부품',qty:b,unit:60000,sum:b*60000,v:'ez',fixed:true});
-    vt.ez+=b*60000;
+    items.push({ek:'bd_main',name:'이지메이커 메인보드',line:'필수 부품',qty:b,unit:60000,sum:b*60000,v:'ez',fixed:true});
   }
   if(ezNanoUnits>0){
-    items.push({name:'나노보드',line:'필수 부품 (센서 1개당 1개)',qty:ezNanoUnits,unit:55000,sum:ezNanoUnits*55000,v:'ez'});
-    items.push({name:'일체형 배터리',line:'필수 부품',qty:ezNanoUnits,unit:11000,sum:ezNanoUnits*11000,v:'ez'});
-    vt.ez+=ezNanoUnits*66000;
+    items.push({ek:'bd_nano',name:'나노보드',line:'필수 부품 (센서 1개당 1개)',qty:ezNanoUnits,unit:55000,sum:ezNanoUnits*55000,v:'ez',fixed:true});
+    items.push({ek:'bd_batt',name:'일체형 배터리',line:'필수 부품',qty:ezNanoUnits,unit:11000,sum:ezNanoUnits*11000,v:'ez',fixed:true});
   }
 
-  const total=items.reduce((a,b)=>a+b.sum,0);
-  lastPlan={items,total,groups,budget,vt};
+  // 제외 반영 후 합계
+  items.forEach(it=>{ it.off=excluded.has(it.ek); });
+  const live=items.filter(it=>!it.off);
+  live.forEach(it=>{ vt[it.v]=(vt[it.v]||0)+it.sum; });
+  const total=live.reduce((a,b)=>a+b.sum,0);
+  lastPlan={items:live,total,groups,budget,vt};
 
   // 출력
   const manualCount=items.filter(i=>i.manual).length;
+  const offCount=items.filter(i=>i.off).length;
   let html='';
   if(manualCount){
     html+='<div class="pickbar">판매사 <b>'+manualCount+'개</b> 직접 선택함'+
       '<button onclick="resetPicks()">전체 자동으로</button></div>';
   }
+  if(offCount){
+    html+='<div class="pickbar off">이미 보유 <b>'+offCount+'개</b> 제외됨'+
+      '<button onclick="clearExcluded()">전체 되돌리기</button></div>';
+  }
   html+='<div class="rlist">';
   items.forEach(it=>{
+    const xbtn='<button class="xbtn'+(it.off?' on':'')+'" title="'+
+      (it.off?'구매 목록에 다시 넣기':'이미 보유 중이라 구매 목록에서 빼기')+
+      '" onclick="toggleExclude(\''+it.ek+'\')">'+(it.off?'↺':'✕')+'</button>';
+    if(it.off){
+      html+='<div class="rline off"><span class="rn">'+it.name+
+        ' <span class="mini">이미 보유</span><br><span class="lmeta" style="font-size:11.5px">'+
+        it.qty+'개 × '+it.unit.toLocaleString('ko-KR')+' — 구매 목록에서 제외</span></span>'+
+        '<span class="rv">'+xbtn+'</span></div>';
+      return;
+    }
     let sb='', vsel='';
     if(!it.fixed){
       const b=(v,t,ti)=>'<button class="'+(it.sc===v?'on':'')+'" title="'+ti+'" onclick="setScale(\''+it.key+'\',\''+v+'\')">'+t+'</button>';
@@ -1019,7 +1146,7 @@ function calc(){
     html+='<div class="rline"><span class="rn">'+it.name+
       ' <span class="mini">'+it.line+'</span><br><span class="lmeta" style="font-size:11.5px;color:var(--sub)">'+
       it.qty+'개 × '+it.unit.toLocaleString('ko-KR')+'</span>'+vsel+sb+'</span>'+
-      '<span class="rv">'+it.sum.toLocaleString('ko-KR')+'</span></div>';
+      '<span class="rv">'+it.sum.toLocaleString('ko-KR')+xbtn+'</span></div>';
   });
   html+='</div>';
   Object.entries(vt).forEach(([k,v])=>{ if(v>0)
@@ -1062,6 +1189,7 @@ function copyPlan(){
     t+='· '+i.name.replace(/<[^>]*>/g,'').trim()+' ['+i.line+'] '+
        i.qty+'개 × '+i.unit.toLocaleString('ko-KR')+' = '+i.sum.toLocaleString('ko-KR')+'원\n';
   });
+  if(excluded.size) t+='\n※ 이미 보유하여 제외한 품목 '+excluded.size+'건은 목록에 없습니다.\n';
   t+='\n[판매사별 합계]\n';
   Object.entries(lastPlan.vt).forEach(([k,v])=>{ if(v>0) t+='· '+VNAME[k]+' '+won(v)+'\n'; });
   t+='\n합계 '+won(lastPlan.total)+' / 예산 '+won(lastPlan.budget);
