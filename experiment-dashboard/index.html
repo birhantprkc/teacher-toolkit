@@ -1031,7 +1031,7 @@ function gPlain(svg){ svg.setAttribute('viewBox','0 0 10 10'); svg.innerHTML='';
    7. 값 카드
    ======================================================================= */
 const cardState = [];   // {shown, target, update, els}
-let rafOn = false;
+let rafOn = false, lastRaf = 0;
 
 function renderValueCards(){
   $$('.valcard').forEach(e=>e.remove());
@@ -1093,9 +1093,16 @@ function drawCard(st, i, snap){
   return busy;
 }
 function tickCards(){
+  lastRaf = performance.now();
   let busy = false;
   cardState.forEach((st,i)=>{ if (drawCard(st, i, false)) busy = true; });
   if (busy) requestAnimationFrame(tickCards); else rafOn = false;
+}
+// 창이 가려지거나 최소화되면 requestAnimationFrame이 멈춰도 document.hidden 이 false 일 수 있다.
+// 프레임이 0.5초 넘게 안 오면 부드러운 이동을 포기하고 값을 즉시 반영한다.
+function cardWatchdog(){
+  if (!rafOn) return;
+  if (performance.now() - lastRaf > 500) cardState.forEach((st,i)=>drawCard(st, i, true));
 }
 document.addEventListener('visibilitychange', ()=>{
   if (!document.hidden && !rafOn){ rafOn = true; requestAnimationFrame(tickCards); }
@@ -1404,6 +1411,7 @@ function sampleTick(){
 /* 화면 갱신 루프 (0.25초) */
 setInterval(()=>{
   refreshMeta();
+  cardWatchdog();
   if (chartDirty){ chartDirty = false; pushChart(); renderTable(); renderStats(); }
 }, 250);
 
