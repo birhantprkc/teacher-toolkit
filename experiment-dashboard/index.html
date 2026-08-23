@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>과학실험 대시보드 · 밝기 / 초음파거리</title>
+
+<!-- Tailwind CSS (CDN) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Chart.js (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<!-- html2canvas (CDN) : 이미지 저장용 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+/* ===================== 디자인 토큰 ===================== */
+:root{
+  --bg:#eef2f7;  --card:#fff;  --text:#1a2433;  --sub:#4b5a6e;  --muted:#8595a8;  --line:#dde4ec;
+  --accent:#2c6cb5;  --accent-bg:#e7eef7;  --accent2:#158585;
+  --content:#b45f1a;  --content-bg:#fbf0e6;  --content-line:#e8cdb2;
+  --ok:#2b9457;  --warn:#cc4a45;
+  --r:14px;  --r-sm:9px;  --bw:1.5px;
+  --shadow:0 1px 3px rgba(20,35,60,.06),0 10px 24px -18px rgba(20,35,60,.3);
+  --rowh:74px;  --gap:12px;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Noto Sans KR','Malgun Gothic',system-ui,-apple-system,sans-serif;
+  font-size:16px; line-height:1.55; -webkit-text-size-adjust:100%;
+}
+h1,h2,h3,h4{margin:0; font-weight:700; line-height:1.35}
+button{font-family:inherit}
+input,select,textarea{font-family:inherit; color:var(--text)}
+
+/* ===================== 헤더 ===================== */
+.appbar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  background:var(--card); border-bottom:var(--bw) solid var(--line);
+  padding:10px 18px; box-shadow:0 2px 10px -6px rgba(20,35,60,.35);
+}
+.brand{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.logo{
+  width:42px; height:42px; border-radius:12px; background:var(--accent-bg); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; font-size:24px; flex:none;
+}
+.app-title{font-size:24px; letter-spacing:-.4px}
+.app-sub{font-size:16px; color:var(--muted); font-weight:500}
+.tools{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.tool-sep{width:1px; height:26px; background:var(--line); margin:0 4px}
+
+.badge{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 14px; border-radius:999px; font-size:16px; font-weight:700;
+  border:var(--bw) solid var(--line); background:#f1f4f8; color:var(--sub); white-space:nowrap;
+}
+.badge::before{content:''; width:10px; height:10px; border-radius:50%; background:currentColor; opacity:.85}
+.badge.off{background:#f1f4f8; color:var(--muted); border-color:var(--line)}
+.badge.on{background:var(--accent-bg); color:var(--accent); border-color:#c6d8ee}
+.badge.run{background:#e6f5ec; color:var(--ok); border-color:#bfe3cd}
+.badge.demo{background:var(--content-bg); color:var(--content); border-color:var(--content-line)}
+.badge.run::before{animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+
+/* ===================== 버튼 ===================== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  font-size:16px; font-weight:700; line-height:1.2;
+  padding:10px 15px; border-radius:var(--r-sm); border:var(--bw) solid var(--line);
+  background:#fff; color:var(--text); cursor:pointer; transition:.15s; white-space:nowrap;
+}
+.btn:hover{background:#f4f7fb; transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.45; cursor:not-allowed; transform:none}
+.btn-primary{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn-primary:hover{background:#25599a}
+.btn-ok{background:var(--ok); border-color:var(--ok); color:#fff}
+.btn-ok:hover{background:#237c49}
+.btn-warn{background:#fff; border-color:#eab9b7; color:var(--warn)}
+.btn-warn:hover{background:#fdf1f0}
+.btn-teal{background:var(--accent2); border-color:var(--accent2); color:#fff}
+.btn-teal:hover{background:#106e6e}
+.btn-content{background:var(--content); border-color:var(--content); color:#fff}
+.btn-content:hover{background:#96501a}
+.btn-content-ghost{background:#fff; border-color:var(--content-line); color:var(--content)}
+.btn-content-ghost:hover{background:var(--content-bg)}
+.btn-sm{padding:7px 11px; font-size:16px}
+.icon-btn{
+  width:36px; height:36px; border-radius:var(--r-sm); border:var(--bw) solid var(--line);
+  background:#fff; color:var(--sub); font-size:17px; cursor:pointer; line-height:1;
+  display:inline-flex; align-items:center; justify-content:center; transition:.15s; flex:none;
+}
+.icon-btn:hover{background:var(--accent-bg); color:var(--accent); border-color:#c6d8ee}
+
+/* ===================== 12칸 그리드 ===================== */
+.grid12{
+  display:grid; grid-template-columns:repeat(12,1fr);
+  grid-auto-rows:minmax(var(--rowh),auto); gap:var(--gap);
+  padding:var(--gap) 18px 26px;
+  align-items:stretch;
+}
+.mod{
+  grid-column:var(--x) / span var(--w);
+  grid-row:var(--y) / span var(--h);
+  background:var(--card); border:var(--bw) solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); display:flex; flex-direction:column; overflow:hidden; min-width:0;
+}
+.mod-head{
+  display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  padding:11px 15px 9px; border-bottom:var(--bw) solid var(--line); flex:none;
+}
+.mod-title{font-size:19px; letter-spacing:-.3px}
+.mod-head .spacer{flex:1}
+.mod-body{padding:13px 15px 15px; overflow:auto; min-height:0; flex:1}
+.mod-body.tight{padding:11px 13px}
+
+/* 콘텐츠(학습지) 영역 구분 */
+.mod.content{border-color:var(--content-line); background:linear-gradient(180deg,#fffaf5 0,#fff 46px)}
+.mod.content .mod-head{border-bottom-color:var(--content-line); background:var(--content-bg)}
+.mod.content .mod-title{color:var(--content)}
+.ws-tag{
+  font-size:16px; font-weight:700; color:#fff; background:var(--content);
+  padding:2px 11px; border-radius:999px; flex:none;
+}
+
+/* ===================== 공통 조각 ===================== */
+.hint{font-size:16px; color:var(--muted); line-height:1.5}
+.label{font-size:16px; font-weight:700; color:var(--sub); display:block; margin-bottom:5px}
+.field{
+  width:100%; font-size:17px; padding:9px 11px; border-radius:var(--r-sm);
+  border:var(--bw) solid var(--line); background:#fff; outline:none; transition:.15s;
+}
+.field:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(44,108,181,.13)}
+.mod.content .field:focus{border-color:var(--content); box-shadow:0 0 0 3px rgba(180,95,26,.13)}
+textarea.field{resize:vertical; line-height:1.6}
+.row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.stack{display:flex; flex-direction:column; gap:10px}
+.divider{height:1px; background:var(--line); margin:11px 0}
+.hidden{display:none !important}
+
+/* 부호 토글(±) 입력 */
+.numwrap{display:inline-flex; align-items:stretch; gap:0; min-width:0; width:100%}
+.numwrap .field{border-top-right-radius:0; border-bottom-right-radius:0; border-right:none; text-align:right}
+.pm{
+  flex:none; width:42px; font-size:18px; font-weight:700; cursor:pointer; color:var(--sub);
+  background:#f2f6fa; border:var(--bw) solid var(--line);
+  border-top-right-radius:var(--r-sm); border-bottom-right-radius:var(--r-sm); transition:.15s;
+}
+.pm:hover{background:var(--accent-bg); color:var(--accent)}
+.mod.content .pm:hover{background:var(--content-bg); color:var(--content)}
+
+/* 토글 스위치 */
+.sw{position:relative; width:52px; height:29px; flex:none; cursor:pointer}
+.sw input{opacity:0; width:0; height:0; position:absolute}
+.sw .track{
+  position:absolute; inset:0; background:#d3dbe5; border-radius:999px; transition:.18s;
+}
+.sw .knob{
+  position:absolute; top:3px; left:3px; width:23px; height:23px; background:#fff; border-radius:50%;
+  transition:.18s; box-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+.sw input:checked + .track{background:var(--accent)}
+.sw input:checked + .track .knob{transform:translateX(23px)}
+
+/* 장치 목록 */
+.dev-list{list-style:none; margin:10px 0 0; padding:0; display:flex; flex-direction:column; gap:7px}
+.dev-item{
+  display:flex; align-items:center; gap:8px; padding:8px 10px;
+  border:var(--bw) solid var(--line); border-radius:var(--r-sm); background:#f8fafc;
+}
+.dev-name{flex:1; font-size:16px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.dev-state{font-size:16px; font-weight:700; color:var(--ok); flex:none}
+.dev-state.wait{color:var(--muted)}
+.dev-x{
+  flex:none; width:30px; height:30px; border-radius:7px; border:var(--bw) solid var(--line);
+  background:#fff; color:var(--warn); cursor:pointer; font-size:15px; line-height:1;
+}
+.dev-x:hover{background:#fdf1f0}
+.dev-empty{font-size:16px; color:var(--muted); padding:10px 2px}
+
+/* 채널 선택 패널 */
+.ch-item{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:var(--r-sm);
+  border:var(--bw) solid var(--line); background:#f8fafc; margin-bottom:7px;
+}
+.ch-dot{width:15px; height:15px; border-radius:50%; flex:none; box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+.ch-name{flex:1; font-size:17px; font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer}
+.ch-col{font-size:16px; color:var(--muted); font-weight:500}
+
+/* 값 카드 */
+.valcard .mod-body{display:flex; align-items:center; gap:12px; padding:10px 15px}
+.gauge-box{flex:none; width:132px; height:104px; display:flex; align-items:center; justify-content:center}
+.gauge-box svg{width:100%; height:100%; overflow:visible}
+.val-side{flex:1; min-width:0; text-align:right}
+.val-num{font-size:46px; font-weight:900; letter-spacing:-2px; line-height:1.05; word-break:break-all}
+.val-unit{font-size:20px; font-weight:700; color:var(--muted); margin-left:5px; letter-spacing:0}
+.val-meta{font-size:16px; color:var(--muted); margin-top:3px}
+.valcard.off{display:none}   /* 표시 데이터 선택에서 끈 채널은 값 카드도 숨김 */
+
+/* 그래프 */
+.chart-wrap{position:relative; flex:1; min-height:210px}
+.tabs{display:inline-flex; background:#eff3f8; border-radius:var(--r-sm); padding:3px; gap:3px}
+.tab{
+  border:none; background:transparent; font-size:16px; font-weight:700; color:var(--sub);
+  padding:7px 14px; border-radius:7px; cursor:pointer; transition:.15s;
+}
+.tab.active{background:#fff; color:var(--accent); box-shadow:0 1px 3px rgba(20,35,60,.14)}
+
+/* 표 */
+.tbl-scroll{overflow:auto; border:var(--bw) solid var(--line); border-radius:var(--r-sm); max-height:100%}
+table.tbl{border-collapse:collapse; width:100%; font-size:16px}
+table.tbl th,table.tbl td{border-bottom:1px solid var(--line); padding:7px 9px; text-align:center; white-space:nowrap}
+table.tbl th{background:#f4f7fb; font-weight:700; color:var(--sub); position:sticky; top:0; z-index:1}
+table.tbl tbody tr:nth-child(even){background:#fbfcfe}
+table.tbl td.num{text-align:right; font-variant-numeric:tabular-nums}
+.mod.content table.tbl th{background:var(--content-bg); color:var(--content)}
+
+/* 학습지 표 입력 */
+table.ws-tbl{border-collapse:separate; border-spacing:0; width:100%; font-size:16px}
+table.ws-tbl th,table.ws-tbl td{border-bottom:1px solid var(--content-line); padding:6px 7px; text-align:center}
+table.ws-tbl th{background:var(--content-bg); color:var(--content); font-weight:700; font-size:16px; white-space:nowrap}
+table.ws-tbl td .field{padding:7px 9px; font-size:16px}
+.tbl-round{border:var(--bw) solid var(--content-line); border-radius:var(--r-sm); overflow:auto}
+
+.chk{display:inline-flex; align-items:center; gap:7px; font-size:16px; cursor:pointer; margin-right:14px}
+.chk input{width:20px; height:20px; accent-color:var(--content); cursor:pointer}
+.savenote{font-size:16px; color:var(--ok); font-weight:700}
+
+/* 토스트 */
+#toast{
+  position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
+  background:#1a2433; color:#fff; font-size:17px; font-weight:700; padding:13px 22px;
+  border-radius:999px; box-shadow:0 12px 30px -12px rgba(0,0,0,.6); opacity:0;
+  transition:.25s; pointer-events:none; z-index:100; max-width:90vw; text-align:center;
+}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+/* 모달 */
+.modal{position:fixed; inset:0; background:rgba(18,28,44,.5); z-index:90; display:flex; align-items:center; justify-content:center; padding:18px}
+.modal-card{
+  background:#fff; border-radius:var(--r); border:var(--bw) solid var(--line); box-shadow:0 24px 60px -20px rgba(0,0,0,.5);
+  width:min(560px,100%); max-height:92vh; overflow:auto;
+}
+.modal-head{padding:15px 20px; border-bottom:var(--bw) solid var(--line); display:flex; align-items:center; gap:10px}
+.modal-body{padding:18px 20px}
+.modal-foot{padding:14px 20px; border-top:var(--bw) solid var(--line); display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap}
+.swatches{display:flex; gap:7px; flex-wrap:wrap; margin-top:7px}
+.swatch{width:32px; height:32px; border-radius:8px; border:2px solid #fff; box-shadow:0 0 0 1.5px var(--line); cursor:pointer}
+.swatch.sel{box-shadow:0 0 0 3px var(--accent)}
+.gauge-preview{
+  border:var(--bw) solid var(--line); border-radius:var(--r-sm); background:#f8fafc;
+  height:120px; display:flex; align-items:center; justify-content:center; margin-top:7px;
+}
+.gauge-preview svg{width:150px; height:104px; overflow:visible}
+
+/* 경고 배너 */
+.banner{
+  margin:12px 18px 0; padding:11px 15px; border-radius:var(--r-sm); font-size:16px; font-weight:500;
+  background:#fdf3e7; border:var(--bw) solid #eccfa9; color:#8a5a16;
+}
+
+/* 푸터 */
+#app-credit{margin-top:6px}
+
+/* ===================== 반응형 ===================== */
+@media (max-width:1240px){
+  .grid12{grid-template-columns:1fr; grid-auto-rows:auto; padding:12px 12px 24px}
+  .mod{grid-column:1 / -1 !important; grid-row:auto !important}
+  .chart-wrap{min-height:280px}
+  .app-title{font-size:21px}
+}
+
+/* ===================== 인쇄 ===================== */
+.print-only{display:none}
+@page{size:A4 landscape; margin:9mm}
+@media print{
+  html,body{background:#fff !important}
+  .no-print{display:none !important}
+  .print-only{display:inline}
+  .appbar{position:static; box-shadow:none; border-bottom:1px solid #ccc; padding:6px 0}
+  .grid12{display:block; padding:0}
+  .mod{
+    display:block !important; overflow:visible !important; box-shadow:none !important;
+    margin:0 0 8px; break-inside:avoid; page-break-inside:avoid; border-color:#c9d2dd;
+  }
+  .mod-body{overflow:visible !important; max-height:none !important}
+  .tbl-scroll,.tbl-round{max-height:none !important; overflow:visible !important}
+  .chart-wrap{min-height:0; height:300px}
+  .valcard .mod-body{display:flex !important}
+  #toast,.modal{display:none !important}
+  .field,.pm{background:#fff !important}
+}
+</style>
+</head>
+<body>
+
+<div id="capture">
+
+  <!-- ===================== [상단 헤더 바] x=0,y=0,w=12,h=1 ===================== -->
+  <header class="appbar">
+    <div class="brand">
+      <div class="logo">🔬</div>
+      <div>
+        <h1 class="app-title">과학실험 대시보드</h1>
+        <div class="app-sub">밝기 · 초음파거리 측정 <span class="print-only" id="printStamp"></span></div>
+      </div>
+      <span id="statusBadge" class="badge off">연결 끊김</span>
+    </div>
+    <div class="tools no-print">
+      <button id="btnDemo" class="btn">🧪 데모 데이터</button>
+      <button id="btnConnect" class="btn btn-primary">📡 장치 연결</button>
+      <button id="btnStart" class="btn btn-ok" disabled>▶ 측정 시작</button>
+      <span class="tool-sep"></span>
+      <button id="btnPrint" class="btn">🖨 인쇄</button>
+      <button id="btnPng" class="btn">🖼 이미지 저장</button>
+      <button id="btnPdf" class="btn">📄 PDF 저장</button>
+    </div>
+  </header>
+
+  <div id="browserWarn" class="banner no-print hidden">
+    ⚠️ 이 브라우저는 <b>Web Serial</b>을 지원하지 않아 장치 연결이 안 됩니다. <b>Chrome</b> 또는 <b>Edge</b>에서 열어 주세요.
+    (화면 확인은 <b>🧪 데모 데이터</b> 버튼으로 가능합니다.)
+  </div>
+
+  <main class="grid12">
+
+    <!-- ============ [장치 연결 패널] x=0,y=1,w=3,h=2 ============ -->
+    <section class="mod" style="--x:1;--w:3;--y:1;--h:2">
+      <div class="mod-head"><h2 class="mod-title">🔌 장치 연결</h2></div>
+      <div class="mod-body tight">
+        <div class="row no-print">
+          <button id="btnAddDevice" class="btn btn-primary btn-sm">＋ 장치 연결</button>
+          <button id="btnDisconnectAll" class="btn btn-warn btn-sm hidden">❌ 연결 해제</button>
+        </div>
+        <ul id="deviceList" class="dev-list"></ul>
+      </div>
+    </section>
+
+    <!-- ============ [측정 제어 패널] x=3,y=1,w=4,h=2 ============ -->
+    <section class="mod" style="--x:4;--w:4;--y:1;--h:2">
+      <div class="mod-head"><h2 class="mod-title">🎛 측정 제어</h2></div>
+      <div class="mod-body tight">
+        <div class="row no-print">
+          <button id="btnCtrlStart" class="btn btn-ok btn-sm">▶ 시작</button>
+          <button id="btnCtrlPause" class="btn btn-sm">⏸ 일시정지</button>
+          <button id="btnCtrlReset" class="btn btn-warn btn-sm">↺ 초기화</button>
+        </div>
+        <div class="row" style="margin-top:10px; gap:14px">
+          <div style="flex:1; min-width:150px">
+            <label class="label" for="inpPeriod">측정 주기 (초)</label>
+            <input id="inpPeriod" class="field" type="number" min="0.01" step="0.01" value="0.5" style="text-align:right">
+          </div>
+          <div style="flex:1; min-width:120px">
+            <div class="label">경과 시간</div>
+            <div id="elapsedTxt" style="font-size:24px; font-weight:900; letter-spacing:-1px">0.0 초</div>
+          </div>
+          <div style="flex:1; min-width:100px">
+            <div class="label">기록된 표본</div>
+            <div id="sampleTxt" style="font-size:24px; font-weight:900; letter-spacing:-1px">0 개</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ [표시 데이터 선택] x=7,y=1,w=3,h=2 ============ -->
+    <section class="mod" style="--x:8;--w:3;--y:1;--h:2">
+      <div class="mod-head">
+        <h2 class="mod-title">📶 표시 데이터 선택</h2>
+        <span class="spacer"></span>
+        <button id="btnResetCh" class="icon-btn no-print" title="채널 설정 기본값으로">↺</button>
+      </div>
+      <div class="mod-body tight">
+        <div id="chList"></div>
+        <div class="hint" style="margin-top:6px">✎ 를 누르면 <b>이름 · 단위 · 게이지 · 색상</b>을 지정할 수 있어요. (센서1 = 첫 번째 값)</div>
+      </div>
+    </section>
+
+    <!-- ============ [수신 현황] x=10,y=1,w=2,h=2 ============ -->
+    <section class="mod" style="--x:11;--w:2;--y:1;--h:2">
+      <div class="mod-head"><h2 class="mod-title">📡 수신 현황</h2></div>
+      <div class="mod-body tight">
+        <div class="label">초당 수신</div>
+        <div id="rxRate" style="font-size:26px; font-weight:900; letter-spacing:-1px">0 줄</div>
+        <div class="divider"></div>
+        <div class="label">마지막 수신</div>
+        <div id="rxLast" style="font-size:17px; font-weight:700; color:var(--sub)">—</div>
+      </div>
+    </section>
+
+    <!-- ============ [값 카드] 밝기 x=0,y=3,w=3,h=2 / 초음파거리 x=3,y=3,w=3,h=2 ============ -->
+    <!-- 자바스크립트가 채널 설정대로 생성 -->
+
+    <!-- ============ [실시간 그래프] ============ -->
+    <section class="mod" style="--x:7;--w:6;--y:3;--h:5">
+      <div class="mod-head">
+        <h2 class="mod-title">📈 실시간 그래프</h2>
+        <span class="spacer"></span>
+        <div class="tabs no-print">
+          <button class="tab active" data-graphtab="time">시간 그래프</button>
+          <button class="tab" data-graphtab="scatter">산점도</button>
+        </div>
+      </div>
+      <div class="mod-body tight" style="display:flex; flex-direction:column; gap:9px">
+
+        <div id="timeOpts" class="row no-print" style="gap:12px">
+          <div class="row" style="gap:6px">
+            <span class="label" style="margin:0">최근 표시 개수</span>
+            <input id="inpWindow" class="field" type="number" min="10" step="10" value="120" style="width:96px; text-align:right; padding:6px 9px">
+          </div>
+          <label class="chk" style="margin:0"><input type="checkbox" id="chkYAuto" checked> Y축 자동</label>
+          <div class="row" id="yManual" style="gap:6px; opacity:.45">
+            <span class="label" style="margin:0">최소</span>
+            <div class="numwrap" style="width:132px"><input id="inpYMin" class="field" type="text" inputmode="decimal" value="0" disabled><button class="pm" type="button" data-pm="inpYMin">±</button></div>
+            <span class="label" style="margin:0">최대</span>
+            <div class="numwrap" style="width:132px"><input id="inpYMax" class="field" type="text" inputmode="decimal" value="1000" disabled><button class="pm" type="button" data-pm="inpYMax">±</button></div>
+          </div>
+        </div>
+
+        <div id="scatterOpts" class="row no-print hidden" style="gap:12px">
+          <div class="row" style="gap:6px">
+            <span class="label" style="margin:0">가로축(X)</span>
+            <select id="selScX" class="field" style="width:auto; padding:7px 10px"></select>
+          </div>
+          <div class="row" style="gap:6px">
+            <span class="label" style="margin:0">세로축(Y)</span>
+            <select id="selScY" class="field" style="width:auto; padding:7px 10px"></select>
+          </div>
+        </div>
+
+        <div class="chart-wrap"><canvas id="chartTime"></canvas></div>
+        <div class="chart-wrap hidden"><canvas id="chartScatter"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ============ [데이터 표 · 통계] ============ -->
+    <section class="mod" style="--x:1;--w:6;--y:5;--h:3">
+      <div class="mod-head">
+        <h2 class="mod-title">🧮 데이터 표 · 통계</h2>
+        <span class="spacer"></span>
+        <button id="btnCsv" class="btn btn-sm no-print">⬇ CSV 저장</button>
+      </div>
+      <div class="mod-body tight" style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start">
+        <div style="flex:1.15; min-width:260px; max-height:100%; display:flex; flex-direction:column">
+          <div class="label">측정 데이터 (최근 순)</div>
+          <div class="tbl-scroll" style="max-height:230px"><table class="tbl" id="dataTbl"><thead></thead><tbody></tbody></table></div>
+        </div>
+        <div style="flex:1; min-width:260px">
+          <div class="label">통계 요약</div>
+          <div class="tbl-scroll"><table class="tbl" id="statTbl"><thead></thead><tbody></tbody></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 학습지(콘텐츠 영역) ===================== -->
+
+    <!-- [학습지 1] 탐구 준비 -->
+    <section class="mod content" style="--x:1;--w:12;--y:8;--h:3">
+      <div class="mod-head"><span class="ws-tag">학습지 1</span><h2 class="mod-title">🔍 탐구 준비</h2>
+        <span class="spacer"></span><span class="hint no-print">입력하면 자동 저장돼요</span></div>
+      <div class="mod-body">
+        <div class="row" style="gap:12px; align-items:flex-start">
+          <div style="flex:2; min-width:250px">
+            <label class="label" for="ws_topic">실험 주제</label>
+            <input id="ws_topic" data-ws="topic" class="field" type="text" placeholder="예) 거리가 멀어지면 빛의 밝기는 어떻게 변할까?">
+          </div>
+          <div style="flex:1; min-width:150px">
+            <label class="label" for="ws_class">학년 / 반 / 모둠</label>
+            <input id="ws_class" data-ws="class" class="field" type="text" placeholder="예) 2학년 3반 4모둠">
+          </div>
+          <div style="flex:1; min-width:150px">
+            <label class="label" for="ws_name">이름 (역할)</label>
+            <input id="ws_name" data-ws="name" class="field" type="text" placeholder="예) 조승재 (기록)">
+          </div>
+          <div style="flex:.8; min-width:130px">
+            <label class="label" for="ws_date">날짜</label>
+            <input id="ws_date" data-ws="date" class="field" type="date">
+          </div>
+        </div>
+        <div style="margin-top:11px">
+          <label class="label" for="ws_question">탐구 질문 — 무엇을 바꾸고(조작변인), 무엇을 재고(종속변인), 무엇을 같게 할까(통제변인)?</label>
+          <textarea id="ws_question" data-ws="question" class="field" rows="2" placeholder="바꾸는 것: ○○○ / 재는 것: ○○○ / 같게 하는 것: ○○○"></textarea>
+        </div>
+        <div style="margin-top:11px">
+          <span class="label">준비 확인</span>
+          <label class="chk"><input type="checkbox" data-ws="chk1"> 센서 보드 연결</label>
+          <label class="chk"><input type="checkbox" data-ws="chk2"> 측정 주기 정하기</label>
+          <label class="chk"><input type="checkbox" data-ws="chk3"> 센서 이름·단위 확인</label>
+          <label class="chk"><input type="checkbox" data-ws="chk4"> 조명·주변 밝기 통제</label>
+          <label class="chk"><input type="checkbox" data-ws="chk5"> 자(줄자)로 실제 거리 확인</label>
+        </div>
+      </div>
+    </section>
+
+    <!-- [학습지 2] 예상하기 -->
+    <section class="mod content" style="--x:1;--w:12;--y:11;--h:4">
+      <div class="mod-head"><span class="ws-tag">학습지 2</span><h2 class="mod-title">🤔 예상하기</h2>
+        <span class="spacer"></span><span class="hint no-print">측정 전에 먼저 적어 보세요</span></div>
+      <div class="mod-body">
+        <label class="label" for="ws_hypo">나의 가설 — “___할수록 ___할 것이다.”</label>
+        <textarea id="ws_hypo" data-ws="hypo" class="field" rows="2" placeholder="예) 광원에서 멀어질수록 밝기는 점점 작아질 것이다. 두 배 멀어지면 밝기는 절반보다 더 크게 줄어들 것이다."></textarea>
+
+        <div style="margin-top:12px">
+          <span class="label">예상 값 적기 — 조건을 정하고, 센서가 얼마를 가리킬지 예상해 보세요 (± 버튼으로 음수 입력)</span>
+          <div class="tbl-round"><table class="ws-tbl" id="predTbl"><thead></thead><tbody></tbody></table></div>
+        </div>
+
+        <div style="margin-top:11px">
+          <label class="label" for="ws_reason">그렇게 예상한 까닭</label>
+          <textarea id="ws_reason" data-ws="reason" class="field" rows="2" placeholder="배운 개념이나 경험을 근거로 써 보세요."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- [학습지 3] 측정하기 -->
+    <section class="mod content" style="--x:1;--w:12;--y:15;--h:5">
+      <div class="mod-head"><span class="ws-tag">학습지 3</span><h2 class="mod-title">📏 측정하기</h2>
+        <span class="spacer"></span>
+        <button id="btnAddRow" class="btn btn-content-ghost btn-sm no-print">＋ 행 추가</button>
+      </div>
+      <div class="mod-body">
+        <div class="hint" style="margin-bottom:8px">
+          🖐 <b>[현재값 담기]</b> 버튼을 누르면 지금 센서가 읽고 있는 값이 그 줄에 자동으로 들어갑니다.
+        </div>
+        <div class="tbl-round"><table class="ws-tbl" id="measTbl"><thead></thead><tbody></tbody></table></div>
+        <div style="margin-top:11px">
+          <label class="label" for="ws_obs">측정하면서 관찰한 것 · 이상했던 점</label>
+          <textarea id="ws_obs" data-ws="obs" class="field" rows="2" placeholder="예) 손 그림자가 지나갈 때 밝기가 갑자기 떨어졌다."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- [학습지 4] 결과 정리 -->
+    <section class="mod content" style="--x:1;--w:12;--y:20;--h:4">
+      <div class="mod-head"><span class="ws-tag">학습지 4</span><h2 class="mod-title">📊 결과 정리</h2>
+        <span class="spacer"></span>
+        <button id="btnPullStat" class="btn btn-content-ghost btn-sm no-print">📥 측정 통계 가져오기</button>
+      </div>
+      <div class="mod-body">
+        <div class="row" style="gap:12px; align-items:flex-start">
+          <div style="flex:1; min-width:260px">
+            <label class="label" for="ws_stat">측정 통계 (버튼을 누르면 위 통계가 들어옵니다)</label>
+            <textarea id="ws_stat" data-ws="stat" class="field" rows="4" placeholder="측정 통계 가져오기 버튼을 누르세요."></textarea>
+          </div>
+          <div style="flex:1; min-width:260px">
+            <label class="label" for="ws_pattern">그래프에서 찾은 규칙</label>
+            <textarea id="ws_pattern" data-ws="pattern" class="field" rows="4" placeholder="예) 거리가 2배가 되면 밝기는 약 1/4로 줄었다."></textarea>
+          </div>
+        </div>
+        <div style="margin-top:11px">
+          <label class="label" for="ws_compare">예상과 결과 비교 — 맞았나요? 달랐다면 무엇이 달랐나요?</label>
+          <textarea id="ws_compare" data-ws="compare" class="field" rows="2"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- [학습지 5] 결론과 되돌아보기 -->
+    <section class="mod content" style="--x:1;--w:12;--y:24;--h:4">
+      <div class="mod-head"><span class="ws-tag">학습지 5</span><h2 class="mod-title">✅ 결론과 되돌아보기</h2>
+        <span class="spacer"></span>
+        <span id="wsSaved" class="savenote no-print">✔ 자동 저장됨</span>
+        <button id="btnWsClear" class="btn btn-warn btn-sm no-print">학습지 지우기</button>
+      </div>
+      <div class="mod-body">
+        <div class="row" style="gap:12px; align-items:flex-start">
+          <div style="flex:1; min-width:260px">
+            <label class="label" for="ws_concl">결론 한 문장</label>
+            <textarea id="ws_concl" data-ws="concl" class="field" rows="3" placeholder="측정 결과를 근거로, 탐구 질문에 대한 답을 한 문장으로 쓰세요."></textarea>
+          </div>
+          <div style="flex:1; min-width:260px">
+            <label class="label" for="ws_error">오차가 생긴 까닭 (2가지 이상)</label>
+            <textarea id="ws_error" data-ws="error" class="field" rows="3" placeholder="1) &#10;2) "></textarea>
+          </div>
+          <div style="flex:1; min-width:260px">
+            <label class="label" for="ws_next">더 알아보고 싶은 것</label>
+            <textarea id="ws_next" data-ws="next" class="field" rows="3" placeholder="다음에 해 보고 싶은 실험은?"></textarea>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row" style="gap:22px">
+          <div><span class="label">모둠 활동에 잘 참여했나요?</span>
+            <label class="chk"><input type="radio" name="ws_self1" value="상" data-ws="self1"> 잘함</label>
+            <label class="chk"><input type="radio" name="ws_self1" value="중" data-ws="self1"> 보통</label>
+            <label class="chk"><input type="radio" name="ws_self1" value="하" data-ws="self1"> 노력</label>
+          </div>
+          <div><span class="label">측정값을 정확하게 기록했나요?</span>
+            <label class="chk"><input type="radio" name="ws_self2" value="상" data-ws="self2"> 잘함</label>
+            <label class="chk"><input type="radio" name="ws_self2" value="중" data-ws="self2"> 보통</label>
+            <label class="chk"><input type="radio" name="ws_self2" value="하" data-ws="self2"> 노력</label>
+          </div>
+          <div><span class="label">근거를 들어 결론을 썼나요?</span>
+            <label class="chk"><input type="radio" name="ws_self3" value="상" data-ws="self3"> 잘함</label>
+            <label class="chk"><input type="radio" name="ws_self3" value="중" data-ws="self3"> 보통</label>
+            <label class="chk"><input type="radio" name="ws_self3" value="하" data-ws="self3"> 노력</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="app-credit" style="width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14px 12px;text-align:center;font-size:16px;line-height:1.6;color:#8a8f98;font-family:system-ui,-apple-system,'Segoe UI','Malgun Gothic',sans-serif;border-top:1px solid rgba(128,128,128,.25);">© 2026 조승재(과학이조선생) · 해누리중학교 · All rights reserved<br><span style="font-size:14px;opacity:.85;">최종 업데이트: 2026-08-24</span></footer>
+</div>
+
+<!-- 채널 환경변수 지정 모달 -->
+<div id="chModal" class="modal hidden no-print">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 style="font-size:20px">✎ 채널 환경변수 지정</h3>
+      <span class="spacer" style="flex:1"></span>
+      <span id="mdCol" class="badge off" style="font-size:16px"></span>
+    </div>
+    <div class="modal-body stack">
+      <div class="row" style="gap:12px">
+        <div style="flex:1.4; min-width:180px">
+          <label class="label" for="mdName">표시 이름</label>
+          <input id="mdName" class="field" type="text" placeholder="예) 밝기">
+        </div>
+        <div style="flex:1; min-width:120px">
+          <label class="label" for="mdUnit">단위</label>
+          <input id="mdUnit" class="field" type="text" placeholder="예) Lux">
+        </div>
+      </div>
+      <div>
+        <label class="label" for="mdGauge">값 카드 게이지 모양</label>
+        <select id="mdGauge" class="field"></select>
+        <div class="gauge-preview"><svg id="mdPreview"></svg></div>
+      </div>
+      <div>
+        <label class="label" for="mdColor">색상</label>
+        <div class="row">
+          <input id="mdColor" type="color" class="field" style="width:74px; height:44px; padding:4px">
+          <div id="mdSwatches" class="swatches" style="margin:0"></div>
+        </div>
+      </div>
+      <div class="row" style="gap:12px">
+        <div style="flex:1; min-width:150px">
+          <label class="label" for="mdMin">게이지 최솟값</label>
+          <div class="numwrap"><input id="mdMin" class="field" type="text" inputmode="decimal" value="0"><button class="pm" type="button" data-pm="mdMin">±</button></div>
+        </div>
+        <div style="flex:1; min-width:150px">
+          <label class="label" for="mdMax">게이지 최댓값</label>
+          <div class="numwrap"><input id="mdMax" class="field" type="text" inputmode="decimal" value="100"><button class="pm" type="button" data-pm="mdMax">±</button></div>
+        </div>
+      </div>
+      <div class="hint">지정한 값은 값 카드 · 그래프 · 표 · 통계 · 산점도 축에 바로 반영되고, 이 컴퓨터 브라우저에 저장됩니다.</div>
+    </div>
+    <div class="modal-foot">
+      <button id="mdDefault" class="btn">기본값으로</button>
+      <button id="mdCancel" class="btn">취소</button>
+      <button id="mdSave" class="btn btn-primary">저장</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =======================================================================
+   과학실험 대시보드 — 밝기(Lux) / 초음파거리(cm)
+   이지메이커 보드 · Web Serial (115200) · 쉼표 구분 한 줄 수신
+   ======================================================================= */
+
+/* ---------- 0. 공통 도구 ---------- */
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
+const SERIES_COLORS = ['#2c6cb5','#158585','#cc6d3e','#7d6cb3','#3f9a6b','#c2902f','#b5567f','#6b8a3a'];
+
+function toast(msg, ms=2200){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), ms);
+}
+function fmt(v){
+  if (v === undefined || v === null || Number.isNaN(v)) return '--';
+  const a = Math.abs(v);
+  return v.toFixed(a >= 100 ? 0 : a >= 10 ? 1 : 2);
+}
+function num(v){ const n = parseFloat(String(v).replace(/[^0-9.\-]/g,'')); return Number.isNaN(n) ? null : n; }
+
+/* ---------- 1. 채널(환경변수) 설정 ---------- */
+const LS_CH = 'sciDash.channels.v1';
+const LS_WS = 'sciDash.worksheet.v1';
+const LS_CFG = 'sciDash.config.v1';
+
+const DEFAULT_CHANNELS = [
+  { name:'밝기',       unit:'Lux', gauge:'sun',   color:'#2c6cb5', min:0, max:1000, visible:true },
+  { name:'초음파거리', unit:'cm',  gauge:'ruler', color:'#158585', min:0, max:100,  visible:true }
+];
+function makeDefaultChannel(i){
+  if (DEFAULT_CHANNELS[i]) return Object.assign({}, DEFAULT_CHANNELS[i]);
+  return { name:'센서 '+(i+1), unit:'', gauge:'arc', color:SERIES_COLORS[i % SERIES_COLORS.length], min:0, max:100, visible:true };
+}
+let channels = (function(){
+  try{
+    const s = JSON.parse(localStorage.getItem(LS_CH));
+    if (Array.isArray(s) && s.length) return s.map((c,i)=>Object.assign(makeDefaultChannel(i), c));
+  }catch(e){}
+  return DEFAULT_CHANNELS.map((c,i)=>makeDefaultChannel(i));
+})();
+const saveChannels = () => localStorage.setItem(LS_CH, JSON.stringify(channels));
+const visibleIdx = () => channels.map((c,i)=>i).filter(i=>channels[i].visible);
+
+/* ---------- 2. 측정 상태 ---------- */
+let latest = [];        // 채널별 최신값
+let samples = [];       // {t, v[]}
+let measuring = false;  // 측정(기록) 중
+let sampleTimer = null;
+let elapsedMs = 0, segStart = 0;
+let periodSec = 0.5;
+
+/* =======================================================================
+   3. [부록] 검증된 Web Serial 연결 코드 — 구조 변경 없음
+   ======================================================================= */
+let port, reader, inputDone, inputStream;
+let isConnected = false, isStreaming = false;
+
+// [장치 연결/해제] 버튼
+document.getElementById('btnConnect').addEventListener('click', async () => {
+    if (!navigator.serial) return alert("Web Serial 미지원 브라우저입니다 (Chrome 권장).");
+    if (!isConnected) {
+        try {
+            port = await navigator.serial.requestPort();
+            await port.open({ baudRate: 115200 }); // 통신 속도: 반드시 115200
+            isConnected = true;
+            updateMainState('connected');
+        } catch (e) { console.error("연결 에러:", e); }
+    } else { await disconnectSerial(); }
+});
+
+// [데이터 수신 시작/중지] 버튼
+document.getElementById('btnStart').addEventListener('click', () => {
+    if (!isConnected) return;
+    if (!isStreaming) { isStreaming = true; startReading(); updateMainState('streaming'); }
+    else { isStreaming = false; stopReading(); updateMainState('connected'); }
+});
+
+async function disconnectSerial() {
+    if (isStreaming) await stopReading();
+    if (port) { await port.close(); port = null; }
+    isConnected = false; updateMainState('disconnected');
+}
+
+async function stopReading() {
+    if (reader) { await reader.cancel(); await inputDone.catch(()=>{}); reader = null; }
+}
+
+// 수신 문자열을 '\n' 기준 줄 단위로 잘라주는 변환기
+class LineBreakTransformer {
+    constructor() { this.container = ''; }
+    transform(chunk, controller) {
+        this.container += chunk;
+        const lines = this.container.split('\n');
+        this.container = lines.pop();
+        lines.forEach(line => controller.enqueue(line));
+    }
+    flush(controller) { controller.enqueue(this.container); }
+}
+
+async function startReading() {
+    const textDecoder = new TextDecoderStream();
+    inputDone = port.readable.pipeTo(textDecoder.writable);
+    inputStream = textDecoder.readable.pipeThrough(new TransformStream(new LineBreakTransformer()));
+    reader = inputStream.getReader();
+    try {
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            if (value) processData(value.trim());
+        }
+    } catch (e) { console.error(e); } finally { reader.releaseLock(); }
+}
+
+// [여기만 구현] 한 줄(예: "10.5, 20, 30")을 받아 화면을 업데이트
+function processData(dataStr) {
+    if (!isStreaming) return;
+    const values = dataStr.split(',').map(v => parseFloat(v.trim()));
+    if (values.some(v => Number.isNaN(v))) return;  // 불완전한 줄은 무시
+    // values[0] = 밝기, values[1] = 초음파거리  (수신 순서 = 채널 순서)
+    if (mainDevice) applyValues(mainDevice, values);
+}
+
+/* =======================================================================
+   4. 여러 장치 관리 (첫 장치 = 위 검증 코드의 port)
+   ======================================================================= */
+const devices = [];         // {id,kind,name,vals,rx,lastRx,port,reader,inputDone}
+let mainDevice = null;
+let devSeq = 0;
+
+function portLabel(p){
+  try{
+    const i = p.getInfo ? p.getInfo() : {};
+    if (i && i.usbVendorId != null){
+      const hex = n => ('000'+n.toString(16).toUpperCase()).slice(-4);
+      return '이지메이커 보드 (' + hex(i.usbVendorId) + ':' + hex(i.usbProductId||0) + ')';
+    }
+  }catch(e){}
+  return '시리얼 장치';
+}
+function addDevice(o){
+  const d = Object.assign({ id:++devSeq, kind:'serial', name:'시리얼 장치', vals:[], rx:0, rxWin:[], lastRx:0 }, o);
+  devices.push(d); renderDevices(); return d;
+}
+function removeDevice(id){
+  const i = devices.findIndex(d=>d.id===id);
+  if (i >= 0) devices.splice(i,1);
+  rebuildLatest(); renderDevices(); refreshHeader();
+}
+function applyValues(dev, values){
+  dev.vals = values;
+  dev.lastRx = Date.now();
+  dev.rxWin.push(performance.now());
+  rebuildLatest();
+}
+function rebuildLatest(){
+  const all = [];
+  devices.forEach(d => d.vals.forEach(v => all.push(v)));
+  latest = all;
+  ensureChannels(all.length);
+  updateCardTargets();
+}
+function ensureChannels(n){
+  let grew = false;
+  while (channels.length < n){ channels.push(makeDefaultChannel(channels.length)); grew = true; }
+  if (grew){ saveChannels(); renderChannelPanel(); renderValueCards(); rebuildTableHeads(); rebuildScatterSelects(); rebuildWorksheetTables(); }
+}
+
+/* --- 추가 장치 연결(2번째 이후) : 검증 코드와 같은 방식 --- */
+async function connectExtra(){
+  if (!navigator.serial) return alert("Web Serial 미지원 브라우저입니다 (Chrome 권장).");
+  try{
+    const p = await navigator.serial.requestPort();
+    await p.open({ baudRate: 115200 });
+    const dev = addDevice({ kind:'serial', name:portLabel(p), port:p });
+    readExtra(dev);
+    refreshHeader(); toast('장치를 추가로 연결했어요.');
+  }catch(e){
+    console.error("연결 에러:", e);
+    if (e && e.name === 'InvalidStateError') toast('이미 연결된 포트입니다.');
+  }
+}
+async function readExtra(dev){
+  const textDecoder = new TextDecoderStream();
+  dev.inputDone = dev.port.readable.pipeTo(textDecoder.writable);
+  const stream = textDecoder.readable.pipeThrough(new TransformStream(new LineBreakTransformer()));
+  dev.reader = stream.getReader();
+  try{
+    while (true){
+      const { value, done } = await dev.reader.read();
+      if (done) break;
+      if (value){
+        const vals = value.trim().split(',').map(v=>parseFloat(v.trim()));
+        if (!vals.some(v=>Number.isNaN(v))) applyValues(dev, vals);
+      }
+    }
+  }catch(e){ console.error(e); }
+  finally{ try{ dev.reader.releaseLock(); }catch(_){} }
+}
+async function disconnectDevice(dev){
+  if (dev.kind === 'demo'){ setDemo(false); return; }
+  if (dev === mainDevice){ await disconnectSerial(); return; }
+  try{ if (dev.reader){ await dev.reader.cancel(); await (dev.inputDone||Promise.resolve()).catch(()=>{}); } }catch(e){}
+  try{ if (dev.port) await dev.port.close(); }catch(e){}
+  removeDevice(dev.id);
+}
+async function disconnectAll(){
+  setDemo(false);
+  for (const d of devices.slice()){ if (d !== mainDevice) await disconnectDevice(d); }
+  if (isConnected) await disconnectSerial();
+  stopMeasuring();
+  refreshHeader();
+}
+
+function renderDevices(){
+  const ul = $('#deviceList');
+  if (!devices.length){ ul.innerHTML = '<li class="dev-empty">연결된 장치가 없습니다.</li>'; return; }
+  ul.innerHTML = devices.map(d => {
+    const on = d.kind === 'demo' ? '가상' : (d === mainDevice ? (isStreaming ? '수신 중' : '연결됨') : '연결됨');
+    const cols = d.vals.length ? (' · ' + d.vals.length + '열') : '';
+    return '<li class="dev-item">'
+      + '<span class="ch-dot" style="background:' + (d.kind==='demo' ? 'var(--content)' : 'var(--accent)') + '"></span>'
+      + '<span class="dev-name">' + d.name + cols + '</span>'
+      + '<span class="dev-state' + (d.vals.length ? '' : ' wait') + '">' + on + '</span>'
+      + '<button class="dev-x no-print" data-devx="' + d.id + '" title="이 장치만 해제">✕</button></li>';
+  }).join('');
+}
+$('#deviceList').addEventListener('click', e=>{
+  const b = e.target.closest('[data-devx]'); if (!b) return;
+  const d = devices.find(x=>x.id === +b.dataset.devx); if (d) disconnectDevice(d);
+});
+
+/* =======================================================================
+   5. 데모 모드 (가상 데이터)
+   ======================================================================= */
+let demoDev = null, demoTimer = null, demoPhase = 0;
+function setDemo(on){
+  if (on && !demoDev){
+    demoDev = addDevice({ kind:'demo', name:'데모(가상) 장치', vals:[0,0] });
+    demoTimer = setInterval(()=>{
+      demoPhase += 0.06;
+      const d = 42 + 34 * Math.sin(demoPhase) + (Math.random()-0.5) * 1.2;      // 거리 8~78 cm
+      const lux = 900 / (1 + Math.pow(d/16, 2)) + (Math.random()-0.5) * 6;      // 거리 멀수록 어두움
+      applyValues(demoDev, [Math.max(0, +lux.toFixed(1)), +d.toFixed(1)]);
+    }, 100);
+    toast('데모 데이터를 켰습니다. ▶ 측정 시작을 눌러 보세요.');
+  } else if (!on && demoDev){
+    clearInterval(demoTimer); demoTimer = null;
+    const id = demoDev.id; demoDev = null; removeDevice(id);
+  }
+  refreshHeader();
+}
+$('#btnDemo').addEventListener('click', ()=> setDemo(!demoDev));
+
+/* =======================================================================
+   6. 게이지 SVG
+   ======================================================================= */
+const GAUGES = {
+  sun:    { label:'해 · 광선',    build:gSun },
+  ruler:  { label:'거리 눈금',    build:gRuler },
+  arc:    { label:'반원 게이지',  build:gArc },
+  bar:    { label:'세로 막대',    build:gBar },
+  thermo: { label:'온도계',       build:gThermo },
+  water:  { label:'물 높이',      build:gWater },
+  plain:  { label:'숫자만',       build:gPlain }
+};
+
+function gSun(svg, ch){
+  svg.setAttribute('viewBox','0 0 130 130');
+  let rays = '';
+  for (let i=0;i<12;i++) rays += '<line class="ray" stroke-linecap="round" stroke-width="6"/>';
+  svg.innerHTML = '<g stroke="'+ch.color+'">'+rays+'</g>'
+    + '<circle class="halo" cx="65" cy="65" r="30" fill="'+ch.color+'" opacity=".16"/>'
+    + '<circle class="core" cx="65" cy="65" r="19" fill="'+ch.color+'"/>';
+  const rays_ = $$('.ray', svg), halo = $('.halo', svg), core = $('.core', svg);
+  return r => {
+    const inner = 29, len = 7 + r*25;
+    rays_.forEach((el,i)=>{
+      const a = (i/12)*Math.PI*2 - Math.PI/2;
+      el.setAttribute('x1', (65+Math.cos(a)*inner).toFixed(1));
+      el.setAttribute('y1', (65+Math.sin(a)*inner).toFixed(1));
+      el.setAttribute('x2', (65+Math.cos(a)*(inner+len)).toFixed(1));
+      el.setAttribute('y2', (65+Math.sin(a)*(inner+len)).toFixed(1));
+      el.setAttribute('opacity', (0.22 + r*0.78).toFixed(2));
+    });
+    halo.setAttribute('r', (23 + r*15).toFixed(1));
+    halo.setAttribute('opacity', (0.10 + r*0.22).toFixed(2));
+    core.setAttribute('r', (15 + r*7).toFixed(1));
+  };
+}
+
+function gRuler(svg, ch){
+  svg.setAttribute('viewBox','0 0 260 112');
+  let ticks = '';
+  for (let i=0;i<=20;i++){
+    const x = 20 + i*11, big = (i%5===0);
+    ticks += '<line x1="'+x+'" y1="'+(big?60:66)+'" x2="'+x+'" y2="74" stroke="#b8c4d2" stroke-width="'+(big?2:1.2)+'"/>';
+  }
+  svg.innerHTML =
+      '<rect x="20" y="56" width="220" height="20" rx="5" fill="#f1f5f9" stroke="#dde4ec" stroke-width="1.5"/>'
+    + ticks
+    + '<rect x="4" y="44" width="16" height="30" rx="4" fill="'+ch.color+'" opacity=".85"/>'
+    + '<line class="meas" y1="36" y2="36" x1="20" stroke="'+ch.color+'" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round"/>'
+    + '<g class="mark"><line y1="30" y2="80" stroke="'+ch.color+'" stroke-width="3"/>'
+    + '<rect x="-13" y="8" width="26" height="24" rx="5" fill="'+ch.color+'"/></g>'
+    + '<text class="lo" x="20" y="100" font-size="16" fill="#8595a8" text-anchor="start">0</text>'
+    + '<text class="hi" x="240" y="100" font-size="16" fill="#8595a8" text-anchor="end">100</text>';
+  const meas = $('.meas', svg), mark = $('.mark', svg), lo = $('.lo', svg), hi = $('.hi', svg);
+  return (r, v, c) => {
+    const x = 20 + r*220;
+    meas.setAttribute('x2', x.toFixed(1));
+    mark.setAttribute('transform', 'translate('+x.toFixed(1)+',0)');
+    lo.textContent = fmt(c.min); hi.textContent = fmt(c.max);
+  };
+}
+
+function gArc(svg, ch){
+  svg.setAttribute('viewBox','0 0 200 122');
+  const R = 78, len = Math.PI*R;
+  const d = 'M 22 100 A '+R+' '+R+' 0 0 1 178 100';
+  svg.innerHTML = '<path d="'+d+'" fill="none" stroke="#e8edf3" stroke-width="17" stroke-linecap="round"/>'
+    + '<path class="fg" d="'+d+'" fill="none" stroke="'+ch.color+'" stroke-width="17" stroke-linecap="round" '
+    + 'stroke-dasharray="'+len.toFixed(1)+'" stroke-dashoffset="'+len.toFixed(1)+'"/>'
+    + '<circle class="nub" cx="22" cy="100" r="7" fill="#fff" stroke="'+ch.color+'" stroke-width="4"/>';
+  const fg = $('.fg', svg), nub = $('.nub', svg);
+  return r => {
+    fg.setAttribute('stroke-dashoffset', (len*(1-r)).toFixed(1));
+    const a = Math.PI*(1-r);
+    nub.setAttribute('cx', (100 + Math.cos(a)*R).toFixed(1));
+    nub.setAttribute('cy', (100 - Math.sin(a)*R).toFixed(1));
+  };
+}
+
+function gBar(svg, ch){
+  svg.setAttribute('viewBox','0 0 96 130');
+  svg.innerHTML = '<rect x="28" y="8" width="40" height="114" rx="13" fill="#eef2f7" stroke="#dde4ec" stroke-width="1.5"/>'
+    + '<rect class="fill" x="31" width="34" rx="11" fill="'+ch.color+'"/>';
+  const f = $('.fill', svg);
+  return r => { const h = Math.max(2, 108*r); f.setAttribute('y', (11 + 108 - h).toFixed(1)); f.setAttribute('height', h.toFixed(1)); };
+}
+
+function gThermo(svg, ch){
+  svg.setAttribute('viewBox','0 0 96 140');
+  svg.innerHTML = '<rect x="38" y="8" width="20" height="98" rx="10" fill="#eef2f7" stroke="#dde4ec" stroke-width="1.5"/>'
+    + '<circle cx="48" cy="118" r="19" fill="#eef2f7" stroke="#dde4ec" stroke-width="1.5"/>'
+    + '<rect class="fill" x="41" width="14" rx="7" fill="'+ch.color+'"/>'
+    + '<circle cx="48" cy="118" r="14" fill="'+ch.color+'"/>';
+  const f = $('.fill', svg);
+  return r => { const h = Math.max(4, 96*r); f.setAttribute('y', (11 + 96 - h).toFixed(1)); f.setAttribute('height', (h+12).toFixed(1)); };
+}
+
+function gWater(svg, ch){
+  svg.setAttribute('viewBox','0 0 130 122');
+  svg.innerHTML = '<defs><clipPath id="wclip'+(gWater._n=(gWater._n||0)+1)+'">'
+    + '<rect x="16" y="10" width="98" height="100" rx="14"/></clipPath></defs>'
+    + '<rect x="16" y="10" width="98" height="100" rx="14" fill="#eef2f7" stroke="#dde4ec" stroke-width="1.5"/>'
+    + '<g clip-path="url(#wclip'+gWater._n+')"><path class="wave" fill="'+ch.color+'" opacity=".9"/></g>'
+    + '<rect x="16" y="10" width="98" height="100" rx="14" fill="none" stroke="#cfd8e3" stroke-width="1.5"/>';
+  const w = $('.wave', svg);
+  return r => {
+    const y = 110 - 100*r;
+    w.setAttribute('d', 'M 10 '+y.toFixed(1)+' q 15 -8 30 0 t 30 0 t 30 0 t 30 0 V 112 H 10 Z');
+  };
+}
+
+function gPlain(svg){ svg.setAttribute('viewBox','0 0 10 10'); svg.innerHTML=''; return ()=>{}; }
+
+/* =======================================================================
+   7. 값 카드
+   ======================================================================= */
+const cardState = [];   // {shown, target, update, els}
+let rafOn = false;
+
+function renderValueCards(){
+  $$('.valcard').forEach(e=>e.remove());
+  cardState.length = 0;
+  const main = $('.grid12');
+  const anchor = $('.mod[style*="--y:3"]');  // 그래프 모듈 앞에 삽입
+  channels.forEach((ch, i)=>{
+    const sec = document.createElement('section');
+    sec.className = 'mod valcard' + (ch.visible ? '' : ' off');
+    // 지정 배치: 0번=x0,y3,w3,h2 / 1번=x3,y3,w3,h2 / 그 외는 자동 배치
+    if (i === 0) sec.setAttribute('style','--x:1;--w:3;--y:3;--h:2');
+    else if (i === 1) sec.setAttribute('style','--x:4;--w:3;--y:3;--h:2');
+    else sec.setAttribute('style','grid-column:span 3; grid-row:span 2');
+    sec.innerHTML =
+        '<div class="mod-head">'
+      +   '<span class="ch-dot" style="background:'+ch.color+'"></span>'
+      +   '<h2 class="mod-title">'+esc(ch.name)+'</h2>'
+      +   '<span class="spacer"></span>'
+      +   '<button class="icon-btn no-print" data-edit="'+i+'" title="환경변수 지정">✎</button>'
+      + '</div>'
+      + '<div class="mod-body">'
+      +   '<div class="gauge-box"><svg></svg></div>'
+      +   '<div class="val-side">'
+      +     '<div class="val-num" style="color:'+ch.color+'">--<span class="val-unit">'+esc(ch.unit)+'</span></div>'
+      +     '<div class="val-meta">센서'+(i+1)+' · 범위 '+fmt(ch.min)+'~'+fmt(ch.max)+'</div>'
+      +   '</div>'
+      + '</div>';
+    main.insertBefore(sec, anchor);
+    const svg = $('svg', sec);
+    const upd = (GAUGES[ch.gauge] || GAUGES.arc).build(svg, ch);
+    if (ch.gauge === 'plain') $('.gauge-box', sec).style.display = 'none';
+    cardState.push({ shown:null, target:null, update:upd, numEl:$('.val-num', sec), unitEl:$('.val-unit', sec), sec });
+  });
+  updateCardTargets();
+}
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function updateCardTargets(){
+  cardState.forEach((st,i)=>{
+    const v = latest[i];
+    st.target = (typeof v === 'number' && !Number.isNaN(v)) ? v : null;
+    if (st.shown === null && st.target !== null) st.shown = st.target;
+  });
+  // 탭이 숨겨지면 requestAnimationFrame이 멈추므로 그때는 바로 그린다
+  if (document.hidden){ cardState.forEach((st,i)=>drawCard(st,i,true)); return; }
+  if (!rafOn){ rafOn = true; requestAnimationFrame(tickCards); }
+}
+function drawCard(st, i, snap){
+  const ch = channels[i]; if (!ch) return false;
+  if (st.target === null){ st.numEl.firstChild.nodeValue = '--'; return false; }
+  let busy = false;
+  const diff = st.target - st.shown;
+  if (snap) st.shown = st.target;
+  else if (Math.abs(diff) > Math.max(0.01, Math.abs(st.target)*0.0005)){ st.shown += diff*0.2; busy = true; }
+  else st.shown = st.target;
+  const span = Math.abs(ch.max - ch.min) < 1e-9 ? 1 : (ch.max - ch.min);
+  st.update(clamp((st.shown - ch.min)/span, 0, 1), st.shown, ch);
+  st.numEl.firstChild.nodeValue = fmt(st.shown);
+  return busy;
+}
+function tickCards(){
+  let busy = false;
+  cardState.forEach((st,i)=>{ if (drawCard(st, i, false)) busy = true; });
+  if (busy) requestAnimationFrame(tickCards); else rafOn = false;
+}
+document.addEventListener('visibilitychange', ()=>{
+  if (!document.hidden && !rafOn){ rafOn = true; requestAnimationFrame(tickCards); }
+});
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-edit]'); if (!b) return;
+  openChModal(+b.dataset.edit);
+});
+
+/* =======================================================================
+   8. 표시 데이터 선택 패널
+   ======================================================================= */
+function renderChannelPanel(){
+  $('#chList').innerHTML = channels.map((c,i)=>
+      '<div class="ch-item">'
+    +   '<span class="ch-dot" style="background:'+c.color+'"></span>'
+    +   '<label class="sw no-print"><input type="checkbox" data-vis="'+i+'"'+(c.visible?' checked':'')+'><span class="track"><span class="knob"></span></span></label>'
+    +   '<span class="ch-name" data-edit="'+i+'" title="눌러서 환경변수 지정">'+esc(c.name)+' <span class="ch-col">'+(c.unit?esc(c.unit)+' · ':'')+'센서'+(i+1)+'</span></span>'
+    +   '<button class="icon-btn no-print" data-edit="'+i+'" title="환경변수 지정">✎</button>'
+    + '</div>').join('');
+}
+$('#chList').addEventListener('change', e=>{
+  const t = e.target.closest('[data-vis]'); if (!t) return;
+  channels[+t.dataset.vis].visible = t.checked;
+  saveChannels(); applyChannelChange(true);   // 조작 중인 스위치는 다시 그리지 않음
+});
+$('#btnResetCh').addEventListener('click', ()=>{
+  if (!confirm('채널 이름·단위·게이지·색상 지정을 모두 기본값으로 되돌릴까요?')) return;
+  const n = Math.max(channels.length, DEFAULT_CHANNELS.length);
+  channels = Array.from({length:n}, (_,i)=>makeDefaultChannel(i));
+  saveChannels(); applyChannelChange(); toast('기본값으로 되돌렸습니다.');
+});
+function applyChannelChange(keepPanel){
+  if (!keepPanel) renderChannelPanel();
+  renderValueCards(); rebuildTableHeads(); rebuildScatterSelects();
+  rebuildWorksheetTables(); rebuildDatasets(); renderTable(); renderStats();
+}
+
+/* =======================================================================
+   9. 환경변수 지정 모달
+   ======================================================================= */
+let mdIdx = -1, mdPrevUpdate = null;
+function openChModal(i){
+  mdIdx = i; const c = channels[i];
+  $('#mdCol').textContent = '센서 ' + (i+1) + ' (' + (i+1) + '번째 값)';
+  $('#mdName').value = c.name; $('#mdUnit').value = c.unit;
+  $('#mdGauge').innerHTML = Object.keys(GAUGES).map(k=>'<option value="'+k+'"'+(k===c.gauge?' selected':'')+'>'+GAUGES[k].label+'</option>').join('');
+  $('#mdColor').value = c.color;
+  $('#mdMin').value = c.min; $('#mdMax').value = c.max;
+  $('#mdSwatches').innerHTML = SERIES_COLORS.map(col=>'<span class="swatch'+(col.toLowerCase()===c.color.toLowerCase()?' sel':'')+'" data-col="'+col+'" style="background:'+col+'"></span>').join('');
+  drawPreview();
+  $('#chModal').classList.remove('hidden');
+  setTimeout(()=>$('#mdName').focus(), 30);
+}
+function closeChModal(){ $('#chModal').classList.add('hidden'); mdIdx = -1; }
+function drawPreview(){
+  const svg = $('#mdPreview');
+  const fake = { color:$('#mdColor').value, min:num($('#mdMin').value)||0, max:num($('#mdMax').value)||100 };
+  const up = (GAUGES[$('#mdGauge').value] || GAUGES.arc).build(svg, fake);
+  mdPrevUpdate = up; up(0.68, 0, fake);
+}
+['#mdGauge','#mdColor','#mdMin','#mdMax'].forEach(s=>{
+  $(s).addEventListener('input', drawPreview); $(s).addEventListener('change', drawPreview);
+});
+$('#mdSwatches').addEventListener('click', e=>{
+  const s = e.target.closest('[data-col]'); if (!s) return;
+  $('#mdColor').value = s.dataset.col;
+  $$('#mdSwatches .swatch').forEach(x=>x.classList.remove('sel')); s.classList.add('sel');
+  drawPreview();
+});
+$('#mdSave').addEventListener('click', ()=>{
+  if (mdIdx < 0) return;
+  const c = channels[mdIdx];
+  c.name = ($('#mdName').value || ('센서 '+(mdIdx+1))).trim();
+  c.unit = $('#mdUnit').value.trim();
+  c.gauge = $('#mdGauge').value;
+  c.color = $('#mdColor').value;
+  let mn = num($('#mdMin').value), mx = num($('#mdMax').value);
+  if (mn === null) mn = 0; if (mx === null) mx = mn + 100;
+  if (mx === mn) mx = mn + 1;
+  c.min = mn; c.max = mx;
+  saveChannels(); applyChannelChange(); closeChModal();
+  toast('“'+c.name+'” 설정을 저장했습니다.');
+});
+$('#mdDefault').addEventListener('click', ()=>{
+  if (mdIdx < 0) return;
+  const d = makeDefaultChannel(mdIdx);
+  $('#mdName').value = d.name; $('#mdUnit').value = d.unit; $('#mdGauge').value = d.gauge;
+  $('#mdColor').value = d.color; $('#mdMin').value = d.min; $('#mdMax').value = d.max;
+  drawPreview();
+});
+$('#mdCancel').addEventListener('click', closeChModal);
+$('#chModal').addEventListener('click', e=>{ if (e.target.id === 'chModal') closeChModal(); });
+document.addEventListener('keydown', e=>{ if (e.key === 'Escape' && !$('#chModal').classList.contains('hidden')) closeChModal(); });
+
+/* =======================================================================
+   10. ± 부호 토글 (태블릿 음수 입력)
+   ======================================================================= */
+document.addEventListener('click', e=>{
+  const b = e.target.closest('.pm'); if (!b) return;
+  const inp = b.dataset.pm ? document.getElementById(b.dataset.pm) : b.previousElementSibling;
+  if (!inp) return;
+  let s = String(inp.value).trim();
+  if (s === '' || s === '-') s = (s === '-') ? '' : '-';
+  else if (s.startsWith('-')) s = s.slice(1);
+  else s = '-' + s;
+  inp.value = s;
+  inp.dispatchEvent(new Event('input', {bubbles:true}));
+  inp.dispatchEvent(new Event('change', {bubbles:true}));
+  inp.focus();
+});
+
+/* =======================================================================
+   11. 그래프 (Chart.js)
+   ======================================================================= */
+const chartFont = { family:"'Noto Sans KR', sans-serif", size:16 };
+let chartTime, chartScatter, graphTab = 'time', chartDirty = false;
+
+function initCharts(){
+  Chart.defaults.font = Object.assign({}, Chart.defaults.font, chartFont);
+  Chart.defaults.color = '#4b5a6e';
+  chartTime = new Chart($('#chartTime'), {
+    type:'line',
+    data:{ datasets:[] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:false, parsing:false, normalized:true,
+      interaction:{ mode:'nearest', intersect:false },
+      scales:{
+        x:{ type:'linear', title:{ display:true, text:'시간 (초)', font:{size:16, weight:'700'} },
+            ticks:{ font:chartFont, maxTicksLimit:9, callback:v=>(+v).toFixed(1) }, grid:{ color:'#eef2f7' } },
+        y:{ ticks:{ font:chartFont }, grid:{ color:'#eef2f7' } }
+      },
+      plugins:{
+        legend:{ labels:{ font:{size:16, weight:'700'}, boxWidth:20, padding:14, usePointStyle:true } },
+        tooltip:{ titleFont:chartFont, bodyFont:chartFont, callbacks:{ title:it=>'시간 '+(+it[0].parsed.x).toFixed(2)+'초' } }
+      }
+    }
+  });
+  chartScatter = new Chart($('#chartScatter'), {
+    type:'scatter',
+    data:{ datasets:[{ label:'측정점', data:[], backgroundColor:'#2c6cb5', pointRadius:5 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:false,
+      scales:{ x:{ title:{display:true, text:'', font:{size:16, weight:'700'}}, ticks:{font:chartFont}, grid:{color:'#eef2f7'} },
+               y:{ title:{display:true, text:'', font:{size:16, weight:'700'}}, ticks:{font:chartFont}, grid:{color:'#eef2f7'} } },
+      plugins:{ legend:{ labels:{ font:{size:16, weight:'700'}, usePointStyle:true } },
+                tooltip:{ titleFont:chartFont, bodyFont:chartFont } }
+    }
+  });
+  rebuildDatasets(); rebuildScatterSelects();
+}
+function rebuildDatasets(){
+  if (!chartTime) return;
+  chartTime.data.datasets = visibleIdx().map(i=>({
+    label: channels[i].name + (channels[i].unit ? ' ('+channels[i].unit+')' : ''),
+    borderColor: channels[i].color,
+    backgroundColor: channels[i].color,
+    borderWidth: 2.5, pointRadius: 0, tension: .25, data: [], _ch: i
+  }));
+  pushChart(true);
+}
+function pushChart(force){
+  if (!chartTime) return;
+  const win = Math.max(10, parseInt($('#inpWindow').value) || 120);
+  const src = samples.slice(-win);
+  chartTime.data.datasets.forEach(ds=>{
+    ds.data = src.map(s=>({ x:+s.t.toFixed(3), y:s.v[ds._ch] })).filter(p=>typeof p.y === 'number' && !Number.isNaN(p.y));
+  });
+  const auto = $('#chkYAuto').checked;
+  chartTime.options.scales.y.min = auto ? undefined : (num($('#inpYMin').value) ?? undefined);
+  chartTime.options.scales.y.max = auto ? undefined : (num($('#inpYMax').value) ?? undefined);
+  chartTime.update('none');
+
+  if (graphTab === 'scatter'){
+    const xi = +$('#selScX').value, yi = +$('#selScY').value;
+    const cx = channels[xi], cy = channels[yi];
+    if (cx && cy){
+      chartScatter.data.datasets[0].data = samples
+        .map(s=>({ x:s.v[xi], y:s.v[yi] }))
+        .filter(p=>typeof p.x === 'number' && typeof p.y === 'number' && !Number.isNaN(p.x) && !Number.isNaN(p.y));
+      chartScatter.data.datasets[0].label = cy.name + ' vs ' + cx.name;
+      chartScatter.data.datasets[0].backgroundColor = cy.color;
+      chartScatter.options.scales.x.title.text = cx.name + (cx.unit ? ' ('+cx.unit+')' : '');
+      chartScatter.options.scales.y.title.text = cy.name + (cy.unit ? ' ('+cy.unit+')' : '');
+      chartScatter.update('none');
+    }
+  }
+}
+function rebuildScatterSelects(){
+  const opts = channels.map((c,i)=>'<option value="'+i+'">'+esc(c.name)+(c.unit?' ('+esc(c.unit)+')':'')+'</option>').join('');
+  const sx = $('#selScX'), sy = $('#selScY');
+  const px = sx.value, py = sy.value;
+  sx.innerHTML = opts; sy.innerHTML = opts;
+  sx.value = px && channels[+px] ? px : '1';
+  sy.value = py && channels[+py] ? py : '0';
+  if (!channels[+sx.value]) sx.value = '0';
+  if (!channels[+sy.value]) sy.value = channels.length > 1 ? '1' : '0';
+}
+$$('[data-graphtab]').forEach(b=>b.addEventListener('click', ()=>{
+  graphTab = b.dataset.graphtab;
+  $$('[data-graphtab]').forEach(x=>x.classList.toggle('active', x === b));
+  $('#timeOpts').classList.toggle('hidden', graphTab !== 'time');
+  $('#scatterOpts').classList.toggle('hidden', graphTab !== 'scatter');
+  $$('.chart-wrap')[0].classList.toggle('hidden', graphTab !== 'time');
+  $$('.chart-wrap')[1].classList.toggle('hidden', graphTab !== 'scatter');
+  pushChart(true);
+}));
+['#inpWindow','#selScX','#selScY','#inpYMin','#inpYMax'].forEach(s=>$(s).addEventListener('input', ()=>pushChart(true)));
+$('#chkYAuto').addEventListener('change', e=>{
+  const on = e.target.checked;
+  $('#inpYMin').disabled = on; $('#inpYMax').disabled = on;
+  $('#yManual').style.opacity = on ? .45 : 1;
+  pushChart(true);
+});
+
+/* =======================================================================
+   12. 데이터 표 · 통계
+   ======================================================================= */
+function rebuildTableHeads(){
+  const vis = visibleIdx();
+  $('#dataTbl thead').innerHTML = '<tr><th>#</th><th>시간(초)</th>'
+    + vis.map(i=>'<th style="color:'+channels[i].color+'">'+esc(channels[i].name)+(channels[i].unit?'<br>('+esc(channels[i].unit)+')':'')+'</th>').join('') + '</tr>';
+  $('#statTbl thead').innerHTML = '<tr><th>채널</th><th>개수</th><th>최소</th><th>최대</th><th>평균</th></tr>';
+}
+function renderTable(){
+  const vis = visibleIdx();
+  const rows = samples.slice(-60).reverse();
+  $('#dataTbl tbody').innerHTML = rows.length ? rows.map((s,k)=>{
+    const n = samples.length - k;
+    return '<tr><td>'+n+'</td><td class="num">'+s.t.toFixed(2)+'</td>'
+      + vis.map(i=>'<td class="num">'+fmt(s.v[i])+'</td>').join('') + '</tr>';
+  }).join('') : '<tr><td colspan="'+(vis.length+2)+'" style="color:var(--muted); padding:18px">아직 기록된 데이터가 없습니다.</td></tr>';
+}
+function statsOf(i){
+  let n=0, mn=Infinity, mx=-Infinity, sum=0;
+  samples.forEach(s=>{ const v = s.v[i]; if (typeof v === 'number' && !Number.isNaN(v)){ n++; sum+=v; if(v<mn)mn=v; if(v>mx)mx=v; } });
+  return n ? { n, mn, mx, avg:sum/n } : null;
+}
+function renderStats(){
+  const vis = visibleIdx();
+  $('#statTbl tbody').innerHTML = vis.map(i=>{
+    const st = statsOf(i), c = channels[i];
+    const cell = st ? ['<td class="num">'+st.n+'</td>','<td class="num">'+fmt(st.mn)+'</td>','<td class="num">'+fmt(st.mx)+'</td>','<td class="num">'+fmt(st.avg)+'</td>'].join('')
+                    : '<td colspan="4" style="color:var(--muted)">데이터 없음</td>';
+    return '<tr><td style="text-align:left; font-weight:700; color:'+c.color+'">'+esc(c.name)+(c.unit?' <span style="color:var(--muted); font-weight:500">('+esc(c.unit)+')</span>':'')+'</td>'+cell+'</tr>';
+  }).join('') || '<tr><td colspan="5" style="color:var(--muted); padding:18px">표시할 채널이 없습니다.</td></tr>';
+}
+$('#btnCsv').addEventListener('click', ()=>{
+  if (!samples.length) return toast('저장할 데이터가 없습니다.');
+  const vis = visibleIdx();
+  const head = ['시간(초)'].concat(vis.map(i=>channels[i].name + (channels[i].unit ? '('+channels[i].unit+')' : '')));
+  const body = samples.map(s=>[s.t.toFixed(2)].concat(vis.map(i=>{ const v = s.v[i]; return (typeof v === 'number' && !Number.isNaN(v)) ? v : ''; })));
+  const csv = '﻿' + [head].concat(body).map(r=>r.join(',')).join('\r\n');
+  dl(new Blob([csv], {type:'text/csv;charset=utf-8'}), stamp('측정데이터') + '.csv');
+});
+
+/* =======================================================================
+   13. 측정 제어 (시작 / 일시정지 / 초기화)
+   ======================================================================= */
+$('#btnStart').addEventListener('click', ()=>{      // 검증 코드 리스너 다음에 실행됨
+  const hasDevice = isConnected || devices.length > 0;
+  if (!hasDevice){ toast('먼저 장치를 연결하거나 🧪 데모 데이터를 켜 주세요.'); return; }
+  if (isConnected) measuring = isStreaming;         // 검증 코드가 이미 토글한 상태를 따름
+  else measuring = !measuring;
+  measuring ? startMeasuring() : stopMeasuring();
+});
+$('#btnCtrlStart').addEventListener('click', ()=>{ if (!measuring) clickStart(); });
+$('#btnCtrlPause').addEventListener('click', ()=>{ if (measuring) clickStart(); });
+function clickStart(){ const b = $('#btnStart'); if (!b.disabled) b.click(); else toast('먼저 장치를 연결하거나 🧪 데모 데이터를 켜 주세요.'); }
+
+$('#btnCtrlReset').addEventListener('click', ()=>{
+  if (samples.length && !confirm('기록된 측정 데이터를 모두 지울까요? (학습지 내용은 지워지지 않습니다)')) return;
+  samples = []; elapsedMs = 0; segStart = measuring ? performance.now() : 0;
+  renderTable(); renderStats(); pushChart(true); refreshMeta();
+  toast('측정 데이터를 초기화했습니다.');
+});
+$('#inpPeriod').addEventListener('change', ()=>{
+  let p = parseFloat($('#inpPeriod').value);
+  if (Number.isNaN(p) || p < 0.01) p = 0.01;
+  p = Math.round(p*100)/100;
+  $('#inpPeriod').value = p; periodSec = p;
+  saveCfg();
+  if (measuring){ clearInterval(sampleTimer); sampleTimer = setInterval(sampleTick, periodSec*1000); }
+});
+function startMeasuring(){
+  measuring = true;
+  segStart = performance.now();
+  clearInterval(sampleTimer);
+  sampleTimer = setInterval(sampleTick, Math.max(10, periodSec*1000));
+  refreshHeader();
+}
+function stopMeasuring(){
+  if (measuring && segStart) elapsedMs += performance.now() - segStart;
+  measuring = false; segStart = 0;
+  clearInterval(sampleTimer); sampleTimer = null;
+  refreshHeader();
+}
+function nowSec(){ return (elapsedMs + (measuring && segStart ? performance.now() - segStart : 0)) / 1000; }
+function sampleTick(){
+  if (!latest.length) return;
+  samples.push({ t: nowSec(), v: latest.slice() });
+  if (samples.length > 20000) samples.splice(0, samples.length - 20000);
+  chartDirty = true;
+}
+
+/* 화면 갱신 루프 (0.25초) */
+setInterval(()=>{
+  refreshMeta();
+  if (chartDirty){ chartDirty = false; pushChart(); renderTable(); renderStats(); }
+}, 250);
+
+function refreshMeta(){
+  $('#elapsedTxt').textContent = nowSec().toFixed(1) + ' 초';
+  $('#sampleTxt').textContent = samples.length + ' 개';
+  const t = performance.now();
+  let rx = 0, last = 0;
+  devices.forEach(d=>{
+    d.rxWin = d.rxWin.filter(x=>t - x < 1000);
+    rx += d.rxWin.length;
+    if (d.lastRx > last) last = d.lastRx;
+  });
+  $('#rxRate').textContent = rx + ' 줄';
+  $('#rxLast').textContent = last ? new Date(last).toLocaleTimeString('ko-KR') : '—';
+}
+
+/* =======================================================================
+   14. 상태 표시 (검증 코드가 호출하는 updateMainState 포함)
+   ======================================================================= */
+function updateMainState(state){
+  if (state === 'connected'){
+    if (!mainDevice) mainDevice = addDevice({ kind:'serial', name:portLabel(port), port:port });
+  } else if (state === 'disconnected'){
+    if (mainDevice){ const id = mainDevice.id; mainDevice = null; removeDevice(id); }
+    stopMeasuring();
+  }
+  refreshHeader(); renderDevices();
+}
+function refreshHeader(){
+  const badge = $('#statusBadge');
+  const anyDev = devices.length > 0;
+  badge.className = 'badge ' + (measuring ? 'run' : (isConnected ? 'on' : (demoDev ? 'demo' : (anyDev ? 'on' : 'off'))));
+  badge.textContent = measuring ? '측정 중' : (isConnected ? '연결됨' : (demoDev ? '데모 모드' : (anyDev ? '연결됨' : '연결 끊김')));
+
+  $('#btnConnect').textContent = isConnected ? '❌ 연결 해제' : '📡 장치 연결';
+  $('#btnConnect').className = isConnected ? 'btn btn-warn' : 'btn btn-primary';
+
+  const b = $('#btnStart');
+  b.disabled = !anyDev;
+  b.textContent = measuring ? '⏸ 일시정지' : '▶ 측정 시작';
+  b.className = measuring ? 'btn' : 'btn btn-ok';
+
+  $('#btnCtrlStart').disabled = !anyDev || measuring;
+  $('#btnCtrlPause').disabled = !measuring;
+  $('#btnDemo').textContent = demoDev ? '🧪 데모 끄기' : '🧪 데모 데이터';
+  $('#btnDemo').className = demoDev ? 'btn btn-content' : 'btn';
+
+  $('#btnAddDevice').textContent = anyDev ? '＋ 장치 추가' : '＋ 장치 연결';
+  $('#btnDisconnectAll').classList.toggle('hidden', !anyDev);
+  renderDevices();
+}
+$('#btnAddDevice').addEventListener('click', ()=>{
+  if (!isConnected) $('#btnConnect').click();   // 첫 장치는 검증 코드 경로
+  else connectExtra();
+});
+$('#btnDisconnectAll').addEventListener('click', disconnectAll);
+
+/* =======================================================================
+   15. 학습지 (자동 저장)
+   ======================================================================= */
+let wsData = {};
+try{ wsData = JSON.parse(localStorage.getItem(LS_WS)) || {}; }catch(e){ wsData = {}; }
+let wsTimer = null;
+function wsSave(){
+  localStorage.setItem(LS_WS, JSON.stringify(wsData));
+  const n = $('#wsSaved'); n.textContent = '✔ 저장됨 ' + new Date().toLocaleTimeString('ko-KR');
+  clearTimeout(wsTimer); wsTimer = setTimeout(()=>{ n.textContent = '✔ 자동 저장됨'; }, 2500);
+}
+function wsBind(root){
+  $$('[data-ws]', root || document).forEach(el=>{
+    if (el._wsBound) return; el._wsBound = true;
+    const k = el.dataset.ws;
+    if (el.type === 'checkbox') el.checked = !!wsData[k];
+    else if (el.type === 'radio'){ if (wsData[k] === el.value) el.checked = true; }
+    else if (wsData[k] !== undefined) el.value = wsData[k];
+    const h = ()=>{
+      if (el.type === 'checkbox') wsData[k] = el.checked;
+      else if (el.type === 'radio'){ if (el.checked) wsData[k] = el.value; }
+      else wsData[k] = el.value;
+      wsSave();
+    };
+    el.addEventListener('input', h); el.addEventListener('change', h);
+  });
+}
+
+/* --- 예상 표 / 측정 표 : 표시 중인 채널로 열을 만든다 --- */
+function predRows(){ return 5; }
+function measRows(){ return Math.max(6, wsData.measRows || 8); }
+
+function rebuildWorksheetTables(){
+  const vis = visibleIdx();
+
+  // 예상 표
+  $('#predTbl thead').innerHTML = '<tr><th style="width:30%">조건 (무엇을 바꿀까?)</th>'
+    + vis.map(i=>'<th style="color:'+channels[i].color+'">예상 '+esc(channels[i].name)+(channels[i].unit?' ('+esc(channels[i].unit)+')':'')+'</th>').join('') + '</tr>';
+  let html = '';
+  for (let r=0;r<predRows();r++){
+    html += '<tr><td><input class="field" type="text" data-ws="pred_c'+r+'" placeholder="예) 거리 '+((r+1)*10)+' cm"></td>'
+      + vis.map(i=>'<td><div class="numwrap"><input class="field" type="text" inputmode="decimal" data-ws="pred_'+r+'_'+i+'"><button class="pm" type="button">±</button></div></td>').join('') + '</tr>';
+  }
+  $('#predTbl tbody').innerHTML = html;
+
+  // 측정 표
+  $('#measTbl thead').innerHTML = '<tr><th style="width:70px">회차</th><th style="width:22%">조건 · 메모</th>'
+    + vis.map(i=>'<th style="color:'+channels[i].color+'">'+esc(channels[i].name)+(channels[i].unit?' ('+esc(channels[i].unit)+')':'')+'</th>').join('')
+    + '<th class="no-print" style="width:130px">현재값</th></tr>';
+  html = '';
+  for (let r=0;r<measRows();r++){
+    html += '<tr><td style="font-weight:700; color:var(--content)">'+(r+1)+'</td>'
+      + '<td><input class="field" type="text" data-ws="meas_c'+r+'" placeholder="조건"></td>'
+      + vis.map(i=>'<td><div class="numwrap"><input class="field" type="text" inputmode="decimal" data-ws="meas_'+r+'_'+i+'"><button class="pm" type="button">±</button></div></td>').join('')
+      + '<td class="no-print"><button class="btn btn-content-ghost btn-sm" data-grab="'+r+'">📥 담기</button></td></tr>';
+  }
+  $('#measTbl tbody').innerHTML = html;
+  wsBind($('#predTbl')); wsBind($('#measTbl'));
+}
+$('#measTbl').addEventListener('click', e=>{
+  const b = e.target.closest('[data-grab]'); if (!b) return;
+  if (!latest.length) return toast('아직 들어온 센서 값이 없습니다.');
+  const r = +b.dataset.grab;
+  visibleIdx().forEach(i=>{
+    const inp = $('[data-ws="meas_'+r+'_'+i+'"]', $('#measTbl'));
+    if (inp && typeof latest[i] === 'number'){ inp.value = fmt(latest[i]); inp.dispatchEvent(new Event('input', {bubbles:true})); }
+  });
+  toast((r+1) + '회차에 현재 측정값을 담았습니다.');
+});
+$('#btnAddRow').addEventListener('click', ()=>{
+  wsData.measRows = measRows() + 1; wsSave(); rebuildWorksheetTables();
+});
+$('#btnPullStat').addEventListener('click', ()=>{
+  if (!samples.length) return toast('먼저 측정을 해 주세요.');
+  const lines = visibleIdx().map(i=>{
+    const st = statsOf(i), c = channels[i];
+    return st ? ('· ' + c.name + ' (' + (c.unit||'단위없음') + ') — 개수 ' + st.n + ' / 최소 ' + fmt(st.mn) + ' / 최대 ' + fmt(st.mx) + ' / 평균 ' + fmt(st.avg)) : '';
+  }).filter(Boolean);
+  const el = $('#ws_stat');
+  el.value = '[측정 통계] 총 ' + samples.length + '개 표본, ' + nowSec().toFixed(1) + '초 측정\n' + lines.join('\n');
+  el.dispatchEvent(new Event('input', {bubbles:true}));
+  toast('통계를 학습지에 넣었습니다.');
+});
+$('#btnWsClear').addEventListener('click', ()=>{
+  if (!confirm('학습지에 쓴 내용을 모두 지울까요? (되돌릴 수 없습니다)')) return;
+  wsData = {}; localStorage.removeItem(LS_WS);
+  $$('[data-ws]').forEach(el=>{
+    if (el.type === 'checkbox' || el.type === 'radio') el.checked = false; else el.value = '';
+  });
+  rebuildWorksheetTables(); toast('학습지를 비웠습니다.');
+});
+
+/* =======================================================================
+   16. 인쇄 · 이미지 · PDF
+   ======================================================================= */
+function stamp(prefix){
+  const d = new Date(), p = n=>('0'+n).slice(-2);
+  const topic = (wsData.topic || '').trim().replace(/[\\/:*?"<>|]/g,'').slice(0,20);
+  return (prefix||'과학실험대시보드') + (topic ? '_'+topic : '') + '_' + d.getFullYear() + p(d.getMonth()+1) + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes());
+}
+function dl(blob, name){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 800);
+}
+function setStamp(){
+  const d = new Date();
+  $('#printStamp').textContent = ' · 인쇄 ' + d.toLocaleString('ko-KR') + (wsData.name ? ' · ' + wsData.name : '');
+}
+$('#btnPrint').addEventListener('click', ()=>{ setStamp(); window.print(); });
+$('#btnPdf').addEventListener('click', ()=>{
+  setStamp();
+  toast('인쇄 창에서 대상(프린터)을 "PDF로 저장"으로 선택하세요.', 3200);
+  setTimeout(()=>window.print(), 700);
+});
+$('#btnPng').addEventListener('click', async ()=>{
+  if (typeof html2canvas !== 'function') return toast('이미지 저장 기능을 불러오지 못했습니다. (인터넷 연결 확인)');
+  toast('이미지를 만드는 중…', 1500);
+  const target = $('#capture');
+  try{
+    const canvas = await html2canvas(target, {
+      backgroundColor:'#eef2f7', scale:Math.min(2, window.devicePixelRatio || 1),
+      useCORS:true, logging:false, windowWidth:document.documentElement.scrollWidth,
+      onclone: doc => { doc.querySelectorAll('.no-print').forEach(e=>e.style.visibility='hidden'); }
+    });
+    canvas.toBlob(b=>{ dl(b, stamp('대시보드') + '.png'); toast('이미지를 저장했습니다.'); }, 'image/png');
+  }catch(e){ console.error(e); toast('이미지 저장에 실패했습니다.'); }
+});
+
+/* =======================================================================
+   17. 설정 저장 / 초기화
+   ======================================================================= */
+function saveCfg(){
+  localStorage.setItem(LS_CFG, JSON.stringify({
+    period: periodSec, win: $('#inpWindow').value,
+    yauto: $('#chkYAuto').checked, ymin: $('#inpYMin').value, ymax: $('#inpYMax').value
+  }));
+}
+function loadCfg(){
+  try{
+    const c = JSON.parse(localStorage.getItem(LS_CFG)); if (!c) return;
+    if (c.period) { periodSec = c.period; $('#inpPeriod').value = c.period; }
+    if (c.win) $('#inpWindow').value = c.win;
+    if (c.yauto === false){ $('#chkYAuto').checked = false; $('#inpYMin').disabled = false; $('#inpYMax').disabled = false; $('#yManual').style.opacity = 1; }
+    if (c.ymin !== undefined) $('#inpYMin').value = c.ymin;
+    if (c.ymax !== undefined) $('#inpYMax').value = c.ymax;
+  }catch(e){}
+}
+['#inpWindow','#inpYMin','#inpYMax'].forEach(s=>$(s).addEventListener('change', saveCfg));
+$('#chkYAuto').addEventListener('change', saveCfg);
+
+/* =======================================================================
+   18. 시작
+   ======================================================================= */
+(function init(){
+  if (!navigator.serial) $('#browserWarn').classList.remove('hidden');
+  loadCfg();
+  renderChannelPanel();
+  renderValueCards();
+  initCharts();
+  rebuildTableHeads(); renderTable(); renderStats();
+  rebuildWorksheetTables();
+  wsBind();
+  if (!$('#ws_date').value){
+    const d = new Date(), p = n=>('0'+n).slice(-2);
+    $('#ws_date').value = d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+    $('#ws_date').dispatchEvent(new Event('input', {bubbles:true}));
+  }
+  refreshHeader(); refreshMeta();
+
+  if (navigator.serial && navigator.serial.addEventListener){
+    navigator.serial.addEventListener('disconnect', ()=>{ toast('장치 연결이 끊어졌습니다.'); });
+  }
+  window.addEventListener('beforeunload', e=>{ if (measuring){ e.preventDefault(); e.returnValue = ''; } });
+})();
+</script>
+</body>
+</html>
