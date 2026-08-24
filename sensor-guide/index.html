@@ -377,7 +377,7 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
       <div class="vcard bar-sc">
         <div class="vname">사이언스큐브</div>
         <div class="vtag">국내(코리아디지탈) · 무선 MBL · Science# 프로그램</div>
-        <div class="vprice">무선 <b>11만~99만원</b> · 유선 <b>1.5만~55만원</b><br><span style="color:#5c636d">무선은 보드 불필요</span></div>
+        <div class="vprice">무선 <b>11만~99만원</b><br><span style="color:#5c636d">보드·인터페이스 불필요</span></div>
         <div class="manual good">
           <div class="mtitle">중학교 매뉴얼 — 충실</div>
           서울시교육청 자료집에 수업 사례 5건. 교사용 지도자료와 학생용 활동지가 한 세트
@@ -407,8 +407,8 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
         <details class="d c"><summary>전용 프로그램 설치 — 크롬북은 사전 확인 필수</summary>
           <div class="dbody">Science#는 <b>Windows·Android 버전</b>으로 안내되며 ChromeOS 지원은 별도 확인이 필요합니다. 디벗 크롬북은 관리자 정책으로 Play 스토어와 확장 프로그램이 막힌 경우가 많아, <b>연수·수업 전 학교 기기 1대로 반드시 테스트</b>해야 합니다.</div>
         </details>
-        <details class="d c"><summary>유선 센서는 인터페이스가 필요할 수 있음</summary>
-          <div class="dbody">유선 라인은 데이터로거·인터페이스를 경유하는 경우가 있고, 인터페이스 가격이 <b>49만원대</b>입니다. 유선 센서 단가만 보고 저렴하다고 판단하면 안 되며, 기존 보유 인터페이스와 커넥터 규격이 맞는지 확인해야 합니다.</div>
+        <details class="d c"><summary>유선(MBL) 라인은 인터페이스가 별도 — 이 가이드에서 제외</summary>
+          <div class="dbody">유선 센서는 <b>인터페이스(Free Linker2 · 495,000원)</b>를 함께 갖춰야 동작합니다. 센서 단가만 보면 저렴해 보이지만 도입 비용 구조가 달라 다른 업체와 같은 기준으로 비교하기 어렵습니다. 그래서 <b>가격표와 구매 계획 생성기에서는 무선만 다룹니다.</b><br><br>이미 인터페이스를 보유한 학교라면 유선이 유리할 수 있으니, 그 경우에는 기존 장비와 커넥터 규격이 맞는지 확인한 뒤 업체 견적을 따로 받으시길 권합니다.</div>
         </details>
       </div>
 
@@ -505,6 +505,12 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
   <div class="card">
     <h2>센서별 가격 비교</h2>
     <p class="lead">중학교 과학에서 실제로 쓰이는 센서 위주. 초록색은 해당 항목 <b>최저가</b>입니다.</p>
+    <div class="note">
+      <b>사이언스큐브 유선(MBL)은 표에서 뺐습니다.</b>
+      유선 라인은 센서만으로는 쓸 수 없고 <b>인터페이스(Free Linker2 · 495,000원)를 함께 사야</b> 합니다.
+      센서 단가가 낮아 보여도 실제 도입 비용이 크게 달라져 <b>같은 기준으로 비교할 수 없기 때문</b>입니다.
+      기존에 인터페이스를 보유한 학교라면 유선 센서가 유리할 수 있으니, 그 경우에는 업체 견적을 따로 받아 보세요.
+    </div>
     <div class="field" style="max-width:280px">
       <label for="fq">센서 이름 검색</label>
       <input type="number" id="fq" style="display:none">
@@ -513,23 +519,69 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
     <div class="tablewrap">
       <table id="ptable">
         <colgroup>
-          <col style="width:22%">
-          <col style="width:13%"><col style="width:13%">
-          <col style="width:13%"><col style="width:13%">
-          <col style="width:13%"><col style="width:13%">
+          <col style="width:24%">
+          <col style="width:16%"><col style="width:16%">
+          <col style="width:16%"><col style="width:14%"><col style="width:14%">
         </colgroup>
         <thead><tr>
           <th>센서</th>
           <th class="num sep" style="color:var(--ez)">이지메이커<small>유선</small></th>
           <th class="num" style="color:var(--ez)">이지메이커<small>나노(무선)</small></th>
-          <th class="num sep" style="color:var(--sc)">사이언스큐브<small>유선</small></th>
-          <th class="num" style="color:var(--sc)">사이언스큐브<small>무선</small></th>
+          <th class="num sep" style="color:var(--sc)">사이언스큐브<small>무선</small></th>
           <th class="num sep" style="color:var(--vn)">버니어<small>무선</small></th>
           <th class="num sep" style="color:var(--ps)">파스코<small>무선</small></th>
         </tr></thead>
         <tbody id="ptbody"></tbody>
       </table>
     </div>
+    <h3>이지메이커를 살 때 — 보드를 꼭 함께</h3>
+    <div class="card" style="border:1px solid #a7f3d0;background:#f0fdf7;margin:10px 0 16px;padding:16px 18px">
+      <div style="font-weight:800;font-size:15px;color:#047857;margin-bottom:6px">
+        ⚠️ 센서만 사면 아무것도 못 합니다
+      </div>
+      <p style="font-size:13.6px;margin:0 0 12px;line-height:1.75">
+        이지메이커 센서는 <b>그 자체로는 컴퓨터에 꽂히지 않습니다.</b>
+        <b>보드</b>가 중간에서 센서 신호를 받아 노트북으로 넘겨 주는 구조라, 보드가 없으면 센서는 값을 보낼 방법이 없습니다.
+        사이언스큐브·버니어·파스코 <b>무선</b> 센서가 전원만 켜면 바로 연결되는 것과 가장 크게 다른 점입니다.
+      </p>
+      <div style="background:#fff;border:1px solid #d1fae5;border-radius:10px;padding:12px 14px;font-size:13.2px;line-height:1.8;margin-bottom:12px">
+        <b>연결 구조</b><br>
+        노트북(또는 태블릿) 1대 &nbsp;──USB──&nbsp; <b>메인보드 1개</b> &nbsp;──연결 케이블──&nbsp; 센서 여러 개<br>
+        <span style="color:var(--sub);font-size:12.3px">
+          즉 <b>모둠 1개 = 노트북 1대 + 보드 1개</b>. 7모둠이면 보드도 7개가 필요합니다.
+        </span>
+      </div>
+
+      <div style="font-weight:800;font-size:13.5px;margin-bottom:5px">메인보드 1개에 센서는 몇 개까지?</div>
+      <div class="tablewrap" style="margin:0 0 10px">
+        <table style="min-width:420px">
+          <thead><tr><th>포트</th><th class="num">개수</th><th>연결하는 센서</th></tr></thead>
+          <tbody>
+            <tr><td class="name">D0 ~ D4 <span class="chip">디지털</span></td><td class="num">5</td><td style="white-space:normal">온도·수중온도·접촉온도·고온·초음파·자기장·소리·DIY-B 등</td></tr>
+            <tr><td class="name">A0 · A1 <span class="chip">아날로그</span></td><td class="num">2</td><td style="white-space:normal">전압·공기압·밝기·DIY-A 등</td></tr>
+            <tr><td class="name">I2C</td><td class="num">1</td><td style="white-space:normal">전류·이산화탄소·기압 등</td></tr>
+            <tr><td class="name">UART</td><td class="num">1</td><td style="white-space:normal"><b>무게 센서 전용</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:13.2px;margin:0 0 10px;line-height:1.75">
+        단순 합계로는 최대 9개지만, 실제 수업에서 확인된 <b>동시 연결 사례</b>는 이렇습니다.
+      </p>
+      <div style="display:grid;gap:4px;font-size:13px;margin-bottom:12px">
+        <div>· 수권의 층상 구조 — <b>온도 센서 5개</b>를 D0~D4에 한꺼번에</div>
+        <div>· 단열재 성능 비교 · 열의 전도 비교 — <b>온도 센서 4개</b>를 D0~D3에</div>
+        <div>· 옴의 법칙 — <b>전압(A0) + 전류(I2C)</b> 동시</div>
+        <div>· 면적과 압력의 관계 — <b>공기압 센서 2개</b>를 A0·A1에</div>
+        <div>· 기체의 용해도 — <b>온도(D0) + 이산화탄소(I2C)</b> 동시</div>
+      </div>
+      <div class="note" style="margin:0">
+        <b>주의할 점 세 가지</b><br>
+        · <b>UART는 1개뿐</b>이라 무게 센서는 보드 하나에 하나만 씁니다(메인보드·미니보드 모두 동일).<br>
+        · <b>미니보드(40,000)는 포트가 3개 적고 SD카드 슬롯이 없습니다.</b> 온도 4~5개를 동시에 쓰는 실험이 막히니 2만원 아끼려다 실험이 안 됩니다.<br>
+        · <b>무선(나노)은 규칙이 다릅니다.</b> 나노보드는 <b>센서 1개당 1개</b>가 필요하고 배터리도 함께 사야 합니다. 옴의 법칙을 무선으로 하면 모둠당 나노보드가 2개입니다.
+      </div>
+    </div>
+
     <h3>보드 · 인터페이스</h3>
     <div class="tablewrap">
       <table>
@@ -539,8 +591,9 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
           <tr><td class="name">이지메이커 미니보드</td><td class="num">40,000</td><td style="white-space:normal">포트 3개 적음 · SD카드 없음</td></tr>
           <tr><td class="name">이지메이커 나노보드</td><td class="num">55,000</td><td style="white-space:normal">무선 · <b>보드 1개당 센서 1개</b></td></tr>
           <tr><td class="name">이지메이커 일체형 배터리</td><td class="num">11,000</td><td style="white-space:normal">보드와 1:1 필요</td></tr>
-          <tr><td class="name">사이언스큐브 Free Linker2</td><td class="num">495,000</td><td style="white-space:normal">유선 MBL 인터페이스</td></tr>
-          <tr><td class="name">사이언스큐브 무선 센서</td><td class="num">—</td><td style="white-space:normal"><b>보드·인터페이스 불필요</b></td></tr>
+          <tr><td class="name">사이언스큐브 무선 센서</td><td class="num">—</td><td style="white-space:normal"><b>보드·인터페이스 불필요</b> — 전원만 켜면 블루투스 연결</td></tr>
+          <tr><td class="name">버니어 · 파스코 무선 센서</td><td class="num">—</td><td style="white-space:normal"><b>보드·인터페이스 불필요</b></td></tr>
+          <tr style="opacity:.6"><td class="name">사이언스큐브 Free Linker2</td><td class="num">495,000</td><td style="white-space:normal">유선 MBL 인터페이스 — <b>가격표에서 제외한 라인</b>(위 안내 참고)</td></tr>
         </tbody>
       </table>
     </div>
@@ -787,6 +840,26 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
 </section>
 
 <section class="credits">
+  <h3>업데이트 이력</h3>
+  <p class="lead">자료가 추가되거나 내용이 바뀔 때마다 여기에 기록합니다.</p>
+  <div class="tablewrap" style="margin:0 0 6px">
+    <table style="min-width:520px">
+      <thead><tr><th style="width:96px">날짜</th><th>변경 내용</th></tr></thead>
+      <tbody>
+        <tr><td class="name">2026-08-25</td><td style="white-space:normal"><b>이지메이커 보드 구매 안내</b> 추가(센서만 사면 안 되는 이유·포트별 동시 연결 수). <b>사이언스큐브 유선 라인 제외</b>(인터페이스 별도 구매 필요). 업데이트 이력 신설</td></tr>
+        <tr><td class="name">2026-08-19</td><td style="white-space:normal">클래스보드 『기초·측정 방법』 센서 19종 쪽수, 사이언스큐브 <b>S2B 물품번호</b> 23종, 사례집 <b>신판(따라잡기·245쪽)</b> 쪽수 병기. 자외선 항목 정정(조도센서 겸용)</td></tr>
+        <tr><td class="name">2026-08-19</td><td style="white-space:normal">구매 계획에서 <b>보유 품목 제외</b> 기능, 실험별 <b>매뉴얼 위치</b> 표시(자료집 쪽수·파스코 링크)</td></tr>
+        <tr><td class="name">2026-08-16</td><td style="white-space:normal">MBL 수업허브 연계 추가</td></tr>
+        <tr><td class="name">2026-08-15</td><td style="white-space:normal">구매 계획에서 <b>센서마다 판매사 직접 선택</b> 기능 추가</td></tr>
+        <tr><td class="name">2026-08-10</td><td style="white-space:normal">파스코 카탈로그 정가 20종 반영(가격 비공개 서술 정정), 전도도 DIY-B 설명</td></tr>
+        <tr><td class="name">2026-08-09</td><td style="white-space:normal">업체 비교를 <b>중학교 활용성 기준</b>으로 재작성, 매뉴얼 보유 현황 비교, 장단점 토글화, 참고 자료 출처 표기</td></tr>
+        <tr><td class="name">2026-08-09</td><td style="white-space:normal">최초 배포 — 업체별 가격·장단점, 수업 26건 성취기준 매핑, 구매 계획 생성기</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="credits">
   <h3>참고 자료 출처</h3>
   <p class="lead">이 페이지는 아래 자료를 근거로 만들었습니다. 좋은 자료를 정리해 공유해 주신 덕분에 이 가이드가 나올 수 있었습니다.</p>
   <ul>
@@ -838,7 +911,7 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
 <footer id="app-credit">
 중학교 과학 센서 구매 가이드 · 디지털 탐구 도구 활용 교원연수 강사용 참고 자료<br>
 <b>© 2026 · CC BY-NC 4.0</b> — 가격은 조사 시점 기준이며 <b>견적서가 우선</b>합니다<br>
-<span style="font-size:11px">최종 업데이트: 2026-08-06 · 가격 출처: 각 사 공식몰 및 국내 유통사 표시가</span>
+<span style="font-size:11px">최종 업데이트: <b>2026-08-25</b> · 가격 출처: 각 사 공식몰 및 국내 총판 카탈로그 표시가</span>
 </footer>
 
 <script>
@@ -846,30 +919,30 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
 // 가격 단위 원. null = 해당 업체 미취급 또는 단독 제품 없음
 const SENSORS = [
   // key, 이름, 이지유선, 이지나노, 큐브유선, 큐브무선, 버니어, 파스코
-  ['temp','온도(수중·접촉)',20000,75000,19800,110000,207000,207000],
-  ['humid','온습도',15000,70000,72600,242000,null,null],
-  ['volt','전압',15000,70000,35640,187000,276000,277000],
-  ['curr','전류',20000,75000,35640,187000,312000,313000],
-  ['light','조도·밝기',15000,70000,64680,220000,331000,240000],
-  ['gaspress','기체압력(주사기)',80000,135000,72600,242000,324000,325000],
-  ['baro','대기압',30000,85000,128040,286000,null,null],
-  ['force','힘·가속도',null,null,229680,297000,376000,380000],
-  ['mass','무게·질량',40000,95000,null,null,null,null],
-  ['co2','이산화탄소',99000,154000,320760,495000,678000,678000],
-  ['o2','산소',null,null,307560,594000,658000,658000],
-  ['ph','pH',99000,154000,154440,242000,328000,333000],
-  ['sound','소리',15000,70000,179520,264000,null,290000],
-  ['mag','자기장',15000,70000,87120,220000,310000,310000],
-  ['dist','거리·운동',30000,85000,130680,297000,422000,432000],
-  ['photogate','포토게이트',null,null,72600,264000,331000,275000],
-  ['heart','심박',null,null,220440,330000,null,328000],
-  ['hitemp','고온(열전쌍)',90000,145000,63360,330000,null,412000],
-  ['cond','전도도 <span class="chip">DIY-B</span>',15000,70000,166320,297000,null,375000],
-  ['dust','미세먼지',80000,135000,396000,495000,null,875000],
-  ['salt','염도',null,null,167640,330000,null,null],
-  ['do','용존산소',null,null,357720,990000,null,594000],
-  ['uv','자외선 <span class="chip">조도센서 겸용</span>',null,null,216480,220000,null,240000],
-  ['rad','방사선',null,null,372240,550000,null,738000]
+  ['temp','온도(수중·접촉)',20000,75000,110000,207000,207000],
+  ['humid','온습도',15000,70000,242000,null,null],
+  ['volt','전압',15000,70000,187000,276000,277000],
+  ['curr','전류',20000,75000,187000,312000,313000],
+  ['light','조도·밝기',15000,70000,220000,331000,240000],
+  ['gaspress','기체압력(주사기)',80000,135000,242000,324000,325000],
+  ['baro','대기압',30000,85000,286000,null,null],
+  ['force','힘·가속도',null,null,297000,376000,380000],
+  ['mass','무게·질량',40000,95000,null,null,null],
+  ['co2','이산화탄소',99000,154000,495000,678000,678000],
+  ['o2','산소',null,null,594000,658000,658000],
+  ['ph','pH',99000,154000,242000,328000,333000],
+  ['sound','소리',15000,70000,264000,null,290000],
+  ['mag','자기장',15000,70000,220000,310000,310000],
+  ['dist','거리·운동',30000,85000,297000,422000,432000],
+  ['photogate','포토게이트',null,null,264000,331000,275000],
+  ['heart','심박',null,null,330000,null,328000],
+  ['hitemp','고온(열전쌍)',90000,145000,330000,null,412000],
+  ['cond','전도도 <span class="chip">DIY-B</span>',15000,70000,297000,null,375000],
+  ['dust','미세먼지',80000,135000,495000,null,875000],
+  ['salt','염도',null,null,330000,null,null],
+  ['do','용존산소',null,null,990000,null,594000],
+  ['uv','자외선 <span class="chip">조도센서 겸용</span>',null,null,220000,null,240000],
+  ['rad','방사선',null,null,550000,null,738000]
 ];
 
 // 수업 데이터 — grade, 단원, 제목, 성취기준, {센서key:동시개수}, 출처, core(필수추천)
@@ -975,7 +1048,7 @@ function renderPrices(filter){
     if(filter && !name.toLowerCase().includes(filter.toLowerCase())) return;
     const vals=p.filter(v=>v!==null);
     const min=vals.length?Math.min(...vals):null;
-    const SEP=[0,2,4,5]; // 업체 경계 열(이지유선·큐브유선·버니어·파스코)
+    const SEP=[0,2,3,4]; // 업체 경계 열(이지유선·큐브무선·버니어·파스코)
     const tr=document.createElement('tr');
     tr.innerHTML='<td class="name">'+name+'</td>'+
       p.map((v,i)=>{
@@ -995,9 +1068,9 @@ document.getElementById('cbtbody').innerHTML=CB.map(([n,a,b])=>
 
 /* 사이언스큐브 S2B 물품번호 표 */
 document.getElementById('s2btbody').innerHTML=SENSORS
-  .filter(s=>S2B[s[0]] && s[5]!==null)
+  .filter(s=>S2B[s[0]] && s[4]!==null)
   .map(s=>'<tr><td class="name">'+s[1].replace(/<[^>]*>/g,'')+'</td>'+
-    '<td class="num">'+s[5].toLocaleString('ko-KR')+'</td>'+
+    '<td class="num">'+s[4].toLocaleString('ko-KR')+'</td>'+
     '<td style="font-variant-numeric:tabular-nums">'+S2B[s[0]]+'</td></tr>').join('');
 
 /* ---------- 수업 표 ---------- */
@@ -1103,17 +1176,16 @@ function pick(w){
 const LINE=[
   {i:0,label:'이지메이커 유선',v:'ez',board:'wired'},
   {i:1,label:'이지메이커 나노(무선)',v:'ez',board:'nano'},
-  {i:2,label:'사이언스큐브 유선',v:'sc',board:null},
-  {i:3,label:'사이언스큐브 무선',v:'sc',board:null},
-  {i:4,label:'버니어 무선',v:'vn',board:null},
-  {i:5,label:'파스코 무선',v:'ps',board:null}
+  {i:2,label:'사이언스큐브 무선',v:'sc',board:null},
+  {i:3,label:'버니어 무선',v:'vn',board:null},
+  {i:4,label:'파스코 무선',v:'ps',board:null}
 ];
 const VNAME={ez:'이지메이커',sc:'사이언스큐브',vn:'버니어',ps:'파스코'};
 const ORDER={
-  mix:[0,3,2,1,4,5],
-  wireless:[3,1,5,4],
-  cheap:[0,2,1,3,4,5],
-  premium:[5,4,3,2,1,0]
+  mix:[0,2,1,3,4],
+  wireless:[2,1,4,3],
+  cheap:[0,1,2,3,4],
+  premium:[4,3,2,1,0]
 };
 
 let lastPlan=null;
