@@ -262,6 +262,16 @@ body.v-hub #homeBtn{display:none}
   width:390px; flex:none; overflow-y:auto; padding:18px 16px 40px; background:#fff;
   border-right:1px solid var(--line);
 }
+/* 크게 보기 — 개념도가 화면을 덮고 아래로 스크롤한다. 이때는 정원을 풀고 전부 그린다. */
+body.railBig #lineage{
+  position:fixed; inset:0; width:100% !important; max-width:none; z-index:60;
+  padding:20px 28px 60px; border-right:none; box-shadow:none;
+}
+body.railBig #briefWrap, body.railBig #splitter, body.railBig #railOpen, body.railBig #foldBtn{display:none !important}
+body.railBig .lnTools{position:sticky; top:0; background:#fff; z-index:2; padding-bottom:10px; margin-bottom:10px}
+body.railBig #cmapBox{max-width:1500px; margin:0 auto}
+body.railBig #lnLegend{max-width:900px; margin:14px auto 0}
+body.railBig .escHint{text-align:center}
 /* 개념도 패널 접기 / 좌우 비율 조절 */
 .lnTools{display:flex; gap:6px; margin-bottom:16px}
 .lnTools .lnBack{margin-bottom:0; flex:1}
@@ -323,7 +333,7 @@ body.railHid #railOpen{display:flex}
 #cmap .edge.n{stroke:var(--blue); stroke-width:2.4}
 #cmap .edge.r{stroke:#adb5bd; stroke-width:2; stroke-dasharray:5 4 !important; animation:none; opacity:.85}
 #cmap .elabel{
-  font-size:9.5px; fill:#6b7280; font-family:inherit; paint-order:stroke;
+  font-size:11px; fill:#6b7280; font-family:inherit; paint-order:stroke;
   stroke:#fff; stroke-width:3.5px; stroke-linejoin:round;
 }
 #cmap .node{cursor:pointer; animation:nodeIn .4s cubic-bezier(.22,1,.36,1) backwards}
@@ -341,7 +351,13 @@ body.railHid #railOpen{display:flex}
 #cmap .node.cur .t{fill:#fff; font-size:12.5px; font-weight:800}
 #cmap .node.cur .g{fill:rgba(255,255,255,.85)}
 #cmap .node.sel rect{stroke-width:3}
-#cmap .tier{font-size:9.5px; fill:#adb5bd; font-family:inherit; font-weight:700}
+#cmap .tier{font-size:10px; fill:#adb5bd; font-family:inherit; font-weight:700}
+#cmap .tierN{fill:var(--sub); font-weight:800}
+#cmap .tierMore{cursor:pointer}
+#cmap .chip{fill:#f1f3f5; stroke:var(--line)}
+#cmap .chipT{font-size:9.5px; fill:#495057; font-weight:700; font-family:inherit}
+#cmap .tierMore:hover .chip{fill:#e9ecef}
+#cmap .tierMore:focus-visible .chip{stroke:var(--blue); stroke-width:2}
 /* 개념도 범례·요약 */
 #lnLegend{margin-top:6px}
 .cmCore{
@@ -350,6 +366,17 @@ body.railHid #railOpen{display:flex}
 }
 .cmCore b{color:var(--c); display:block; font-size:10.5px; margin-bottom:4px; letter-spacing:.02em}
 .cmList{display:flex; flex-direction:column; gap:6px}
+.cmGroup{margin-top:11px; display:flex; flex-direction:column; gap:5px}
+.cmGH{font-size:10.5px; font-weight:800; color:var(--k); letter-spacing:.02em; margin-bottom:1px}
+.cmGH b{color:var(--sub); font-weight:700}
+.cmRow.off{border-left-style:dotted; opacity:.94}
+.cmRow i{font-style:normal; color:#5c636a; font-weight:600}
+.gb{
+  display:inline-block; font-family:inherit; font-size:9.5px; font-weight:700;
+  color:var(--sub); background:var(--bg); border-radius:5px; padding:1px 5px; margin-right:4px;
+}
+.cmGroup.flash{animation:flashG .8s ease}
+@keyframes flashG{0%,100%{background:transparent} 35%{background:#fff3bf}}
 .cmRow{
   display:flex; gap:8px; align-items:flex-start; font-size:11.8px; line-height:1.6;
   border-left:3px solid var(--k); padding:5px 0 5px 9px; cursor:pointer; border-radius:0 6px 6px 0;
@@ -1085,6 +1112,14 @@ details li.linkline{background:#fff9db; border-radius:8px; padding:6px 8px; list
 .obT::before{content:'▸'; position:absolute; left:0; color:#ec4899}
 .obW{font-size:11px; color:var(--sub); padding-left:14px}
 @media print{ .obCopy{display:none} .obBox{border-style:solid; border-color:#999} }
+@media print{
+  #cmap .ehit, #cmap .tierMore, .cmHint, .escHint{display:none !important}
+  .cmGroup, .cmRow, .insRow{break-inside:avoid; page-break-inside:avoid}
+  .cmRow.off{border-left-style:solid}
+  #lnLegend{column-count:2; column-gap:18px}
+  #lnLegend .cmGroup{break-inside:avoid}
+  body.railBig #lineage{position:static; padding:0}
+}
 footer#app-credit{flex:none}
 </style>
 </head>
@@ -1121,10 +1156,12 @@ footer#app-credit{flex:none}
     <aside id="lineage">
       <div class="lnTools">
         <button class="lnBack" onclick="clearSel()">← 지도로 돌아가기</button>
-        <button class="lnFold" onclick="setRail(false)" title="개념도 접고 내용을 넓게 보기">⇤</button>
+        <button class="lnFold" onclick="setBig(!document.body.classList.contains('railBig'))"
+          title="개념도 크게 보기 (연결을 전부 그립니다)">⛶</button>
+        <button class="lnFold" id="foldBtn" onclick="setRail(false)" title="개념도 접고 내용을 넓게 보기">⇤</button>
       </div>
       <div id="cmapBox"><svg id="cmap"></svg><div id="edgePop"></div></div>
-      <div class="escHint">ESC 를 누르면 지도로 돌아갑니다</div>
+      <div class="escHint">⛶ 를 누르면 개념도를 크게 봅니다 · ESC 로 돌아갑니다</div>
       <div id="lnLegend"></div>
     </aside>
     <div id="splitter" title="드래그하면 좌우 비율이 바뀝니다 · 더블클릭하면 기본값"></div>
@@ -1794,68 +1831,133 @@ function linkInfo(uid, to){
   const d = LINKS[uid];
   return (d && d.links && d.links[to]) || null;
 }
+/* ---------- 순위 — 앞은 가장 최근에 배운 것부터, 뒤는 가장 먼저 만날 것부터 ---------- */
+const POS = {e34:1, e56:2, h1:5, h2:5};
+const YEARPOS = {'중1':3.0, '중2':3.3, '중3':3.6};
+function posOf(t){
+  if(!t) return 9;
+  if(t.grade === 'm13') return YEARPOS[t.year] != null ? YEARPOS[t.year] : 3.3;
+  if(POS[t.grade] != null) return POS[t.grade];
+  const s = SUBJECTS[t.grade];
+  return s ? 6 + (TRACK_ORDER[s.track] || 0) * 0.1 : 9;
+}
+const ordPrev = ids => [...ids].sort((x,y)=> posOf(byId[y]) - posOf(byId[x]) || (x<y?-1:1));
+const ordNext = ids => [...ids].sort((x,y)=> posOf(byId[x]) - posOf(byId[y]) || (x<y?-1:1));
+// 감춘 것들이 어느 학교급인지 한 마디로
+function whoOf(ids){
+  const s = new Set(ids.map(id=>{
+    const g = byId[id] && byId[id].grade;
+    return g==='e34'||g==='e56' ? '초등' : g==='m13' ? '중학' : g==='h1'||g==='h2' ? '고1' : '고2~3';
+  }));
+  return s.size === 1 ? [...s][0] : '여러 학년';
+}
+const railBig = () => document.body.classList.contains('railBig');
+if(LS.get('railBig', false)) document.body.classList.add('railBig');
+function setBig(on){
+  document.body.classList.toggle('railBig', on);
+  LS.set('railBig', on);
+  if(selected) renderLineage(byId[selected]);
+  const r = document.getElementById('lineage'); if(r) r.scrollTop = 0;
+}
+
 function renderLineage(u){
   const a = AREA_BY[u.area];
-  // 패널 폭을 사용자가 바꿀 수 있으므로 실제 폭에 맞춰 배치한다
+  const big = railBig();
   const railEl = document.getElementById('lineage');
-  const avail = Math.round((railEl && railEl.clientWidth ? railEl.clientWidth : 390) - 32);
-  const W = Math.max(280, Math.min(560, avail)), NH = 42, CH = 52, RG = 9, VG = 46;
-  const chunk = (arr, n) => { const o = []; for(let i=0;i<arr.length;i+=n) o.push(arr.slice(i,i+n)); return o; };
-  const per = arr => arr.length <= 2 ? arr.length || 1 : (arr.length <= 4 ? 2 : 3);
+  const avail = Math.round((railEl && railEl.clientWidth ? railEl.clientWidth : 390) - (big ? 56 : 32));
+  const W = Math.max(280, Math.min(big ? 1500 : 560, avail));
+  const NH = 42, CH = 52, RG = 9;
+
+  // 그림 정원 — 좁은 레일에서만 건다. 크게 보기에서는 전부 그린다.
+  // 층별 상한이라 뒤가 아무리 많아도 앞자리를 빼앗지 않는다.
+  const PCAP = big ? {p:99, n:99, r:99, i:99} : {p:2, n:2, r:1, i:1};
+  const perRow = W >= 1100 ? 4 : W >= 760 ? 3 : W >= 330 ? 2 : 1;
+  const FSL = 11, LHL = 13;
+  const CW = c => /[가-힣一-鿿ㄱ-ㆎ]/.test(c) ? FSL : FSL * 0.55;
+  const textW = t => [...t].reduce((s,c)=>s+CW(c), 0);
+  // 라벨은 자르지 않는다. 자기 칸 폭 안에서 줄을 늘려 담는다.
+  const wrapT = (t, max) => {
+    const out = []; let cur = '';
+    for(const ch of t){
+      if(textW(cur + ch) > max && cur.trim()){ out.push(cur.trim()); cur = (ch === ' ' ? '' : ch); }
+      else cur += ch;
+    }
+    if(cur.trim()) out.push(cur.trim());
+    return out.length ? out : [];
+  };
 
   let y = 14;
-  const nodes = [];
-  const place = (ids, cls, h) => {
-    if(!ids.length) return [];
-    const rows = chunk(ids, per(ids));
-    const made = [];
-    for(const row of rows){
-      const gap = 8;
-      const w = Math.min(196, (W - gap * (row.length - 1)) / row.length);
-      const x0 = (W - (w * row.length + gap * (row.length - 1))) / 2;
-      row.forEach((id, i) => made.push({id, x: x0 + i*(w+gap), y, w, h, cls}));
-      y += h + RG;
+  const nodes = [], tiers = [], LAB = {};
+  // dir 'up'  = 칸이 먼저, 라벨 띠가 아래 (앞 단원 → 지금)
+  // dir 'down'= 라벨 띠가 먼저, 칸이 아래 (지금 → 뒤 단원)
+  const layTier = (ids, cls, dir, texts) => {
+    const made = [], gap = 8;
+    for(let s = 0; s < ids.length; s += perRow){
+      const row = ids.slice(s, s + perRow);
+      const w = Math.min(big ? 240 : 210, (W - gap*(row.length-1)) / row.length);
+      const x0 = (W - (w*row.length + gap*(row.length-1))) / 2;
+      const wrapped = row.map(id => texts[id] ? wrapT(texts[id], w - 12) : []);
+      const nl = Math.max(0, ...wrapped.map(l=>l.length));
+      const band = nl ? 5 + nl*LHL : 0;
+      if(dir === 'down') y += band;
+      row.forEach((id, i) => {
+        const n = {id, x: x0 + i*(w+gap), y, w, h: NH, cls};
+        made.push(n);
+        if(wrapped[i].length) LAB[id] = {
+          cx: n.x + n.w/2,
+          y: dir === 'down' ? y - band + LHL : y + NH + LHL,
+          lines: wrapped[i], e: -1,
+        };
+      });
+      y += NH;
+      if(dir === 'up') y += band;
+      y += RG;
     }
     nodes.push(...made);
     return made;
   };
 
-  const tiers = [];
-  if(u.prev.length) tiers.push({label:'학생이 배우고 오는 곳', y: y - 4});
-  const pn = place(u.prev, 'p', NH);
-  if(pn.length) y += VG - RG;
-  const cur = {id: u.id, x: (W - 210)/2, y, w: 210, h: CH, cls: 'cur'};
-  nodes.push(cur); y += CH + RG;
-  const nn = [];
-  if(u.next.length){ y += VG - RG; tiers.push({label:'여기서 이어지는 곳', y: y - VG + 14}); nn.push(...place(u.next, 'n', NH)); }
-  const rn = [];
-  if(u.related.length){ y += 16; tiers.push({label:'같은 시기 연계', y: y - 4}); rn.push(...place(u.related, 'r', NH)); }
   const ins = insightsOf(u.id);
-  const inNodes = [];
-  if(ins.length){
-    y += 16; tiers.push({label:'문서엔 없지만 이어지는 곳', y: y - 4});
-    inNodes.push(...place(ins.map(k=>k.other), 'i', NH));
-  }
-  const H = y + 6;
+  const labOf = ids => { const o = {}; for(const id of ids){ const li = linkInfo(u.id, id); if(li && li.label) o[id] = li.label; } return o; };
 
-  // 엣지
+  const P = ordPrev(u.prev).slice(0, PCAP.p);
+  const N = ordNext(u.next).slice(0, PCAP.n);
+  const R = ordNext(u.related).slice(0, PCAP.r);
+  const I = ins.map(k=>k.other).slice(0, PCAP.i);
+  const insLab = {}; for(const k of ins) if(k.concept) insLab[k.other] = k.concept;
+
+  const tier = (label, kind, total, shown, ids) =>
+    tiers.push({label, kind, total, shown, y: y - 4, who: whoOf(ids.slice(shown))});
+
+  if(P.length){ tier('학생이 배우고 오는 곳', 'p', u.prev.length, P.length, ordPrev(u.prev)); y += 12; }
+  const pn = layTier(P, 'p', 'up', labOf(P));
+  if(pn.length) y += 8;
+  const cur = {id: u.id, x: (W - (big?260:210))/2, y, w: big?260:210, h: CH, cls: 'cur'};
+  nodes.push(cur); y += CH + RG;
+  const mk = (ids, cls, label, kind, all, texts) => {
+    if(!ids.length) return [];
+    y += 12; tier(label, kind, all.length, ids.length, kind==='i' ? ins.map(k=>k.other) : ordNext(all)); y += 12;
+    return layTier(ids, cls, 'down', texts);
+  };
+  const nn = mk(N, 'n', '여기서 이어지는 곳', 'n', u.next, labOf(N));
+  const rn = mk(R, 'r', '같은 시기 연계', 'r', u.related, labOf(R));
+  const inNodes = mk(I, 'i', '문서엔 없지만 이어지는 곳', 'i', ins, insLab);
+  const H = y + 6;
+  const drawn = new Set(nodes.map(n=>n.id));
+
+  /* ---- 선 ---- */
   let ed = '', eh = '';
   EDGES = [];
-  const labelReqs = [];          // 라벨은 모아뒀다가 겹치지 않는 자리를 찾아 마지막에 배치한다
-  // 한 칸에서 여러 선이 나가면 시작점이 한 점에 모여, 그 부근에서는 클릭 영역이
-  // 통째로 겹쳐 원하는 선을 누를 수 없다. 칸의 변을 따라 시작·도착점을 벌린다.
   const spread = (node, i, n) => {
     const c = node.x + node.w/2;
     if(n <= 1) return c;
-    // 선이 많을수록 칸 폭을 거의 다 쓴다. 간격이 좁으면 갈래 부근에서 클릭이 안 갈린다.
-    const span = Math.min(node.w - 10, 30 * (n - 1));
+    const span = Math.min(node.w - 10, 34 * (n - 1));
     return c - span/2 + span * i / (n - 1);
   };
-  const edge = (from, to, cls, label, info, anchor) => {
+  const edge = (from, to, cls, forId, info, anchor) => {
     const x1 = (anchor && anchor.fromX != null) ? anchor.fromX : from.x + from.w/2;
-    // 선이 많으면 칸 폭만으로는 못 벌린다. 출발 높이를 번갈아 어긋내 갈래를 더 벌린다.
-    const y1 = from.y + from.h + ((anchor && anchor.dy1) || 0);
-    const x2 = (anchor && anchor.toX   != null) ? anchor.toX   : to.x + to.w/2;
+    const y1 = from.y + from.h;
+    const x2 = (anchor && anchor.toX != null) ? anchor.toX : to.x + to.w/2;
     const y2 = to.y;
     const dy = Math.max(18, (y2 - y1) * 0.55);
     const d = `M${x1},${y1} C${x1},${y1+dy} ${x2},${y2-dy} ${x2},${y2}`;
@@ -1863,94 +1965,47 @@ function renderLineage(u){
     let idx = -1;
     if(info && info.why){
       idx = EDGES.push(info) - 1;
-      // 선은 얇아서 누르기 어렵다 → 투명한 굵은 선을 위에 겹쳐 클릭 영역을 만든다
       eh += `<path class="ehit" data-e="${idx}" d="${d}"><title>눌러서 어떻게 이어지는지 보기</title></path>`;
     }
     ed += `<path class="edge ${cls}"${idx>=0?` data-e="${idx}"`:''} d="${d}" style="--len:${len.toFixed(0)}"/>`;
-    if(label) labelReqs.push({text: label, x1, y1, x2, y2, dy, e: idx});
+    if(forId && LAB[forId]) LAB[forId].e = idx;
   };
-  // 팝오버에 쓸 정보. a→b는 배우는 순서대로, to는 눌렀을 때 열 상대 단원.
   const EI = (kind, aId, bId, other, li, color) => li && ({
     kind, a: byId[aId].title, b: byId[bId].title, to: other,
     label: li.label || '', why: li.why || '', color,
   });
-  // 위로 들어오는 선 — 현재 칸의 윗변에 벌려 꽂는다
   pn.forEach((n, i) => {
     const li = linkInfo(u.id, n.id);
-    edge(n, cur, 'p', li ? li.label : '', EI('학생이 배우고 오는 곳', n.id, u.id, n.id, li, 'var(--amber)'),
+    edge(n, cur, 'p', n.id, EI('학생이 배우고 오는 곳', n.id, u.id, n.id, li, 'var(--amber)'),
          {toX: spread(cur, i, pn.length)});
   });
-  // 아래로 나가는 선 — 후속·같은시기·통찰을 한 묶음으로 보고 아랫변에 고루 벌린다.
-  // (따로 벌리면 서로 겹쳐서 벌린 의미가 없다)
-  const down = [
-    ...nn.map(n => ({n, kind: 'n'})),
-    ...rn.map(n => ({n, kind: 'r'})),
-    ...inNodes.map(n => ({n, kind: 'i'})),
-  ];
+  const down = [...nn.map(n=>({n,k:'n'})), ...rn.map(n=>({n,k:'r'})), ...inNodes.map(n=>({n,k:'i'}))];
   down.forEach((d, i) => {
     const fromX = spread(cur, i, down.length);
-    // 이웃한 선끼리 출발 높이를 어긋내면 갈래 부근에서 서로 더 멀어진다
-    const dy1 = down.length > 4 ? (i % 2) * 9 : 0;
-    if(d.kind === 'n'){
-      const li = linkInfo(u.id, d.n.id);
-      edge(cur, d.n, 'n', li ? li.label : '', EI('여기서 이어지는 곳', u.id, d.n.id, d.n.id, li, 'var(--blue)'), {fromX, dy1});
-    } else if(d.kind === 'r'){
-      const li = linkInfo(u.id, d.n.id);
-      edge(cur, d.n, 'r', '', EI('같은 시기 연계', u.id, d.n.id, d.n.id, li, '#adb5bd'), {fromX, dy1});
-    } else {
+    if(d.k === 'i'){
       const k = ins.find(x => x.other === d.n.id);
-      edge(cur, d.n, 'i', k ? k.concept : '', k && {
+      edge(cur, d.n, 'i', d.n.id, k && {
         kind: '문서엔 없지만 이어지는 개념', a: u.title, b: byId[d.n.id].title, to: d.n.id,
         label: k.concept || '', why: k.why || '', color: '#9c36b5',
-      }, {fromX, dy1});
+      }, {fromX});
+    } else {
+      const li = linkInfo(u.id, d.n.id);
+      edge(cur, d.n, d.k, d.n.id,
+           EI(d.k === 'n' ? '여기서 이어지는 곳' : '같은 시기 연계', u.id, d.n.id, d.n.id, li,
+              d.k === 'n' ? 'var(--blue)' : '#adb5bd'), {fromX});
     }
   });
 
-  // ---- 연결선 라벨 배치 ----
-  // 연결이 많은 단원은 라벨이 서로 겹치거나 칸에 가려 잘렸다.
-  // 선 위 여러 지점을 후보로 두고, 칸·다른 라벨과 안 겹치는 자리를 찾아 놓는다.
-  // 자리를 못 찾으면 그 라벨은 버린다 — 선을 누르면 전체 내용이 뜨고, 아래 목록에도 다 있다.
-  let el = '';
-  const CW = c => /[가-힣一-鿿ㄱ-ㆎ]/.test(c) ? 9.5 : 5.2;  // 한글은 거의 1em
-  const textW = t => [...t].reduce((s, c) => s + CW(c), 0);
-  const LH = 12;                       // 라벨 한 줄 높이(글자 9.5px + 흰 테두리)
-  const boxes = nodes.map(n => ({x1: n.x - 2, y1: n.y - 2, x2: n.x + n.w + 2, y2: n.y + n.h + 2}));
-  // 왼쪽 층 제목('학생이 배우고 오는 곳' 등)도 피해야 할 대상이다. x=4에 좌측 정렬로 놓인다.
-  for(const t of tiers) boxes.push({x1: 2, y1: t.y - 9, x2: 6 + textW(t.label), y2: t.y + 4});
-  const hit = b => boxes.some(o => b.x1 < o.x2 && b.x2 > o.x1 && b.y1 < o.y2 && b.y2 > o.y1);
-  const bez = (a, b, c, d, t) => {
-    const m = 1 - t;
-    return m*m*m*a + 3*m*m*t*b + 3*m*t*t*c + t*t*t*d;
-  };
-  const clip = (s, max) => {
-    let t = s;
-    while(t.length > 4 && textW(t) > max) t = t.slice(0, -1);
-    return t === s ? s : t.slice(0, -1) + '…';
-  };
-  // 선 위 여러 지점 × 위아래 약간의 여유. 선에서 멀어지면 어느 선의 라벨인지 흐려지므로 ±11px까지만.
-  const SPOTS = [];
-  for(const f of [0.5, 0.36, 0.64, 0.24, 0.76, 0.14, 0.86])
-    for(const off of [0, -11, 11, -17, 17]) SPOTS.push([f, off]);
-  for(const r of labelReqs){
-    let put = null, used = '';
-    // 긴 형태로 자리를 못 찾으면 점점 줄여서 다시 시도한다
-    for(const frac of [0.66, 0.46, 0.30]){
-      const t = clip(r.text, W * frac), half = textW(t)/2 + 3;
-      for(const [f, off] of SPOTS){
-        const x = bez(r.x1, r.x1, r.x2, r.x2, f);
-        const y = bez(r.y1, r.y1 + r.dy, r.y2 - r.dy, r.y2, f) + off;
-        const b = {x1: x - half, y1: y - LH/2, x2: x + half, y2: y + LH/2};
-        if(b.x1 < 1 || b.x2 > W - 1) continue;            // 화면 밖으로 나가면 제외
-        if(hit(b)) continue;
-        put = {x, y}; used = t; boxes.push(b); break;
-      }
-      if(put) break;
-    }
-    if(!put) continue;                                    // 끝내 자리가 없으면 생략(선을 누르면 전체가 뜬다)
-    el += `<text class="elabel"${r.e >= 0 ? ` data-e="${r.e}"` : ''} x="${put.x.toFixed(1)}" y="${(put.y + 3.2).toFixed(1)}" text-anchor="middle">${esc(used)}</text>`;
-  }
+  /* ---- 라벨 ----
+     자리를 찾지 않는다. 자기 칸 폭에 갇힌 채 칸 바로 위/아래 띠에 앉는다.
+     띠에는 칸이 없고 이웃 칸과는 8px가 남으므로 겹칠 방법이 없다 —
+     생략도 잘림도 정의상 0. */
+  const el = Object.values(LAB).map(s =>
+    `<text class="elabel"${s.e>=0?` data-e="${s.e}"`:''} x="${s.cx.toFixed(1)}" y="${s.y.toFixed(1)}" text-anchor="middle">` +
+    s.lines.map((t,i)=>`<tspan x="${s.cx.toFixed(1)}"${i?` dy="${LHL}"`:''}>${esc(t)}</tspan>`).join('') +
+    `</text>`).join('');
 
-  // 노드
+  /* ---- 칸 ---- */
   const cut = (t, w) => { const m = Math.floor(w/12.6); return t.length > m ? t.slice(0, m-1) + '…' : t; };
   let nd = '';
   nodes.forEach((n, i) => {
@@ -1963,14 +2018,27 @@ function renderLineage(u){
       <text class="t" x="${cx}" y="${n.y + (isCur?38:32)}" text-anchor="middle">${esc(cut(t.title, n.w))}</text>
     </g>`;
   });
-  let tl = tiers.map(t=>`<text class="tier" x="4" y="${t.y}">${t.label}</text>`).join('');
+
+  /* ---- 층 제목 + 감춘 개수 칩 ---- */
+  const tl = tiers.map(t => {
+    let s = `<text class="tier" x="4" y="${t.y}">${esc(t.label)} <tspan class="tierN">${t.total}</tspan></text>`;
+    const hid = t.total - t.shown;
+    if(hid > 0){
+      const txt = `+${hid} ${t.who} ▾`;
+      const cw = textW(txt) * 0.9 + 12;
+      const tx = 12 + textW(t.label) * 0.92 + 20;
+      s += `<g class="tierMore" data-k="${t.kind}" tabindex="0" role="button">
+        <rect class="chipHit" x="${(tx-10).toFixed(1)}" y="${(t.y-24).toFixed(1)}" width="${(cw+20).toFixed(1)}" height="44" fill="transparent"/>
+        <rect class="chip" x="${tx.toFixed(1)}" y="${(t.y-9.5).toFixed(1)}" width="${cw.toFixed(1)}" height="14" rx="7"/>
+        <text class="chipT" x="${(tx+cw/2).toFixed(1)}" y="${(t.y+0.8).toFixed(1)}" text-anchor="middle">${esc(txt)}</text>
+        <title>아래 목록에서 ${hid}개를 마저 봅니다</title></g>`;
+    }
+    return s;
+  }).join('');
 
   const svg = document.getElementById('cmap');
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.setAttribute('height', H);
-  // 순서 = 선 → 클릭영역 → 칸 → 라벨.
-  // 칸이 클릭영역보다 위라 칸을 누르면 이동, 선을 누르면 설명이 뜬다.
-  // 라벨은 맨 위에 둬서 흰 테두리가 선을 덮고 글자가 또렷하게 읽히도록 한다.
   svg.innerHTML = tl + ed + eh + nd + el;
   hideEdge();
   const box = document.getElementById('cmapBox');
@@ -1990,42 +2058,54 @@ function renderLineage(u){
       const e = svg.querySelector(`.edge[data-e="${i}"]`); if(e) e.classList.remove('hl');
     });
   });
+  // 칩 = 아래 목록의 그 층으로 데려다 준다. 새 목록을 열지 않는다.
+  svg.querySelectorAll('.tierMore').forEach(g=>{
+    const go = () => {
+      const t = document.getElementById('cmg-' + g.dataset.k), rail = document.getElementById('lineage');
+      if(!t || !rail) return;
+      rail.scrollTo({top: rail.scrollTop + t.getBoundingClientRect().top - rail.getBoundingClientRect().top - 12, behavior:'smooth'});
+      t.classList.remove('flash'); void t.offsetWidth; t.classList.add('flash');
+    };
+    g.addEventListener('click', ev=>{ ev.stopPropagation(); go(); });
+    g.addEventListener('keydown', ev=>{ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); go(); } });
+  });
 
-  // 요약
+  /* ---- 목록 = 이 단원의 모든 연결. 그림이 무엇을 감추든 여기엔 전부 있다. ---- */
   const info = LINKS[u.id];
   let h = '';
-  if(info && info.core){
-    h += `<div class="cmCore" style="--c:${a.color}"><b>이 단원의 자리</b>${esc(info.core)}</div>`;
+  if(info && info.core) h += `<div class="cmCore" style="--c:${a.color}"><b>이 단원의 자리</b>${esc(info.core)}</div>`;
+  const gBadge = t => t.year || ({e34:'초3·4', e56:'초5·6', h1:'고1', h2:'고1'}[t.grade])
+    || (SUBJECTS[t.grade] ? SUBJECTS[t.grade].name : t.grade);
+  const GRP = [
+    {k:'p', label:'학생이 배우고 오는 곳', ar:'↑', c:'var(--amber)', ids: ordPrev(u.prev)},
+    {k:'n', label:'여기서 이어지는 곳',   ar:'↓', c:'var(--blue)',  ids: ordNext(u.next)},
+    {k:'r', label:'같은 시기 연계',       ar:'≈', c:'#adb5bd',      ids: ordNext(u.related)},
+    {k:'i', label:'문서엔 없지만 이어지는 곳', ar:'◇', c:'#9c36b5', ids: ins.map(x=>x.other)},
+  ];
+  let nRow = 0;
+  for(const g of GRP){
+    if(!g.ids.length) continue;
+    h += `<div class="cmGroup" id="cmg-${g.k}" style="--k:${g.c}"><div class="cmGH">${g.ar} ${g.label} <b>${g.ids.length}</b></div>`;
+    for(const id of g.ids){
+      const t = byId[id]; if(!t) continue;
+      let lab = '', why = '', tag = '';
+      if(g.k === 'i'){
+        const kk = ins.find(x=>x.other===id);
+        if(kk){ lab = kk.concept || ''; why = kk.why || ''; tag = `<span class="insTag">${esc(kk.value)}</span>`; }
+      } else {
+        const li = linkInfo(u.id, id);
+        if(li){ lab = li.label || ''; why = li.why || ''; }
+      }
+      nRow++;
+      h += `<div class="cmRow${drawn.has(id)?'':' off'}" style="--k:${g.c}" onclick="select('${id}')" role="button" tabindex="0"${drawn.has(id)?'':' title="그림에는 그려지지 않은 연결"'}>
+        <span class="ar">${g.ar}</span>
+        <div><b><span class="gb">${esc(gBadge(t))}</span> ${esc(t.title)}${lab?' · <i>'+esc(lab)+'</i>':''}</b>
+        <span>${tag}${esc(why)}</span></div></div>`;
+    }
+    h += `</div>`;
   }
-  const rows = [];
-  const add = (ids, kind, arrow, color) => ids.forEach(id => {
-    const li = linkInfo(u.id, id);
-    if(!li) return;
-    rows.push(`<div class="cmRow" style="--k:${color}" onclick="select('${id}')">
-      <span class="ar">${arrow}</span>
-      <div><b>${esc(byId[id].title)} · ${esc(li.label)}</b><span>${esc(li.why)}</span></div>
-    </div>`);
-  });
-  add(u.prev, 'prev', '↑', 'var(--amber)');
-  add(u.next, 'next', '↓', 'var(--blue)');
-  add(u.related, 'related', '≈', '#adb5bd');
-  if(rows.length){
-    const head = rows.slice(0, 6).join('');
-    const rest = rows.slice(6);
-    h += `<div class="cmList">${head}` +
-      (rest.length ? `<details><summary style="font-size:11.5px;color:var(--sub);cursor:pointer;padding:4px 0">+ ${rest.length}개 더 보기</summary><div class="cmList" style="margin-top:6px">${rest.join('')}</div></details>` : '') +
-      `</div>`;
-  } else if(!u.prev.length && !u.next.length){
-    h += `<div class="lnNone">이 단원과 연계된 단원이 교육과정 문서에 명시되어 있지 않습니다.</div>`;
-  }
-  if(ins.length){
-    h += `<div class="insBox"><b>◇ 문서엔 없지만 이어지는 개념</b>` +
-      ins.map(k=>`<div class="insRow" onclick="select('${k.other}')">
-        <b>${esc(byId[k.other].title)} · ${esc(k.concept)}</b>
-        <span><span class="insTag">${esc(k.value)}</span>${esc(k.why)}</span>
-      </div>`).join('') + `</div>`;
-  }
-  h += `<div class="cmHint">칸을 누르면 그 단원으로 이동 · <b>선을 누르면 어떻게 이어지는지</b> 뜹니다</div>`;
+  if(!nRow) h += `<div class="lnNone">이 단원과 연계된 단원이 교육과정 문서에 명시되어 있지 않습니다.</div>`;
+  h += `<div class="cmHint">칸을 누르면 그 단원으로 이동 · <b>아래 목록에 이 단원의 연결이 전부</b> 있습니다</div>`;
   document.getElementById('lnLegend').innerHTML = h;
 }
 function renderBrief(u){ renderPanel(u); }
@@ -2981,6 +3061,7 @@ qEl.addEventListener('input', ()=>{
 });
 document.addEventListener('keydown', e=>{
   if(e.key !== 'Escape') return;
+  if(document.body.classList.contains('railBig')){ setBig(false); return; }
   if(document.getElementById('tipView').classList.contains('open')){ closeTip(); return; }
   if(document.getElementById('miscView').classList.contains('open')){ closeMisc(); return; }
   if(document.getElementById('edgePop').classList.contains('on')){ hideEdge(); return; }
