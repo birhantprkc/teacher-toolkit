@@ -1,143 +1,40 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teacher Toolkit — 교사 업무·수업 준비 도구 모음</title>
-    <meta name="description" content="승재쌤의 교사 업무·수업 준비를 돕는 웹도구 모음" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap" rel="stylesheet" />
-    <style>
-      :root {
-        --bg: #f4f6f9;
-        --card: #ffffff;
-        --ink: #1b1d20;
-        --sub: #64748b;
-        --line: #e2e8f0;
-        --brand: #17395c;
-        --accent: #a5372c;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--ink);
-        font-family: 'Pretendard', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-        -webkit-font-smoothing: antialiased;
-      }
-      .wrap { max-width: 900px; margin: 0 auto; padding: 56px 20px 40px; }
-      header .kicker {
-        font-size: 13px; font-weight: 800; letter-spacing: 0.14em;
-        color: var(--accent); text-transform: uppercase;
-      }
-      header h1 {
-        font-family: 'Nanum Myeongjo', serif; font-weight: 800;
-        font-size: clamp(28px, 6vw, 42px); margin: 6px 0 8px; color: var(--brand);
-      }
-      header p { color: var(--sub); font-size: 16px; margin: 0 0 6px; line-height: 1.6; }
-      .grid {
-        margin-top: 34px; display: grid; gap: 16px;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      }
-      .tool {
-        display: block; text-decoration: none; color: inherit;
-        background: var(--card); border: 1px solid var(--line); border-radius: 16px;
-        padding: 22px 22px 20px; transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
-      }
-      .tool:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 28px rgba(23, 57, 92, 0.12);
-        border-color: #c7d2e0;
-      }
-      .tool .badge {
-        display: inline-block; font-size: 12px; font-weight: 800; color: var(--brand);
-        background: color-mix(in srgb, var(--brand) 9%, white); padding: 3px 9px; border-radius: 999px;
-      }
-      .tool h2 { font-size: 19px; margin: 12px 0 6px; }
-      .tool p { color: var(--sub); font-size: 13.5px; line-height: 1.6; margin: 0; }
-      .tool .go { margin-top: 14px; font-size: 13px; font-weight: 800; color: var(--accent); }
-      .soon {
-        background: repeating-linear-gradient(45deg, #fafbfc 0 10px, #f4f6f9 10px 20px);
-        border-style: dashed; cursor: default;
-      }
-      .soon:hover { transform: none; box-shadow: none; border-color: var(--line); }
-      .soon .badge { color: var(--sub); background: #eef2f6; }
-      footer#app-credit {
-        margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line);
-        text-align: center; color: #94a3b8; font-size: 12.5px; line-height: 1.7;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="wrap">
-      <header>
-        <div class="kicker">Teacher Toolkit</div>
-        <h1>교사 업무·수업 준비 도구 모음</h1>
-        <p>승재쌤이 바이브코딩으로 만든, 수업 준비와 업무를 돕는 브라우저 웹도구들입니다.<br />설치 없이 바로 쓰고, 결과물은 A4로 인쇄하거나 PDF로 저장하세요.</p>
-      </header>
-
-      <main class="grid">
-        <a class="tool" href="./value-journey/">
-          <span class="badge">성찰</span>
-          <h2>나의 교직 가치 여정</h2>
-          <p>60개의 교직 낱말 중에서 고르고, 여러 번 내려놓으며 지금 내 수업을 붙들고 있는 다섯 가지를 만나는 8단계 여정. 힘든 것을 뒤집어 원하는 힘으로 바꾸는 단계까지. 결과를 AI에 물어볼 프롬프트도 함께 나옵니다.</p>
-          <div class="go">열기 →</div>
-        </a>
-
-        <a class="tool" href="./science-curriculum-map/">
-          <span class="badge">교육과정</span>
-          <h2>과학 나선 교육과정 지도</h2>
-          <p>2022 개정 과학과(초3~고3)의 나선형 연계를 지하철 노선도로 시각화. 초·중·통합과학·고교 선택과목까지 108단원. 단원을 누르면 성취기준·해설·고려사항과 선수/후속 연계가 한눈에, 진단·형성평가 AI 프롬프트까지 원클릭 복사.</p>
-          <div class="go">열기 →</div>
-        </a>
-
-        <a class="tool" href="./worksheet-studio/">
-          <span class="badge">학습지 제작</span>
-          <h2>학습지 스튜디오</h2>
-          <p>수업 내용을 블록으로 조립해 A4 학습지를 만들고, 교사용 원본에서 학생용·정답지를 한 번에 뽑아냅니다. 과학 그래프·입자 모형·힘 화살표 등 과학 전용 시각화 내장.</p>
-          <div class="go">열기 →</div>
-        </a>
-
-        <a class="tool" href="./mp3-extractor/">
-          <span class="badge">오디오 추출</span>
-          <h2>동영상 → MP3 추출기</h2>
-          <p>동영상 파일에서 소리만 뽑아 MP3로 저장합니다. 브라우저 안에서만 처리해 파일이 서버로 올라가지 않아요. mp4·mov·avi·mkv·webm 등 지원, 음질 선택 가능.</p>
-          <div class="go">열기 →</div>
-        </a>
-
-        <a class="tool" href="./sensor-guide/">
-          <span class="badge">센서 구매</span>
-          <h2>중학교 과학 센서 구매 가이드</h2>
-          <p>디지털 탐구 도구 연수 강사용. 이지메이커·사이언스큐브·버니어·파스코 센서 가격·장단점 비교와, 예산·모둠수·수업을 고르면 구매 계획이 자동 생성되는 도구.</p>
-          <div class="go">열기 →</div>
-        </a>
-
-        <a class="tool" href="https://scienceisjo.github.io/mblclasshub/" target="_blank" rel="noopener">
-          <span class="badge">MBL 수업</span>
-          <h2>MBL 수업허브</h2>
-          <p>센서로 모은 모둠 데이터를 한 화면에 모아 비교하는 수업 운영 도구. 참여코드 6자리로 학생이 계정 없이 참여하고, 교사 대시보드·전자칠판 발표 모드·데이터 실험실(축 변환·추세선)을 제공합니다. 중학교 실험 38건 내장.</p>
-          <div class="go">열기 →</div>
-        </a>
-
-        <a class="tool" href="./experiment-dashboard/">
-          <span class="badge">실험 대시보드</span>
-          <h2>과학실험 대시보드 (밝기·거리)</h2>
-          <p>이지메이커 보드를 USB로 연결해 밝기·초음파거리를 실시간으로 재는 한 장짜리 대시보드. 값 카드 게이지·그래프·산점도·통계와 학습지(예상→측정→정리)가 한 화면에 있고, 센서 열마다 이름·단위·게이지·색을 직접 지정할 수 있습니다. 장치가 없으면 데모 데이터로 연습.</p>
-          <div class="go">열기 →</div>
-        </a>
-
-        <div class="tool soon">
-          <span class="badge">준비 중</span>
-          <h2>다음 도구</h2>
-          <p>여기에 새 교사 도구가 계속 추가됩니다.</p>
-        </div>
-      </main>
-
-      <footer id="app-credit">
-        © 2026 승재쌤 · Teacher Toolkit<br />
-        최종 업데이트: 2026-08-24
-      </footer>
-    </div>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>교사 도구 모음 · 자리를 옮겼습니다</title>
+<link rel="canonical" href="https://scienceisjo.github.io/growing-teachers/">
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url=https://scienceisjo.github.io/growing-teachers/">
+<style>
+  :root{color-scheme:light}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;display:grid;place-items:center;padding:24px;
+    background:#f2f0eb;color:rgba(0,0,0,.87);
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+    letter-spacing:-.01em;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .box{max-width:420px;text-align:center;background:#fff;border-radius:12px;padding:40px 32px;
+    box-shadow:0 0 .5px 0 rgba(0,0,0,.14),0 1px 1px 0 rgba(0,0,0,.24)}
+  .seal{width:44px;height:44px;border-radius:50%;background:#006241;color:#fff;
+    display:grid;place-items:center;margin:0 auto 20px;
+    font-family:"Gowun Batang","Batang",serif;font-size:20px;font-weight:700}
+  h1{font-size:20px;font-weight:700;color:#006241;letter-spacing:-.02em}
+  p{margin-top:12px;font-size:14.5px;color:rgba(0,0,0,.58);word-break:keep-all}
+  a.btn{display:inline-flex;align-items:center;justify-content:center;margin-top:24px;
+    background:#00754A;color:#fff;border-radius:50px;padding:11px 22px;
+    font-size:15px;font-weight:600;text-decoration:none;transition:background .2s ease}
+  a.btn:hover{background:#006241}
+  a.btn:active{transform:scale(.95)}
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="seal">조</div>
+    <h1>자리를 옮겼습니다</h1>
+    <p>여기 있던 도구들은 그대로 있습니다. 이제 <b>조승재 포트폴리오</b> 한 곳에서 모두 찾으실 수 있습니다.</p>
+    <a class="btn" href="https://scienceisjo.github.io/growing-teachers/">포트폴리오로 이동 →</a>
+  </div>
+  <script>location.replace("https://scienceisjo.github.io/growing-teachers/");</script>
+</body>
 </html>
