@@ -5,238 +5,273 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>중학교 과학 센서 구매 가이드 — 디지털 탐구 도구 연수 강사용</title>
 <style>
+/* ============================================================
+   Apple 디자인 언어 — 단일 Action Blue, 그림자 0, 헤어라인, 필 버튼
+   ============================================================ */
 :root{
-  --bg:#f6f7f9; --card:#fff; --ink:#1c2128; --sub:#5c636d; --line:#e3e6ea;
-  --accent:#2563eb; --accent-soft:#eff4ff;
-  --ez:#0891b2; --sc:#7c3aed; --vn:#d97706; --ps:#dc2626;
-  --ok:#059669; --warn:#d97706; --bad:#dc2626;
-  --r:14px;
+  --primary:#0066cc; --primary-focus:#0071e3; --primary-soft:#f0f5fb;
+  --ink:#1d1d1f; --sub:#6e6e73; --sub-48:#7a7a7a;
+  --canvas:#fff; --parchment:#f5f5f7; --pearl:#fafafc;
+  --hair:rgba(0,0,0,.08); --hair-solid:#e0e0e0; --divider:#f0f0f0;
+  --warn:#bf4800; --bad:#e30000;
+  /* 호환용 별칭 — 기존 클래스가 참조 */
+  --accent:var(--primary); --accent-soft:var(--primary-soft);
+  --ok:var(--primary); --line:var(--hair-solid); --card:var(--canvas); --bg:var(--parchment);
+  --ez:var(--ink); --sc:var(--ink); --vn:var(--ink); --ps:var(--ink);
+  --r-sm:8px; --r-md:11px; --r-lg:18px; --pill:9999px;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:system-ui,-apple-system,'Segoe UI','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
-  line-height:1.65;-webkit-text-size-adjust:100%}
-.wrap{max-width:1160px;margin:0 auto;padding:0 16px 40px}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--parchment);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Pretendard","Malgun Gothic",sans-serif;
+  font-size:15px;line-height:1.47;letter-spacing:-.2px;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+b,strong{font-weight:600}
+a{color:var(--primary)}
+button{font-family:inherit}
+button:active,.btn:active,.tab:active{transform:scale(.97)}
+:focus-visible{outline:2px solid var(--primary-focus);outline-offset:2px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 22px 48px}
 
-/* 헤더 */
-header.top{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:30px 0 26px;margin-bottom:0}
-header.top .wrap{padding-bottom:0}
-header.top h1{margin:0 0 6px;font-size:clamp(20px,3.4vw,29px);letter-spacing:-.4px}
-header.top p{margin:0;opacity:.92;font-size:14.5px}
-.badge-row{margin-top:12px;display:flex;gap:7px;flex-wrap:wrap}
-.badge{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);
-  padding:4px 11px;border-radius:99px;font-size:12.5px}
+/* ── 글로벌 네비(검정 44px) + 히어로 ── */
+header.top{background:var(--canvas);color:var(--ink);padding:0;margin:0}
+header.top .gnav{background:#000;color:#f5f5f7;font-size:12px;letter-spacing:-.12px;
+  height:44px;line-height:44px;text-align:center;padding:0 16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.top .wrap{padding:56px 22px 40px;text-align:center}
+header.top h1{margin:0 0 10px;font-size:clamp(30px,4.6vw,44px);font-weight:600;line-height:1.08;letter-spacing:-.6px}
+header.top p{margin:0;font-size:clamp(17px,2.2vw,21px);font-weight:400;color:var(--sub);letter-spacing:-.2px;line-height:1.3}
+.badge-row{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.badge{background:var(--parchment);color:var(--ink);border:1px solid var(--hair);
+  padding:7px 14px;border-radius:var(--pill);font-size:13px;letter-spacing:-.1px}
 
-/* 탭 */
-nav.tabs{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);
-  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-bottom:22px}
-nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
+/* ── 서브네비(반투명 파치먼트, 고정) ── */
+nav.tabs{position:sticky;top:0;z-index:50;background:rgba(245,245,247,.82);
+  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid var(--hair);margin-bottom:28px}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 22px;height:52px;align-items:center;scrollbar-width:none}
 nav.tabs .wrap::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;background:none;border:none;padding:14px 15px;font-size:14.5px;
-  font-weight:600;color:var(--sub);cursor:pointer;border-bottom:3px solid transparent;
-  font-family:inherit;white-space:nowrap}
+.tab{flex:0 0 auto;background:none;border:none;padding:8px 14px;font-size:14px;letter-spacing:-.2px;
+  font-weight:400;color:var(--sub);cursor:pointer;border-radius:var(--pill);white-space:nowrap;
+  transition:color .15s,background .15s}
 .tab:hover{color:var(--ink)}
-.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tab.on{color:var(--ink);font-weight:600;background:rgba(0,0,0,.05)}
 .panel{display:none;animation:fade .22s}
 .panel.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-/* 카드 */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
-  padding:20px 22px;margin-bottom:16px}
-.card h2{margin:0 0 4px;font-size:19px;letter-spacing:-.3px}
-.card h3{margin:20px 0 8px;font-size:15.5px}
-.card > p.lead{margin:0 0 16px;color:var(--sub);font-size:14px}
-.note{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;
-  padding:12px 14px;font-size:13.5px;margin:14px 0}
-.note.info{background:var(--accent-soft);border-color:#bfdbfe}
-.note b{font-weight:700}
+/* ── 최상단 권고 ── */
+.advice{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;
+  background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);
+  padding:20px 24px;margin-bottom:22px}
+.adv-k{background:var(--ink);color:#fff;font-size:12px;font-weight:600;letter-spacing:-.1px;
+  padding:4px 11px;border-radius:var(--pill);margin-top:2px;white-space:nowrap}
+.adv-b{font-size:15px;line-height:1.6;color:var(--ink)}
+.adv-b b{font-weight:600}
+@media(max-width:640px){.advice{grid-template-columns:1fr;gap:10px}}
 
-/* 업체 카드 */
-.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
-.vcard{border:1px solid var(--line);border-radius:12px;padding:16px 17px;background:#fff}
-.vcard .vname{font-weight:800;font-size:17px;margin-bottom:2px}
-.vcard .vtag{font-size:12.5px;color:var(--sub);margin-bottom:12px}
-.vcard .vprice{font-size:13px;background:#f1f3f6;border-radius:7px;padding:7px 10px;margin-bottom:12px}
-.vcard ul{margin:0 0 10px;padding-left:17px;font-size:13.4px}
+/* ── 카드 ── */
+.card{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);
+  padding:28px 28px 26px;margin-bottom:20px}
+.card h2{margin:0 0 6px;font-size:28px;font-weight:600;letter-spacing:-.5px;line-height:1.15}
+.card h3{margin:30px 0 10px;font-size:19px;font-weight:600;letter-spacing:-.35px;line-height:1.25}
+.card > p.lead{margin:0 0 20px;color:var(--sub);font-size:17px;line-height:1.47;letter-spacing:-.3px}
+.note{background:var(--parchment);border:1px solid transparent;border-radius:var(--r-md);
+  padding:14px 16px;font-size:14px;line-height:1.55;margin:16px 0;color:var(--ink)}
+.note.info{background:var(--primary-soft)}
+.note b{font-weight:600}
+
+/* ── 업체 카드 ── */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.vcard{border:1px solid var(--hair);border-radius:var(--r-lg);padding:22px 22px 18px;background:var(--canvas)}
+.vcard .vname{font-weight:600;font-size:21px;letter-spacing:-.4px;margin-bottom:2px}
+.vcard .vtag{font-size:13px;color:var(--sub);margin-bottom:14px}
+.vcard .vprice{font-size:14px;background:var(--parchment);border-radius:var(--r-md);padding:10px 12px;margin-bottom:14px;line-height:1.5}
+.vcard ul{margin:0 0 10px;padding-left:17px;font-size:14px}
 .vcard ul li{margin-bottom:4px}
-.pro li::marker{color:var(--ok)}
-.con li::marker{color:var(--bad)}
-.vlabel{font-size:12px;font-weight:700;letter-spacing:.3px;margin:10px 0 3px}
-.vlabel.p{color:var(--ok)} .vlabel.c{color:var(--bad)}
-.bar-ez{border-top:4px solid var(--ez)} .bar-sc{border-top:4px solid var(--sc)}
-.bar-vn{border-top:4px solid var(--vn)} .bar-ps{border-top:4px solid var(--ps)}
+.vlabel{font-size:12px;font-weight:600;letter-spacing:.2px;margin:14px 0 6px;color:var(--sub);text-transform:uppercase}
+.vlabel.p{color:var(--primary)} .vlabel.c{color:var(--sub-48)}
+.bar-ez,.bar-sc,.bar-vn,.bar-ps{border-top:1px solid var(--hair)}
 
-/* 표 */
-.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);
-  border-radius:11px;background:#fff}
-table{border-collapse:collapse;width:100%;font-size:13.6px;min-width:620px}
-th,td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-th{background:#f2f4f7;font-weight:700;font-size:12.8px;position:sticky;top:0}
-tbody tr:hover{background:#fafbfc}
+/* ── 표 ── */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--hair);
+  border-radius:var(--r-md);background:var(--canvas)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px;letter-spacing:-.15px}
+th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--divider);white-space:nowrap;vertical-align:top}
+th{background:var(--parchment);font-weight:600;font-size:12.5px;color:var(--sub);position:sticky;top:0;letter-spacing:-.1px}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--pearl)}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 td.name{white-space:normal;min-width:120px;font-weight:600}
 
-/* 가격표 전용 — 열 정렬 고정 */
 #ptable{table-layout:fixed;min-width:760px}
-#ptable th,#ptable td{padding:9px 10px;overflow:hidden;text-overflow:ellipsis}
+#ptable th,#ptable td{padding:11px 12px;overflow:hidden;text-overflow:ellipsis}
 #ptable th.num,#ptable td.num{padding-right:14px}
-#ptable .sep{border-left:1px solid var(--line)}
-#ptable thead th{vertical-align:bottom;line-height:1.35;white-space:normal}
-#ptable th small{display:block;font-weight:600;font-size:11px;opacity:.75;margin-top:1px}
+#ptable .sep{border-left:1px solid var(--divider)}
+#ptable thead th{vertical-align:bottom;line-height:1.35;white-space:normal;color:var(--ink)}
+#ptable th small{display:block;font-weight:400;font-size:11px;color:var(--sub);margin-top:1px}
 
-/* 토글 */
-details.d{border:1px solid var(--line);border-radius:9px;margin-bottom:6px;background:#fff}
-details.d[open]{background:#fcfdfe;border-color:#cfd8e3}
-details.d>summary{cursor:pointer;padding:8px 11px;font-size:13.3px;font-weight:600;
-  list-style:none;display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+/* ── 토글 ── */
+details.d{border:1px solid var(--hair);border-radius:var(--r-md);margin-bottom:8px;background:var(--canvas)}
+details.d[open]{background:var(--canvas)}
+details.d>summary{cursor:pointer;padding:12px 14px;font-size:14.5px;font-weight:400;letter-spacing:-.2px;
+  list-style:none;display:flex;gap:10px;align-items:flex-start;line-height:1.45;color:var(--ink)}
 details.d>summary::-webkit-details-marker{display:none}
-details.d>summary::before{content:'+';flex:0 0 auto;width:15px;height:15px;margin-top:3px;
-  border-radius:4px;background:#eef1f5;color:var(--sub);font-size:12px;font-weight:800;
+details.d>summary::before{content:"+";flex:0 0 auto;width:18px;height:18px;margin-top:2px;
+  border-radius:50%;background:var(--parchment);color:var(--sub);font-size:14px;font-weight:400;
   display:flex;align-items:center;justify-content:center;line-height:1}
-details.d[open]>summary::before{content:'−';background:var(--accent);color:#fff}
-details.d.p>summary::before{background:#dcfce7;color:var(--ok)}
-details.d.c>summary::before{background:#fee2e2;color:var(--bad)}
-details.d[open].p>summary::before,details.d[open].c>summary::before{background:var(--accent);color:#fff}
-details.d .dbody{padding:0 12px 11px 34px;font-size:12.9px;color:var(--sub);line-height:1.7}
+details.d[open]>summary{font-weight:600}
+details.d[open]>summary::before{content:"\2212";background:var(--primary);color:#fff}
+details.d.p>summary::before,details.d.c>summary::before{background:var(--parchment);color:var(--sub)}
+details.d[open].p>summary::before,details.d[open].c>summary::before{background:var(--primary);color:#fff}
+details.d .dbody{padding:0 14px 14px 42px;font-size:14px;color:var(--sub);line-height:1.6;letter-spacing:-.15px}
 details.d .dbody b{color:var(--ink)}
 
-/* 매뉴얼 배지 */
-.manual{border-radius:9px;padding:9px 11px;font-size:12.6px;line-height:1.6;margin-bottom:12px}
-.manual.good{background:#ecfdf5;border:1px solid #a7f3d0}
-.manual.mid{background:#fffbeb;border:1px solid #fde68a}
-.manual .mtitle{font-weight:800;font-size:12px;letter-spacing:.2px;margin-bottom:2px}
-.manual.good .mtitle{color:var(--ok)} .manual.mid .mtitle{color:var(--warn)}
+/* ── 매뉴얼 배지 ── */
+.manual{border-radius:var(--r-md);padding:11px 13px;font-size:13px;line-height:1.55;margin-bottom:14px;
+  background:var(--parchment);border:1px solid transparent}
+.manual.good,.manual.mid{background:var(--parchment)}
+.manual .mtitle{font-weight:600;font-size:12px;letter-spacing:.1px;margin-bottom:3px;text-transform:uppercase}
+.manual.good .mtitle{color:var(--primary)} .manual.mid .mtitle{color:var(--sub)}
 
-/* 출처 */
-.credits{background:#fff;border:1px solid var(--line);border-radius:var(--r);
-  padding:20px 22px;margin-top:22px}
-.credits h3{margin:0 0 4px;font-size:15px;color:var(--ink)}
-.credits p.lead{margin:0 0 14px;color:var(--sub);font-size:13.3px}
-.credits ul{margin:0;padding:0;list-style:none;display:grid;gap:11px}
-.credits li{font-size:13.3px;line-height:1.65}
-.credits li b{color:var(--accent)}
-.credits li .who{color:var(--sub);font-size:12.5px}
-.credits a{color:var(--accent);word-break:break-all}
-.credits .thanks{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);
-  font-size:12.9px;color:var(--sub);line-height:1.75}
-.cheap{color:var(--ok);font-weight:700}
-.dash{color:#b6bcc4}
-.chip{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;
-  background:#eef1f5;color:var(--sub);margin-left:5px}
+/* ── 출처·이력 ── */
+.credits{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);padding:26px 28px;margin-top:22px}
+.credits h3{margin:0 0 6px;font-size:19px;font-weight:600;letter-spacing:-.35px;color:var(--ink)}
+.credits p.lead{margin:0 0 16px;color:var(--sub);font-size:14px}
+.credits ul{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.credits li{font-size:14px;line-height:1.6}
+.credits li b{color:var(--ink);font-weight:600}
+.credits li .who{color:var(--sub);font-size:13px}
+.credits a{color:var(--primary);word-break:break-all;text-decoration:none}
+.credits a:hover{text-decoration:underline}
+.credits .thanks{margin-top:16px;padding-top:14px;border-top:1px solid var(--divider);font-size:13.5px;color:var(--sub);line-height:1.7}
+.cheap{color:var(--primary);font-weight:600}
+.dash{color:#c7c7cc}
+.chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--pill);background:var(--parchment);color:var(--sub);margin-left:5px;font-weight:400;letter-spacing:0}
 
-/* 생성기 */
-.gengrid{display:grid;grid-template-columns:1fr 380px;gap:16px;align-items:start}
-@media(max-width:900px){
-  .gengrid{grid-template-columns:1fr}
-  .result{position:static!important}
-  .lessonbox{max-height:320px!important}
-}
-.field{margin-bottom:15px}
-.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
-input[type=number],select{width:100%;padding:10px 12px;border:1px solid var(--line);
-  border-radius:9px;font-size:15px;font-family:inherit;background:#fff}
-input[type=number]:focus,select:focus{outline:2px solid var(--accent);border-color:transparent}
-.seg{display:flex;gap:6px;flex-wrap:wrap}
-.seg button{flex:1;min-width:96px;padding:9px 8px;border:1px solid var(--line);background:#fff;
-  border-radius:9px;font-size:13px;font-family:inherit;cursor:pointer;font-weight:600;color:var(--sub)}
-.seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+/* ── 생성기 ── */
+.gengrid{display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:start}
+@media(max-width:900px){.gengrid{grid-template-columns:1fr}.result{position:static!important}.lessonbox{max-height:320px!important}}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink);letter-spacing:-.1px}
+input[type=number],input[type=text],select{width:100%;padding:11px 14px;border:1px solid var(--hair-solid);
+  border-radius:var(--r-md);font-size:16px;font-family:inherit;background:var(--canvas);color:var(--ink)}
+input[type=number]:focus,input[type=text]:focus,select:focus{outline:2px solid var(--primary-focus);outline-offset:0;border-color:transparent}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:104px;padding:10px 12px;border:1px solid var(--hair-solid);background:var(--canvas);
+  border-radius:var(--pill);font-size:13.5px;cursor:pointer;font-weight:400;color:var(--ink);letter-spacing:-.15px;
+  transition:background .15s,color .15s,border-color .15s}
+.seg button.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.seglabel{font-size:12px;color:var(--sub);margin:12px 0 6px;font-weight:600;letter-spacing:.1px;text-transform:uppercase}
+#modeseg2 button{color:var(--sub)}
+#modeseg2 button.on{background:var(--primary);border-color:var(--primary);color:#fff}
 
-.lessonbox{max-height:430px;overflow-y:auto;border:1px solid var(--line);
-  border-radius:11px;padding:6px 4px;background:#fff}
-.gradehead{font-size:12.5px;font-weight:800;color:var(--sub);padding:9px 10px 5px;
-  position:sticky;top:0;background:#fff;letter-spacing:.3px}
-.lrow{display:flex;gap:9px;align-items:flex-start;padding:7px 10px;border-radius:8px;cursor:pointer}
-.lrow:hover{background:#f5f7fa}
-.lrow input{margin-top:3px;width:17px;height:17px;flex:0 0 auto;accent-color:var(--accent)}
-.lrow .ltxt{font-size:13.5px;line-height:1.45}
-.lrow .lmeta{font-size:11.5px;color:var(--sub)}
-.mini{font-size:11px;background:#eef1f5;color:var(--sub);border-radius:5px;padding:1px 6px;margin-left:4px}
+.lessonbox{max-height:460px;overflow-y:auto;border:1px solid var(--hair);border-radius:var(--r-md);padding:6px 4px;background:var(--canvas)}
+.gradehead{font-size:12px;font-weight:600;color:var(--sub);padding:12px 12px 6px;position:sticky;top:0;background:var(--canvas);letter-spacing:.1px;text-transform:uppercase}
+.lrow{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:var(--r-sm);cursor:pointer}
+.lrow:hover{background:var(--pearl)}
+.lrow input{margin-top:3px;width:18px;height:18px;flex:0 0 auto;accent-color:var(--primary)}
+.lrow .ltxt{font-size:14.5px;line-height:1.4;letter-spacing:-.2px}
+.lrow .lmeta{font-size:12px;color:var(--sub)}
+.mini{font-size:11px;background:var(--parchment);color:var(--sub);border-radius:var(--pill);padding:2px 8px;margin-left:5px;letter-spacing:0;font-weight:400}
+.mini.warn{background:#fff4e6;color:var(--warn)}
 
-.result{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px;
-  position:sticky;top:64px}
-.total{font-size:27px;font-weight:800;letter-spacing:-.8px;font-variant-numeric:tabular-nums}
-.total.over{color:var(--bad)}
-.total.ok{color:var(--ok)}
-.budgetbar{height:9px;background:#eef1f5;border-radius:99px;overflow:hidden;margin:10px 0 4px}
-.budgetbar i{display:block;height:100%;background:var(--ok);transition:width .3s}
-.budgetbar i.over{background:var(--bad)}
-.rlist{margin:14px 0 0;font-size:13.3px}
-.rline{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);flex-wrap:wrap}
-.rline .rn{color:var(--ink);flex:1 1 60%}
-.rline .rv{font-variant-numeric:tabular-nums;color:var(--sub);flex:0 0 auto;font-weight:600}
-.vendorsel{display:block;width:100%;margin-top:6px;font-size:11.5px;padding:4px 6px;
-  border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);
-  font-family:inherit;cursor:pointer}
-.vendorsel:focus{outline:2px solid var(--accent);border-color:transparent}
-.vendorsel.manual{border-color:var(--accent);color:var(--accent);font-weight:700;background:var(--accent-soft)}
-.pickbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.3px;color:var(--sub);
-  background:var(--accent-soft);border:1px solid #bfdbfe;border-radius:8px;padding:7px 10px;margin-bottom:10px}
-.pickbar b{color:var(--accent)}
-.pickbar button{margin-left:auto;border:1px solid #bfdbfe;background:#fff;border-radius:6px;
-  font-size:11.5px;padding:3px 9px;cursor:pointer;font-family:inherit;color:var(--accent);font-weight:700}
-.pickbar.off{background:#f4f5f7;border-color:#d8dce2;color:var(--sub)}
+.result{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);padding:22px;position:sticky;top:64px}
+.total{font-size:34px;font-weight:600;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
+.total.over{color:var(--warn)}
+.total.ok{color:var(--ink)}
+.budgetbar{height:6px;background:var(--parchment);border-radius:var(--pill);overflow:hidden;margin:12px 0 6px}
+.budgetbar i{display:block;height:100%;background:var(--primary);transition:width .3s}
+.budgetbar i.over{background:var(--warn)}
+.rlist{margin:16px 0 0;font-size:14px}
+.rline{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--divider);flex-wrap:wrap}
+.rline .rn{color:var(--ink);flex:1 1 60%;letter-spacing:-.15px}
+.rline .rv{font-variant-numeric:tabular-nums;color:var(--ink);flex:0 0 auto;font-weight:600}
+.rline.na .rn{color:var(--sub)}
+.vendorsel{display:block;width:100%;margin-top:7px;font-size:12.5px;padding:6px 10px;
+  border:1px solid var(--hair-solid);border-radius:var(--r-sm);background:var(--canvas);color:var(--ink);cursor:pointer}
+.vendorsel.manual{border-color:var(--primary);color:var(--primary);font-weight:600;background:var(--primary-soft)}
+.pickbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--sub);
+  background:var(--primary-soft);border:1px solid transparent;border-radius:var(--r-md);padding:9px 12px;margin-bottom:10px}
+.pickbar b{color:var(--primary);font-weight:600}
+.pickbar button{margin-left:auto;border:1px solid var(--primary);background:var(--canvas);border-radius:var(--pill);
+  font-size:12px;padding:5px 12px;cursor:pointer;color:var(--primary);font-weight:400}
+.pickbar.off{background:var(--parchment);color:var(--sub)}
 .pickbar.off b{color:var(--ink)}
-.pickbar.off button{border-color:#d8dce2;color:var(--ink)}
+.pickbar.off button{border-color:var(--hair-solid);color:var(--ink)}
 
-/* 제외 버튼 */
-.xbtn{margin-left:7px;border:1px solid var(--line);background:#fff;border-radius:6px;
-  width:22px;height:22px;line-height:1;cursor:pointer;font-family:inherit;font-size:12px;
-  color:#9aa2ad;padding:0;vertical-align:middle}
-.xbtn:hover{border-color:var(--bad);color:var(--bad)}
-.xbtn.on{border-color:var(--accent);color:var(--accent);font-weight:700}
-.rline.off{opacity:.55}
-.rline.off .rn{text-decoration:line-through;text-decoration-color:#c3c9d1}
+.xbtn{margin-left:8px;border:1px solid var(--hair-solid);background:var(--canvas);border-radius:50%;
+  width:24px;height:24px;line-height:1;cursor:pointer;font-size:12px;color:var(--sub-48);padding:0;vertical-align:middle}
+.xbtn:hover{border-color:var(--ink);color:var(--ink)}
+.xbtn.on{border-color:var(--primary);color:var(--primary)}
+.rline.off{opacity:.5}
+.rline.off .rn{text-decoration:line-through;text-decoration-color:#c7c7cc}
 .rline.off .mini{text-decoration:none}
 
-/* 실험 자료 위치 */
+/* ── 실험 자료 위치 ── */
 .lwrap{display:flex;align-items:flex-start;gap:4px}
 .lwrap .lrow{flex:1 1 auto}
-.refbtn{flex:0 0 auto;margin:9px 8px 0 0;border:1px solid var(--line);background:#fff;
-  border-radius:6px;font-size:11px;padding:2px 7px;cursor:pointer;font-family:inherit;
-  color:var(--sub);white-space:nowrap}
-.refbtn:hover{border-color:var(--accent);color:var(--accent)}
-.refbtn.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
-.refbox{margin:0 10px 8px 36px;padding:10px 12px;background:#f8fafc;
-  border:1px solid var(--line);border-radius:9px;font-size:12.3px;line-height:1.6}
-.refhead{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.3px;margin-bottom:7px}
-.refrow{padding:5px 0;border-top:1px dashed var(--line)}
+.refbtn{flex:0 0 auto;margin:10px 10px 0 0;border:1px solid var(--hair-solid);background:var(--canvas);
+  border-radius:var(--pill);font-size:12px;padding:4px 11px;cursor:pointer;color:var(--primary);white-space:nowrap}
+.refbtn:hover{background:var(--primary-soft)}
+.refbtn.on{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+.refbox{margin:0 12px 10px 40px;padding:12px 14px;background:var(--parchment);border:1px solid transparent;
+  border-radius:var(--r-md);font-size:13px;line-height:1.6}
+.refhead{font-size:11px;font-weight:600;color:var(--sub);letter-spacing:.1px;margin-bottom:8px;text-transform:uppercase}
+.refrow{padding:7px 0;border-top:1px solid rgba(0,0,0,.06)}
 .refrow:first-of-type{border-top:none}
-.refrow b{font-size:12px}
-.pdfp{display:inline-block;background:#eef1f5;color:var(--sub);border-radius:5px;
-  padding:0 6px;font-size:11px;margin-left:4px}
-.refnote{color:var(--sub);font-size:11.5px;margin-top:1px}
-.ed{font-size:11.8px;margin-top:2px}
-.ed .edn{display:inline-block;background:var(--accent-soft);color:var(--accent);
-  border-radius:5px;padding:0 5px;font-size:10.5px;font-weight:800;margin-right:3px}
-.ed i{color:#9aa2ad;font-style:normal;font-size:10.5px;margin-left:3px}
-.refbox a{color:var(--accent);font-weight:600;word-break:break-all}
-.scale{display:flex;gap:3px;margin-top:5px}
-.scale button{border:1px solid var(--line);background:#fff;border-radius:6px;font-size:10.5px;
-  padding:2px 7px;cursor:pointer;font-family:inherit;color:var(--sub);line-height:1.5}
-.scale button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
-.vsum{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;
-  padding:9px 0;border-top:2px solid var(--line);margin-top:6px}
-.btn{display:inline-block;padding:10px 16px;border-radius:9px;border:1px solid var(--line);
-  background:#fff;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.btnrow{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.empty{color:var(--sub);font-size:13.5px;text-align:center;padding:30px 10px}
+.refrow b{font-size:13px;font-weight:600}
+.pdfp{display:inline-block;background:var(--canvas);color:var(--sub);border-radius:var(--pill);padding:1px 8px;font-size:11px;margin-left:4px}
+.refnote{color:var(--sub);font-size:12px;margin-top:2px}
+.ed{font-size:12.5px;margin-top:3px}
+.ed .edn{display:inline-block;background:var(--primary);color:#fff;border-radius:var(--pill);padding:1px 7px;font-size:10.5px;font-weight:600;margin-right:4px}
+.ed i{color:var(--sub-48);font-style:normal;font-size:11px;margin-left:3px}
+.refbox a{color:var(--primary);font-weight:600;word-break:break-all;text-decoration:none}
+.refbox a:hover{text-decoration:underline}
+.scale{display:flex;gap:4px;margin-top:7px}
+.scale button{border:1px solid var(--hair-solid);background:var(--canvas);border-radius:var(--pill);font-size:11px;
+  padding:3px 9px;cursor:pointer;color:var(--sub);line-height:1.5}
+.scale button.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.vsum{display:flex;justify-content:space-between;font-size:14.5px;font-weight:600;padding:11px 0;border-top:1px solid var(--hair-solid);margin-top:8px}
 
-footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14px 12px;
-  text-align:center;font-size:12.5px;line-height:1.6;color:#5c636d;
-  border-top:1px solid rgba(128,128,128,.25)}
+/* ── 버튼 ── */
+.btn{display:inline-block;padding:11px 20px;border-radius:var(--pill);border:1px solid var(--primary);
+  background:var(--canvas);color:var(--primary);font-size:14px;font-weight:400;cursor:pointer;letter-spacing:-.15px;
+  transition:background .15s,color .15s}
+.btn:hover{background:var(--primary-soft)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.primary:hover{background:var(--primary-focus)}
+.btnrow{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.empty{color:var(--sub);font-size:14.5px;text-align:center;padding:34px 10px;line-height:1.6}
+
+/* ── 버니어 영상 ── */
+.vidlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding-left:14px!important}
+.vid{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;text-decoration:none;
+  color:var(--ink);background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);padding:8px;
+  transition:border-color .15s}
+.vid:hover{border-color:var(--primary)}
+.vid img{width:96px;height:54px;object-fit:cover;border-radius:var(--r-sm);background:var(--parchment);display:block}
+.vid .vt{font-size:13px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
+.vid .vt small{display:block;color:var(--sub);font-size:11.5px;margin-top:2px;letter-spacing:0}
+.vid .vgo{color:var(--primary);font-size:12px;padding-right:4px}
+@media(max-width:560px){.vidlist{grid-template-columns:1fr}}
+
+/* ── 푸터(파치먼트) ── */
+footer#app-credit{width:100%;box-sizing:border-box;margin:48px 0 0;padding:40px 22px 48px;
+  text-align:center;font-size:12px;line-height:1.8;color:var(--sub);background:var(--parchment);
+  border-top:1px solid var(--hair);letter-spacing:-.1px}
+footer#app-credit b{color:var(--ink);font-weight:600}
 
 @media print{
-  nav.tabs,.btnrow,header.top{display:none}
-  .panel{display:block!important}
-  .result{position:static}
+  nav.tabs,.btnrow,header.top .gnav{display:none}
+  .panel{display:block!important}.result{position:static}
+  body{background:#fff}.card,.credits,.vcard{border-color:#ddd}
 }
 </style>
 </head>
 <body>
 
 <header class="top">
+  <div class="gnav">중학교 과학 센서 구매 가이드 &nbsp;·&nbsp; 디지털 탐구 도구 활용 교원연수 강사용</div>
   <div class="wrap">
     <h1>중학교 과학 센서 구매 가이드</h1>
     <p>디지털 탐구 도구 활용 교원연수 · 강사용 참고 자료</p>
@@ -259,6 +294,18 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
 </nav>
 
 <div class="wrap">
+
+<!-- 최상단 권고 — 모든 탭에서 보임 -->
+<div class="advice">
+  <div class="adv-k">권고</div>
+  <div class="adv-b">
+    <b>같은 종류의 센서는 한 업체에서만 사시길 권합니다.</b>
+    온도 센서를 이지메이커와 사이언스큐브에서 나눠 사면 프로그램이 두 개가 되어 학생 안내가 두 배로 늘고,
+    데이터 형식이 달라 모둠끼리 결과를 비교하기 어려워집니다.
+    업체를 섞으시더라도 <b>센서 종류 단위로 업체를 배정</b>하면 — 예를 들어 온도·조도는 사이언스큐브, 전압·전류·압력은 이지메이커처럼 — 운용이 훨씬 단순해집니다.
+    아래 「구매 계획 생성기」도 이 원칙으로 배정합니다.
+  </div>
+</div>
 
 <!-- ============ 탭1 업체 비교 ============ -->
 <section class="panel on" id="p1">
@@ -300,8 +347,8 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
           </tr>
           <tr>
             <td class="name">버니어</td>
-            <td style="color:var(--warn);font-weight:700">보통</td>
-            <td style="white-space:normal">본사 실험 자료는 방대하나 <b>국내 중학교 단원에 맞춘 한글 매뉴얼은 상대적으로 적음</b>. 영문 자료를 교사가 재구성해야 하는 경우가 있음</td>
+            <td><span class="cheap">충실</span></td>
+            <td style="white-space:normal">국내 총판 <b>한국과학 유튜브 채널에 한국어 영상 90여 편</b>. 어는점·마찰력·보일의 법칙·광합성 등 중학교 실험 시연, 센서별 사용·보정 안내, 지능형과학실 ON 연동까지. 문서보다 <b>영상 중심</b>인 점이 특징 — 「강사 참고 노트」 탭의 영상 모음 참고</td>
           </tr>
         </tbody>
       </table>
@@ -454,12 +501,20 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
         <div class="vname">버니어 (Vernier)</div>
         <div class="vtag">미국 · Go Direct 무선 · 국내 유통사 경유</div>
         <div class="vprice">무선 <b>20.7만~139만원</b><br><span style="color:#5c636d">국내 유통사 표시가</span></div>
-        <div class="manual mid">
-          <div class="mtitle">중학교 매뉴얼 — 보통</div>
-          본사 자료는 방대하나 국내 중학교 단원에 맞춘 한글 매뉴얼은 상대적으로 적음
+        <div class="manual good">
+          <div class="mtitle">중학교 매뉴얼 — 충실 (영상 중심)</div>
+          국내 총판 한국과학 유튜브에 한국어 영상 90여 편. 중학교 실험 시연·센서별 사용법·지능형과학실 ON 연동
         </div>
 
         <div class="vlabel p">장점</div>
+        <details class="d p"><summary>한국어 실험 영상이 90여 편 — 문서 대신 보고 따라 함</summary>
+          <div class="dbody">
+            국내 총판 <b>한국과학(KoreaScientifics)</b> 유튜브 채널에 어는점·끓는점·열평형·마찰력·보일의 법칙·거리에 따른 빛의 세기·광합성과 호흡·직렬병렬 회로·코일의 자기장·소리의 3요소 등
+            <b>중학교 단원 실험 시연 영상</b>이 3~8분 길이로 올라와 있습니다. 센서별 사용·보정 안내(온도·CO₂·산소·pH), 그래프 분석 프로그램 사용법, 지능형과학실 ON 연동(교사편·학생편)까지 갖춰져 있고요.<br><br>
+            다른 업체가 PDF 자료집 중심인 것과 달리 <b>버니어는 영상이 매뉴얼 역할</b>을 합니다. 종이 읽기보다 보고 따라 하는 쪽이 편한 선생님께는 오히려 진입이 빠릅니다.
+            「강사 참고 노트」 탭에 중학교용으로 골라 정리해 두었습니다.
+          </div>
+        </details>
         <details class="d p"><summary>Graphical Analysis가 직관적, 다기기 지원</summary>
           <div class="dbody">전용 분석 앱 <b>Graphical Analysis</b>가 화면 구성이 단순해 처음 쓰는 학생도 헤매지 않습니다. <b>Windows·macOS·크롬북·iOS·안드로이드</b>를 모두 지원해 학교 기기가 무엇이든 대응됩니다. 크롬북 학교에서 특히 유리한 부분입니다.</div>
         </details>
@@ -471,8 +526,8 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
         </details>
 
         <div class="vlabel c">단점</div>
-        <details class="d c"><summary>국내 중학교용 한글 수업자료가 부족</summary>
-          <div class="dbody">본사 실험 라이브러리는 방대하지만 대부분 <b>영문이고 미국 교육과정 기준</b>입니다. 국내 중학교 단원·성취기준에 맞춰 정리된 한글 매뉴얼은 이지메이커·사이언스큐브·파스코에 비해 적어, <b>교사가 직접 재구성해야 하는 부담</b>이 생깁니다. 센서를 처음 도입하는 학교에는 이 점이 가장 큰 진입 장벽입니다.</div>
+        <details class="d c"><summary>문서형 한글 자료집은 없음 — 영상을 찾아 봐야 함</summary>
+          <div class="dbody">다른 세 업체처럼 <b>성취기준·절차·활동지가 묶인 PDF 자료집</b>은 국내에 없습니다. 영상은 많지만 제목만으로 원하는 실험을 찾아야 하고, 학생용 활동지는 교사가 만들어야 합니다. 본사 실험 라이브러리는 영문·미국 교육과정 기준입니다. 인쇄물로 나눠 주는 수업 흐름을 선호하는 학교라면 이 점을 감안해야 합니다.</div>
         </details>
         <details class="d c"><summary>단가가 높아 모둠 보급에 큰 예산 필요</summary>
           <div class="dbody">무선 센서가 <b>20.7만~139만원</b>대입니다. 7모둠 기준으로 한 종류를 갖추는 데만 145만원 이상이 들어, 일반 교구 예산에서는 전 모둠 보급이 어렵습니다.</div>
@@ -488,14 +543,11 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
 
     <div class="note info">
       <b>예산 규모별 판단 기준</b><br>
-      · <b>지능형 과학실 구축 등 고예산(1천만원 이상)</b> — 사이언스큐브 무선, 파스코를 우선 검토. 정밀도와 확장성이 확보되고, 두 업체 모두 중학교 실험 매뉴얼이 갖춰져 있어 도입 후 활용까지 이어집니다.<br>
+      · <b>지능형 과학실 구축 등 고예산(1천만원 이상)</b> — 사이언스큐브 무선, 파스코, 버니어를 우선 검토. 정밀도와 확장성이 확보되고, 세 업체 모두 중학교 실험 자료(문서 또는 영상)가 갖춰져 있어 도입 후 활용까지 이어집니다.<br>
       · <b>400만원 안팎의 일반 교구 예산</b> — 전 모둠 보급이 목표라면 이지메이커 비중을 높이고, 분석 기능이 필요한 핵심 센서만 사이언스큐브 무선으로 확보하는 혼합 구성이 현실적입니다.<br>
       · <b>센서가 전무한 학교</b> — 센서가 없으면 아예 불가능한 실험(압력·힘)부터 확보하고, <b>매뉴얼이 갖춰진 업체</b>를 고르는 편이 활용률이 높습니다. 첫 도입에서 가장 흔한 실패가 "사놓고 안 쓰는 것"입니다.<br>
-      · <b>영재·연구 활동 비중이 높은 학교</b> — 버니어·파스코의 정밀도와 특수 센서 라인업이 유리합니다. 단 버니어는 국내 중학교용 한글 매뉴얼이 적어 교사의 재구성 부담을 감안해야 합니다.
-    </div>
-
-    <div class="note">
-      <b>같은 종류의 센서를 두 업체에서 나눠 사지 마세요.</b> 프로그램이 달라 학생 안내가 두 배가 되고, 데이터 형식이 달라 모둠 간 비교가 어려워집니다. 센서 <b>종류 단위로 업체를 배정</b>하는 편이 운용이 단순합니다.
+      · <b>영재·연구 활동 비중이 높은 학교</b> — 두 방향이 있습니다. <b>정밀도·특수 센서</b>가 필요하면 버니어·파스코가 유리합니다(버니어는 영상은 풍부하나 문서형 자료집이 없어 활동지는 교사가 제작).
+      반대로 <b>탐구 설계의 자유도</b>가 목표라면 이지메이커가 오히려 적합합니다 — 블록 코딩으로 <b>수집 주기·조건·데이터 형식을 학생이 직접 정하고</b>, 센서를 조합해 자기만의 측정 장치를 만드는 과정 자체가 탐구가 되기 때문입니다. 정해진 실험을 정밀하게 재현할지, 실험 자체를 설계하게 할지에 따라 갈립니다.
     </div>
   </div>
 </section>
@@ -693,6 +745,13 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
             <button data-m="cheap">가성비 우선</button>
             <button data-m="premium">정밀도 우선</button>
           </div>
+          <div class="seglabel">한 업체로만</div>
+          <div class="seg" id="modeseg2">
+            <button data-m="only_ez" class="v-ez">이지메이커</button>
+            <button data-m="only_sc" class="v-sc">사이언스큐브</button>
+            <button data-m="only_vn" class="v-vn">버니어</button>
+            <button data-m="only_ps" class="v-ps">파스코</button>
+          </div>
           <div style="font-size:12.3px;color:var(--sub);margin-top:6px" id="modedesc">
             센서마다 국내 두 업체 중 유리한 쪽을 자동 선택합니다. 같은 종류는 한 업체로 통일합니다.
           </div>
@@ -719,9 +778,22 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
         <div style="font-size:12.3px;color:var(--sub)" id="rbudget">예산 대비 0%</div>
         <div id="rbody"><div class="empty">수업을 선택하면<br>구매 계획이 나타납니다</div></div>
         <div class="btnrow">
-          <button class="btn primary" onclick="window.print()">인쇄 · PDF 저장</button>
+          <button class="btn primary" onclick="downloadSettlementCSV()">정산서 CSV 내려받기</button>
           <button class="btn" onclick="copyPlan()">목록 복사</button>
+          <button class="btn" onclick="window.print()">인쇄 · PDF</button>
         </div>
+        <details class="d" style="margin-top:10px">
+          <summary>정산서 CSV는 어떤 양식인가요?</summary>
+          <div class="dbody">
+            서울시교육청 <b>「지능형 과학실 환경 구축 사업 정산서」</b>의 <b>나. 사업별 집행 내역</b> 표와 같은 9열입니다.<br>
+            <span style="font-size:11.8px">구분 · 항목 · 품명 · 규격, 세부 산출 내역 · 단가(천원) · 수량 · 지출액(천원) · 재원 · 비고</span><br><br>
+            · 단가와 지출액은 양식대로 <b>천원 단위</b>입니다 (220,000원 → 220).<br>
+            · 구분은 <b>필수</b>, 항목은 <b>⑥AI수업기자재</b>, 재원은 <b>교육청</b>으로 채워 둡니다. 학교 상황에 맞게 고치세요.<br>
+            · 비고에 업체·모델명·S2B 물품번호를 넣어 두었습니다.<br>
+            · 정산서 엑셀을 열고 13행부터 붙여 넣으시면 됩니다. <b>소계 행은 양식의 수식이 계산</b>하니 따로 넣지 않았습니다.<br>
+            · 이미 보유로 제외한 항목과 미취급 항목은 들어가지 않습니다.
+          </div>
+        </details>
       </div>
     </div>
   </div>
@@ -828,7 +900,38 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
       </div>
     </div>
 
-    <h3>5. 자주 나오는 발주 실수</h3>
+    <h3>5. 버니어 영상 모음 — 중학교용으로 골라 정리</h3>
+    <p style="font-size:13.5px;margin:0 0 10px;line-height:1.7">
+      국내 총판 <b>한국과학(KoreaScientifics)</b> 유튜브 채널 90여 편 중 중학교 수업과 연수에 바로 쓸 만한 것을 골랐습니다.
+      실험 영상은 3~8분이고 모두 한국어 자막·설명입니다. 연수에서 실물 시연이 어려운 센서는 이 영상으로 대신하기 좋습니다.
+      <a href="https://www.youtube.com/@koreascientifics9569/videos" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600">채널 전체 보기 ↗</a>
+    </p>
+
+    <details class="d" open>
+      <summary>처음 쓸 때 — 연결·프로그램 사용법 (7편)</summary>
+      <div class="dbody vidlist" id="vid-start"></div>
+    </details>
+    <details class="d">
+      <summary>중학교 실험 시연 — 이 가이드의 수업과 연결 (16편)</summary>
+      <div class="dbody vidlist" id="vid-lesson"></div>
+    </details>
+    <details class="d">
+      <summary>센서별 사용·보정 안내 (12편)</summary>
+      <div class="dbody vidlist" id="vid-sensor"></div>
+    </details>
+    <details class="d">
+      <summary>지능형과학실 ON 연동 (4편)</summary>
+      <div class="dbody vidlist" id="vid-on"></div>
+    </details>
+    <details class="d">
+      <summary>다른 선생님이 만든 영상 (2편)</summary>
+      <div class="dbody vidlist" id="vid-teacher"></div>
+    </details>
+    <div class="note" style="margin:10px 0 16px;font-size:12.6px">
+      영상 링크는 2026-09-17에 전부 열리는지 확인했습니다. 유튜브 영상은 삭제·비공개 전환될 수 있으니, 연수 당일 쓸 영상은 <b>전날 한 번 더 열어 보시길</b> 권합니다.
+    </div>
+
+    <h3>6. 자주 나오는 발주 실수</h3>
     <ul style="font-size:14px">
       <li>이지메이커 <b>「공기압 센서」와 「기압 센서」는 다른 제품</b> — 주사기 연결용은 공기압</li>
       <li>이지메이커 <b>나노 센서는 나노보드와 배터리가 별도</b> — 센서만 발주하면 작동하지 않음</li>
@@ -846,6 +949,7 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
     <table style="min-width:520px">
       <thead><tr><th style="width:96px">날짜</th><th>변경 내용</th></tr></thead>
       <tbody>
+        <tr><td class="name">2026-09-17</td><td style="white-space:normal"><b>애플 디자인으로 재조판.</b> 버니어 매뉴얼 평가를 <b>충실</b>로 정정하고 한국과학 채널 <b>한국어 영상 41편</b> 모음 신설. 구매 계획에 <b>한 업체로만</b> 프리셋 4종과 <b>정산서 양식 CSV 내려받기</b> 추가. 중복 구매 권고를 최상단으로, 고예산 기준에 버니어 추가, 영재·연구 항목에 이지메이커(탐구 자유도) 병기. 제작자 표기</td></tr>
         <tr><td class="name">2026-08-25</td><td style="white-space:normal"><b>이지메이커 보드 구매 안내</b> 추가(센서만 사면 안 되는 이유·포트별 동시 연결 수). <b>사이언스큐브 유선 라인 제외</b>(인터페이스 별도 구매 필요). 업데이트 이력 신설</td></tr>
         <tr><td class="name">2026-08-19</td><td style="white-space:normal">클래스보드 『기초·측정 방법』 센서 19종 쪽수, 사이언스큐브 <b>S2B 물품번호</b> 23종, 사례집 <b>신판(따라잡기·245쪽)</b> 쪽수 병기. 자외선 항목 정정(조도센서 겸용)</td></tr>
         <tr><td class="name">2026-08-19</td><td style="white-space:normal">구매 계획에서 <b>보유 품목 제외</b> 기능, 실험별 <b>매뉴얼 위치</b> 표시(자료집 쪽수·파스코 링크)</td></tr>
@@ -910,8 +1014,9 @@ footer#app-credit{width:100%;box-sizing:border-box;margin:2.5rem 0 0;padding:14p
 
 <footer id="app-credit">
 중학교 과학 센서 구매 가이드 · 디지털 탐구 도구 활용 교원연수 강사용 참고 자료<br>
-<b>© 2026 · CC BY-NC 4.0</b> — 가격은 조사 시점 기준이며 <b>견적서가 우선</b>합니다<br>
-<span style="font-size:11px">최종 업데이트: <b>2026-08-25</b> · 가격 출처: 각 사 공식몰 및 국내 총판 카탈로그 표시가</span>
+<b>제작 · 해누리중학교 조승재</b> &nbsp;·&nbsp; © 2026 · CC BY-NC 4.0<br>
+가격은 조사 시점 기준이며 <b>견적서가 우선</b>합니다<br>
+<span style="font-size:11px">최종 업데이트: <b>2026-09-17</b> · 가격 출처: 각 사 공식몰 및 국내 총판 카탈로그 표시가</span>
 </footer>
 
 <script>
@@ -960,6 +1065,82 @@ const CB=[
  ['DIY-B (용액 전도도)',48,48],['미세먼지',54,52],['전류',58,56],['전압',64,60],
  ['자기장',68,64],['무게',74,70],['공기압',78,74],['pH',84,78],['고온',88,82],['이산화 탄소',94,88]
 ];
+/* 버니어 한국어 영상 — 한국과학(KoreaScientifics) 채널, 2026-09-17 전부 유효 확인 */
+const YT='https://www.youtube.com/watch?v=';
+const VIDS={
+ start:[
+  ['RdwPnxZqepA','무선 센서 연결','가장 먼저 볼 영상'],
+  ['9YK0tJ7kZvg','그래프 분석 프로그램 사용법 (1) 메뉴',''],
+  ['Ms7EyA2tb8g','그래프 분석 프로그램 사용법 (2) 세부 기능과 분석 방법',''],
+  ['TsWXJIYZZBs','무선 온도 센서 소개 및 선택 가이드',''],
+  ['0YL2gE-TeXo','버니어 무선 센서 소개 · 지능형과학실ON · 버니어ON','전체 그림'],
+  ['VCTpW317ecU','그래프 분석 프로그램 데이터 공유 가이드','모둠 데이터 모으기'],
+  ['MGPBl_bZmsM','무선 센서 원격 데이터 수집 방법','노트북 없이 센서만 두고 기록']
+ ],
+ lesson:[
+  ['ULH1CmhG5q4','어는점 실험 (무선 MBL 온도 센서)','중1 상태 변화'],
+  ['qVVwyV47uDk','끓는점 (무선 MBL 온도 센서)','중1 상태 변화'],
+  ['XoG2szqiC9U','열평형','중1 열'],
+  ['m9Z0NnwUYIs','복사 평형','중3 날씨와 기후'],
+  ['WCySC_yblgM','마찰력 실험 (무선 MBL 힘가속도 센서)','중1 힘의 작용 · 조회 6천'],
+  ['PvOPFsPWAqE','부력의 원리 (아르키메데스) — 힘가속도 센서','중1 힘의 작용'],
+  ['d7h1XhnquZg','보일의 법칙 — 기체압력 센서','중1 기체의 성질'],
+  ['eNW5eDxuBVQ','보일·샤를의 법칙 — 기체압력 + 온도 센서','중1 기체의 성질'],
+  ['1MN0SSIuUy8','거리에 따른 빛의 세기 (역제곱 법칙) — 조도색도 센서','중2 별과 우주'],
+  ['2CsliaG7Np4','소리의 3요소 (크기·높낮이·맵시) — 소리 센서','중2 빛과 파동'],
+  ['E6WAjnNxdFY','광합성과 호흡 — 산소 + 이산화탄소 센서','중2 식물과 에너지'],
+  ['pyjg6oyH5sk','직렬·병렬 회로 — 전류 + 전압 센서','중2 전기와 자기'],
+  ['tUu_oFeqPcI','코일 내부의 자기장 — 3축 자기장 센서','중2 전기와 자기'],
+  ['bOGANZnQtp0','용액의 전기전도도 — 전도도 센서','전해질 · 비전해질'],
+  ['3HK5DVXMcSQ','위치에너지와 운동에너지 — 운동 센서','중3 역학적 에너지'],
+  ['vDc1f8SZZPc','자유낙하 (중력가속도 측정) — 포토게이트','중3 운동 · 조회 5.5천']
+ ],
+ sensor:[
+  ['3ThhztxwPtI','온도 센서 사용 가이드 (GDX-TMP)',''],
+  ['Pvc1lp4M4ww','기체압력 센서 (GDX-GP)',''],
+  ['Llc_YmZuZLg','힘가속도 센서 (GDX-FOR)',''],
+  ['3qtUpE3pZZE','조도색도 센서 (GDX-LC)',''],
+  ['Sf9ChtCk4Is','소리 센서 (GDX-SND)',''],
+  ['4lD4KBuUPi0','자기장 센서 (GDX-3MG)',''],
+  ['r9IaQImCOdU','운동 센서 (GDX-MD)',''],
+  ['I-Yj1QPVED4','포토게이트 (GDX-VPG)',''],
+  ['jGXUiGW0RFw','심박측정 센서 (GW-HR)',''],
+  ['tFw3WO2DUOs','이산화탄소 센서 사용 및 보정 (GDX-CO2)','보정 필수'],
+  ['CK2ZtB4q3ok','산소 센서 사용 및 보정 (GDX-O2)','보정 필수'],
+  ['82IhpUs67oY','pH 센서 보정 안내','보정 필수']
+ ],
+ on:[
+  ['qKt__40tNsc','수업 개설 안내 — 교사편',''],
+  ['AWr3SMaZ9y4','실험 결과 전송 안내 — 학생편',''],
+  ['3Uw0eURcmdI','결과 보고서 작성 및 평가 — 학생·교사편',''],
+  ['vxicXBNv75A','버니어ON 추가 기능 (유선 센서 · 파일 전송)','']
+ ],
+ teacher:[
+  ['2Iszo81vvZs','MBL 온도센서 비교 & 지능형과학실 ON 업로드 (파스코·버니어·사이언스큐브)','보또보과학 · 3사 비교'],
+  ['aC9nlrvI-nc','버니어 센서로 광합성(호흡) 실험하기','강인숙 선생님']
+ ]
+};
+
+/* 정산서 CSV용 — 규격 설명 · 모델명 · 파스코 S2B (카탈로그에서 위치가 명확한 것만) */
+const SPEC={temp:'온도 측정 센서',humid:'온도·습도 동시 측정 센서',volt:'전압 측정 센서',curr:'전류 측정 센서',
+ light:'조도(밝기) 측정 센서',gaspress:'기체 압력 측정 센서, 주사기 연결형',baro:'대기압 측정 센서',
+ force:'힘·가속도 측정 센서',mass:'무게(질량) 측정 센서',co2:'이산화탄소 농도 측정 센서',o2:'산소 농도 측정 센서',
+ ph:'pH 측정 센서',sound:'소리(음량) 측정 센서',mag:'자기장 측정 센서',dist:'거리·운동 측정 센서',
+ photogate:'포토게이트(통과 시간 측정)',heart:'심박수 측정 센서',hitemp:'고온(열전쌍) 측정 센서',
+ cond:'전도도 측정 센서',dust:'미세먼지 농도 측정 센서',salt:'염도 측정 센서',do:'용존산소 측정 센서',
+ uv:'자외선 측정(조도색도 센서 겸용)',rad:'방사선 측정 센서'};
+const MODEL={ // [사이언스큐브 무선, 파스코]
+ temp:['WL 100T','PS-3201'],humid:['WL 117H',''],volt:['WL 101V','PS-3211A'],curr:['WL 102C','PS-3212'],
+ light:['WL 112LC','PS-3213'],gaspress:['WL 103P','PS-3203'],baro:['WL 134AP',''],force:['WL 105F','PS-3202'],
+ co2:['WL 111CO2','PS-3208'],o2:['WL 113O2','PS-3217'],ph:['WL 104PH','PS-3204'],sound:['WL 124S','PS-3227'],
+ mag:['WL 108MG','PS-3221'],dist:['WL 106M','PS-3219'],photogate:['WL 120PG','PS-3225'],heart:['WL 129HR','PS-3206'],
+ hitemp:['WL 123TC','PS-4256'],cond:['WL 107EC','PS-3210A'],dust:['WL 115PM','PS-3226'],salt:['WL 119S',''],
+ do:['WL 118DO','PS-3224'],uv:['WL 112LC','PS-3213'],rad:['WL 126R','PS-3238']};
+const S2B_PS={temp:'202602056835887',ph:'202602056836323',force:'202602056836255',heart:'202302245874893',
+ cond:'202302245875158',gaspress:'202302245874168',co2:'202302245875008',light:'202302245875579',
+ uv:'202302245875579',mag:'202302245878028',rad:'202402268195504',photogate:'202302245878212',
+ dust:'202502250883463',sound:'202302245878386'};
+
 /* 사이언스큐브 무선센서 S2B 물품번호 (2026 카탈로그 Ver9.0) */
 const S2B={temp:'201811098011361',humid:'202108102792867',volt:'201811098011854',
  curr:'201811098011895',light:'202107142649889',gaspress:'201811098011510',
@@ -1061,6 +1242,15 @@ function renderPrices(filter){
 renderPrices('');
 document.getElementById('fq2').oninput=e=>renderPrices(e.target.value.trim());
 
+/* 버니어 영상 목록 */
+Object.entries(VIDS).forEach(([k,list])=>{
+  const el=document.getElementById('vid-'+k); if(!el) return;
+  el.innerHTML=list.map(([id,t,tag])=>
+    '<a class="vid" href="'+YT+id+'" target="_blank" rel="noopener">'+
+    '<img loading="lazy" src="https://i.ytimg.com/vi/'+id+'/mqdefault.jpg" alt="">'+
+    '<span class="vt">'+t+(tag?'<small>'+tag+'</small>':'')+'</span><span class="vgo">▶</span></a>').join('');
+});
+
 /* 클래스보드 기초 측정법 표 */
 document.getElementById('cbtbody').innerHTML=CB.map(([n,a,b])=>
   '<td class="name">'+n+'</td><td class="num">'+a+'쪽</td><td class="num">'+b+'쪽</td>')
@@ -1095,16 +1285,20 @@ document.getElementById('s2btbody').innerHTML=SENSORS
 
 /* ---------- 생성기 ---------- */
 let mode='mix';
-document.querySelectorAll('#modeseg button').forEach(b=>{
+document.querySelectorAll('#modeseg button, #modeseg2 button').forEach(b=>{
   b.onclick=()=>{
-    document.querySelectorAll('#modeseg button').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('#modeseg button, #modeseg2 button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on'); mode=b.dataset.m;
     picks={};   // 프리셋을 바꾸면 개별 선택은 초기화
     document.getElementById('modedesc').textContent={
       mix:'센서마다 국내 두 업체 중 유리한 쪽을 자동 선택합니다. 같은 종류는 한 업체로 통일합니다.',
       wireless:'보드·배선 없이 쓰는 무선 제품을 우선합니다. 관리가 단순한 대신 총액이 올라갑니다.',
       cheap:'최저가 라인을 우선합니다. 이지메이커 유선 비중이 높아져 블록 코딩 준비가 필요합니다.',
-      premium:'파스코·버니어 등 정밀도 우선 제품을 먼저 배치합니다. 고예산 사업용 구성입니다.'
+      premium:'파스코·버니어 등 정밀도 우선 제품을 먼저 배치합니다. 고예산 사업용 구성입니다.',
+      only_ez:'이지메이커 한 업체로만 구성합니다. 유선을 우선하고, 유선이 없는 센서는 나노(무선)로 채웁니다. 이지메이커에 없는 센서는 미취급으로 표시됩니다.',
+      only_sc:'사이언스큐브 무선으로만 구성합니다. 보드·인터페이스 없이 전원만 켜면 연결됩니다. 사이언스큐브에 없는 센서는 미취급으로 표시됩니다.',
+      only_vn:'버니어 무선으로만 구성합니다. Graphical Analysis 한 프로그램으로 통일됩니다. 버니어에 없는 센서는 미취급으로 표시됩니다.',
+      only_ps:'파스코 무선으로만 구성합니다. SPARKvue 한 프로그램으로 통일됩니다. 파스코에 없는 센서는 미취급으로 표시됩니다.'
     }[mode];
     calc();
   };
@@ -1185,8 +1379,11 @@ const ORDER={
   mix:[0,2,1,3,4],
   wireless:[2,1,4,3],
   cheap:[0,1,2,3,4],
-  premium:[4,3,2,1,0]
+  premium:[4,3,2,1,0],
+  // 한 업체로만 — 그 업체에 없는 센서는 결과에 '미취급'으로 표시
+  only_ez:[0,1], only_sc:[2], only_vn:[3], only_ps:[4]
 };
+const ONLY_VENDOR={only_ez:'ez',only_sc:'sc',only_vn:'vn',only_ps:'ps'};
 
 let lastPlan=null;
 let scales={};   // 센서key -> 'full' | 'half' | 'demo'
@@ -1233,6 +1430,13 @@ function calc(){
     if(picks[key]!==undefined && price[picks[key]]!==null){ chosen=picks[key]; manual=true; }
     if(chosen===null){
       for(const idx of ORDER[mode]){ if(price[idx]!==null){ chosen=idx; break; } }
+    }
+    // '한 업체로만' 모드에서 그 업체가 이 센서를 취급하지 않으면 미취급 항목으로 남김
+    if(chosen===null && ONLY_VENDOR[mode]){
+      const sets0=(scales[key]||'full')==='full'?groups:(scales[key]==='half'?Math.ceil(groups/2):1);
+      items.push({key,ek:key,name:S[1],line:VNAME[ONLY_VENDOR[mode]]+' 미취급',qty:per*sets0,unit:0,sum:0,
+        v:ONLY_VENDOR[mode],sc:scales[key]||'full',sets:sets0,chosen:null,price,manual:false,na:true});
+      return;
     }
     if(chosen===null){
       for(let i=0;i<price.length;i++){ if(price[i]!==null){ chosen=i; break; } }
@@ -1288,6 +1492,18 @@ function calc(){
         ' <span class="mini">이미 보유</span><br><span class="lmeta" style="font-size:11.5px">'+
         it.qty+'개 × '+it.unit.toLocaleString('ko-KR')+' — 구매 목록에서 제외</span></span>'+
         '<span class="rv">'+xbtn+'</span></div>';
+      return;
+    }
+    if(it.na){
+      // 한 업체로만 모드에서 미취급 — 다른 업체로 채울 수 있게 셀렉트만 제공
+      const avail=LINE.filter(l=>it.price[l.i]!==null);
+      const opts='<option value="" selected>다른 업체에서 채우기…</option>'+avail.map(l=>
+        '<option value="'+l.i+'">'+l.label+' · '+it.price[l.i].toLocaleString('ko-KR')+'원</option>').join('');
+      html+='<div class="rline na"><span class="rn">'+it.name+
+        ' <span class="mini warn">'+it.line+'</span><br><span class="lmeta" style="font-size:11.5px">'+
+        it.qty+'개 필요 — 이 업체에는 해당 센서가 없습니다</span>'+
+        '<select class="vendorsel" onchange="setPick(\''+it.key+'\',this.value)">'+opts+'</select></span>'+
+        '<span class="rv" style="color:var(--warn)">—</span></div>';
       return;
     }
     let sb='', vsel='';
@@ -1346,6 +1562,40 @@ function calc(){
 
 document.getElementById('budget').oninput=calc;
 document.getElementById('groups').oninput=calc;
+
+/* 지능형 과학실 사업 정산서 「나. 사업별 집행 내역」 양식 CSV */
+function downloadSettlementCSV(){
+  if(!lastPlan||!lastPlan.items.length){ alert('수업을 먼저 선택해 주세요.'); return; }
+  const esc=v=>{ v=String(v??''); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const k=n=>{ const t=n/1000; return Number.isInteger(t)?String(t):String(Math.round(t*100)/100); };
+  const head=['구분','항목','품명','규격, 세부 산출 내역','단가(천원)','수량','지출액(천원)','재원','비고'];
+  const rows=[head];
+  lastPlan.items.forEach(it=>{
+    if(it.na) return;
+    const name=it.name.replace(/<[^>]*>/g,'').trim();
+    let spec='', memo='';
+    if(it.key){
+      const m=MODEL[it.key]||['',''];
+      const model = it.v==='sc'?m[0] : it.v==='ps'?m[1] : '';
+      const s2b = it.v==='sc'?(S2B[it.key]||'') : it.v==='ps'?(S2B_PS[it.key]||'') : '';
+      spec=(SPEC[it.key]||name)+(model?' ('+model+')':'')+(it.line.includes('나노')?' — 나노보드 연결형':it.line.includes('유선')&&it.v==='ez'?' — 메인보드 연결형':'');
+      memo=[it.line, s2b?'S2B '+s2b:''].filter(Boolean).join(' · ');
+    } else {
+      spec = it.ek==='bd_main' ? 'EZON·클래스보드로 센서 데이터를 수집하는 메인보드 (D0~D4·A0·A1·I2C·UART)'
+           : it.ek==='bd_nano' ? '무선 나노 센서 구동용 보드 (센서 1개당 1개)'
+           : it.ek==='bd_batt' ? '나노보드용 일체형 배터리' : '';
+      memo='이지메이커';
+    }
+    rows.push(['필수','⑥AI수업기자재',name,spec,k(it.unit),it.qty,k(it.sum),'교육청',memo]);
+  });
+  const csv='﻿'+rows.map(r=>r.map(esc).join(',')).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const d=new Date(), ds=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  a.download='센서구매_정산서집행내역_'+lastPlan.groups+'모둠_'+ds+'.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
 
 function copyPlan(){
   if(!lastPlan){ alert('수업을 먼저 선택해 주세요.'); return; }
