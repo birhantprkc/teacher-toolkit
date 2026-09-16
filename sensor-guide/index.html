@@ -5,202 +5,216 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>중학교 과학 센서 구매 가이드 — 디지털 탐구 도구 연수 강사용</title>
 <style>
-/* ============================================================
-   Apple 디자인 언어 — 단일 Action Blue, 그림자 0, 헤어라인, 필 버튼
-   ============================================================ */
+/* ================================================================
+   Apple iPhone 제품·구매 페이지 문법 (apple.md 기준)
+   · 전폭 타일 교차(white ↔ parchment ↔ near-black) — 색 변화가 곧 구분선
+   · 단일 Action Blue #0066cc · 그림자 0 · 헤어라인 · 필 CTA · 설정 칩
+   · 글로벌 네비(검정 44px) + 반투명 서브네비(태그라인 + 링크 + 상시 CTA)
+   · 하단 고정 바(합계 + Add to Bag 자리에 정산서 CSV)
+   ================================================================ */
 :root{
-  --primary:#0066cc; --primary-focus:#0071e3; --primary-soft:#f0f5fb;
-  --ink:#1d1d1f; --sub:#6e6e73; --sub-48:#7a7a7a;
+  --primary:#0066cc; --primary-focus:#0071e3; --primary-on-dark:#2997ff; --primary-soft:#f0f5fb;
+  --ink:#1d1d1f; --sub:#6e6e73; --sub-48:#7a7a7a; --muted-dark:#cccccc;
   --canvas:#fff; --parchment:#f5f5f7; --pearl:#fafafc;
+  --tile-1:#272729; --tile-2:#2a2a2c; --tile-3:#252527;
   --hair:rgba(0,0,0,.08); --hair-solid:#e0e0e0; --divider:#f0f0f0;
   --warn:#bf4800; --bad:#e30000;
-  /* 호환용 별칭 — 기존 클래스가 참조 */
   --accent:var(--primary); --accent-soft:var(--primary-soft);
-  --ok:var(--primary); --line:var(--hair-solid); --card:var(--canvas); --bg:var(--parchment);
+  --ok:var(--primary); --line:var(--hair-solid); --card:var(--canvas); --bg:var(--canvas);
   --ez:var(--ink); --sc:var(--ink); --vn:var(--ink); --ps:var(--ink);
   --r-sm:8px; --r-md:11px; --r-lg:18px; --pill:9999px;
+  --tile:var(--canvas);
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--parchment);color:var(--ink);
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--canvas);color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Pretendard","Malgun Gothic",sans-serif;
-  font-size:15px;line-height:1.47;letter-spacing:-.2px;
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  font-size:15px;line-height:1.47;letter-spacing:-.2px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 b,strong{font-weight:600}
 a{color:var(--primary)}
 button{font-family:inherit}
-button:active,.btn:active,.tab:active{transform:scale(.97)}
+button:active,.btn:active,.tab:active{transform:scale(.96)}
 :focus-visible{outline:2px solid var(--primary-focus);outline-offset:2px}
-.wrap{max-width:1160px;margin:0 auto;padding:0 22px 48px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 22px}
 
-/* ── 글로벌 네비(검정 44px) + 히어로 ── */
+/* ── 글로벌 네비 ── */
 header.top{background:var(--canvas);color:var(--ink);padding:0;margin:0}
-header.top .gnav{background:#000;color:#f5f5f7;font-size:12px;letter-spacing:-.12px;
-  height:44px;line-height:44px;text-align:center;padding:0 16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-header.top .wrap{padding:56px 22px 40px;text-align:center}
-header.top h1{margin:0 0 10px;font-size:clamp(30px,4.6vw,44px);font-weight:600;line-height:1.08;letter-spacing:-.6px}
-header.top p{margin:0;font-size:clamp(17px,2.2vw,21px);font-weight:400;color:var(--sub);letter-spacing:-.2px;line-height:1.3}
-.badge-row{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.badge{background:var(--parchment);color:var(--ink);border:1px solid var(--hair);
-  padding:7px 14px;border-radius:var(--pill);font-size:13px;letter-spacing:-.1px}
+header.top .gnav{background:#000;color:#f5f5f7;font-size:12px;letter-spacing:-.12px;height:44px;line-height:44px;
+  text-align:center;padding:0 16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ── 서브네비(반투명 파치먼트, 고정) ── */
-nav.tabs{position:sticky;top:0;z-index:50;background:rgba(245,245,247,.82);
+/* ── 히어로 타일 (product-tile-light) ── */
+header.top .hero{padding:80px 22px 64px;text-align:center;max-width:980px}
+.eyebrow{font-size:14px;font-weight:600;color:var(--sub);letter-spacing:.2px;margin-bottom:14px;text-transform:uppercase}
+header.top h1{margin:0 0 16px;font-size:clamp(38px,6vw,56px);font-weight:600;line-height:1.07;letter-spacing:-.28px}
+header.top p{margin:0 auto;font-size:clamp(19px,2.4vw,26px);font-weight:400;color:var(--ink);letter-spacing:.1px;line-height:1.3;max-width:820px}
+.brk{display:none}@media(min-width:740px){.brk{display:inline}}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:30px 0 0}
+.badge-row{margin-top:36px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.badge{background:transparent;color:var(--sub);border:1px solid var(--hair);padding:6px 13px;border-radius:var(--pill);font-size:12.5px;letter-spacing:-.1px}
+
+/* ── 서브네비 (sub-nav-frosted) ── */
+nav.tabs{position:sticky;top:0;z-index:50;background:rgba(245,245,247,.8);
   backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
-  border-bottom:1px solid var(--hair);margin-bottom:28px}
-nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 22px;height:52px;align-items:center;scrollbar-width:none}
-nav.tabs .wrap::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;background:none;border:none;padding:8px 14px;font-size:14px;letter-spacing:-.2px;
-  font-weight:400;color:var(--sub);cursor:pointer;border-radius:var(--pill);white-space:nowrap;
-  transition:color .15s,background .15s}
-.tab:hover{color:var(--ink)}
-.tab.on{color:var(--ink);font-weight:600;background:rgba(0,0,0,.05)}
-.panel{display:none;animation:fade .22s}
+  border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);margin:0}
+nav.tabs .wrap{display:flex;align-items:center;gap:14px;height:52px}
+.nav-title{font-size:21px;font-weight:600;letter-spacing:.23px;color:var(--ink);white-space:nowrap;flex:0 0 auto}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;justify-content:flex-end}
+.nav-links::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;background:none;border:none;padding:8px 12px;font-size:14px;letter-spacing:-.22px;font-weight:400;
+  color:var(--ink);opacity:.72;cursor:pointer;border-radius:var(--pill);white-space:nowrap;transition:opacity .15s}
+.tab:hover{opacity:1}
+.tab.on{opacity:1;font-weight:600}
+.nav-cta{flex:0 0 auto;background:var(--primary);color:#fff;border:none;border-radius:var(--pill);padding:7px 15px;
+  font-size:12.5px;letter-spacing:-.12px;cursor:pointer;white-space:nowrap}
+.nav-cta:hover{background:var(--primary-focus)}
+@media(max-width:833px){.nav-title{display:none}.nav-links{justify-content:flex-start}}
+@media(max-width:560px){.nav-cta{display:none}}
+.panel{display:none;animation:fade .25s}
 .panel.on{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* ── 최상단 권고 ── */
-.advice{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;
-  background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);
-  padding:20px 24px;margin-bottom:22px}
-.adv-k{background:var(--ink);color:#fff;font-size:12px;font-weight:600;letter-spacing:-.1px;
-  padding:4px 11px;border-radius:var(--pill);margin-top:2px;white-space:nowrap}
-.adv-b{font-size:15px;line-height:1.6;color:var(--ink)}
-.adv-b b{font-weight:600}
-@media(max-width:640px){.advice{grid-template-columns:1fr;gap:10px}}
+/* ── 전폭 타일 트릭: 내용 폭은 .wrap, 배경만 뷰포트 끝까지 ── */
+.tile{background:var(--tile);box-shadow:0 0 0 100vmax var(--tile);clip-path:inset(0 -100vmax)}
+.panel>.card,.advice,.credits{border:none;border-radius:0;margin:0;padding:64px 0}
+.panel>.card{background:var(--tile);box-shadow:0 0 0 100vmax var(--tile);clip-path:inset(0 -100vmax)}
+.panel>.card:nth-of-type(even){--tile:var(--parchment)}
+.panel>.card:nth-of-type(odd){--tile:var(--canvas)}
+@media(max-width:735px){.panel>.card,.advice,.credits{padding:48px 0}}
 
-/* ── 카드 ── */
-.card{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);
-  padding:28px 28px 26px;margin-bottom:20px}
-.card h2{margin:0 0 6px;font-size:28px;font-weight:600;letter-spacing:-.5px;line-height:1.15}
-.card h3{margin:30px 0 10px;font-size:19px;font-weight:600;letter-spacing:-.35px;line-height:1.25}
-.card > p.lead{margin:0 0 20px;color:var(--sub);font-size:17px;line-height:1.47;letter-spacing:-.3px}
-.note{background:var(--parchment);border:1px solid transparent;border-radius:var(--r-md);
-  padding:14px 16px;font-size:14px;line-height:1.55;margin:16px 0;color:var(--ink)}
-.note.info{background:var(--primary-soft)}
+/* ── 최상단 권고 — 다크 타일 (environment-quote-card) ── */
+.advice{--tile:var(--tile-1);background:var(--tile);box-shadow:0 0 0 100vmax var(--tile);clip-path:inset(0 -100vmax);
+  color:#fff;display:grid;grid-template-columns:1fr;gap:16px;text-align:center;padding:64px 0}
+.adv-k{justify-self:center;background:transparent;color:var(--primary-on-dark);font-size:14px;font-weight:600;letter-spacing:.2px;
+  padding:0;border-radius:0;margin:0;text-transform:uppercase}
+.adv-b{font-size:clamp(19px,2.3vw,24px);font-weight:400;line-height:1.4;color:#fff;max-width:880px;margin:0 auto;letter-spacing:.05px}
+.adv-b b{font-weight:600;color:#fff}
+
+/* ── 카드 내부 타이포 ── */
+.card h2{margin:0 0 10px;font-size:clamp(28px,3.6vw,40px);font-weight:600;letter-spacing:-.2px;line-height:1.1}
+.card h3{margin:44px 0 14px;font-size:24px;font-weight:600;letter-spacing:-.37px;line-height:1.2}
+.card > p.lead{margin:0 0 28px;color:var(--sub);font-size:19px;line-height:1.42;letter-spacing:.02px;max-width:880px}
+.note{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);padding:18px 20px;font-size:14.5px;line-height:1.55;margin:18px 0;color:var(--ink)}
+.panel>.card:nth-of-type(even) .note{background:var(--canvas)}
+.panel>.card:nth-of-type(odd) .note{background:var(--parchment);border-color:transparent}
+.note.info{background:var(--primary-soft)!important;border-color:transparent}
 .note b{font-weight:600}
 
-/* ── 업체 카드 ── */
-.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.vcard{border:1px solid var(--hair);border-radius:var(--r-lg);padding:22px 22px 18px;background:var(--canvas)}
-.vcard .vname{font-weight:600;font-size:21px;letter-spacing:-.4px;margin-bottom:2px}
-.vcard .vtag{font-size:13px;color:var(--sub);margin-bottom:14px}
-.vcard .vprice{font-size:14px;background:var(--parchment);border-radius:var(--r-md);padding:10px 12px;margin-bottom:14px;line-height:1.5}
+/* 안쪽 유틸리티 카드(중첩 .card) — store-utility-card */
+.card .card{background:var(--canvas)!important;border:1px solid var(--hair)!important;border-radius:var(--r-lg)!important;
+  padding:24px!important;margin:12px 0 20px!important;box-shadow:none!important;clip-path:none!important}
+
+/* ── 업체 카드 (store-utility-card) ── */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px}
+.vcard{border:1px solid var(--hair);border-radius:var(--r-lg);padding:24px;background:var(--canvas)}
+.vcard .vname{font-weight:600;font-size:24px;letter-spacing:-.37px;margin-bottom:2px}
+.vcard .vtag{font-size:13px;color:var(--sub);margin-bottom:16px}
+.vcard .vprice{font-size:14.5px;background:var(--parchment);border-radius:var(--r-md);padding:12px 14px;margin-bottom:16px;line-height:1.5}
 .vcard ul{margin:0 0 10px;padding-left:17px;font-size:14px}
-.vcard ul li{margin-bottom:4px}
-.vlabel{font-size:12px;font-weight:600;letter-spacing:.2px;margin:14px 0 6px;color:var(--sub);text-transform:uppercase}
+.vlabel{font-size:12px;font-weight:600;letter-spacing:.2px;margin:16px 0 8px;color:var(--sub);text-transform:uppercase}
 .vlabel.p{color:var(--primary)} .vlabel.c{color:var(--sub-48)}
 .bar-ez,.bar-sc,.bar-vn,.bar-ps{border-top:1px solid var(--hair)}
 
 /* ── 표 ── */
-.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--hair);
-  border-radius:var(--r-md);background:var(--canvas)}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--hair);border-radius:var(--r-lg);background:var(--canvas)}
 table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px;letter-spacing:-.15px}
-th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--divider);white-space:nowrap;vertical-align:top}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--divider);white-space:nowrap;vertical-align:top}
 th{background:var(--parchment);font-weight:600;font-size:12.5px;color:var(--sub);position:sticky;top:0;letter-spacing:-.1px}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover{background:var(--pearl)}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 td.name{white-space:normal;min-width:120px;font-weight:600}
-
 #ptable{table-layout:fixed;min-width:760px}
-#ptable th,#ptable td{padding:11px 12px;overflow:hidden;text-overflow:ellipsis}
+#ptable th,#ptable td{padding:12px 12px;overflow:hidden;text-overflow:ellipsis}
 #ptable th.num,#ptable td.num{padding-right:14px}
 #ptable .sep{border-left:1px solid var(--divider)}
 #ptable thead th{vertical-align:bottom;line-height:1.35;white-space:normal;color:var(--ink)}
 #ptable th small{display:block;font-weight:400;font-size:11px;color:var(--sub);margin-top:1px}
 
 /* ── 토글 ── */
-details.d{border:1px solid var(--hair);border-radius:var(--r-md);margin-bottom:8px;background:var(--canvas)}
-details.d[open]{background:var(--canvas)}
-details.d>summary{cursor:pointer;padding:12px 14px;font-size:14.5px;font-weight:400;letter-spacing:-.2px;
-  list-style:none;display:flex;gap:10px;align-items:flex-start;line-height:1.45;color:var(--ink)}
+details.d{border:1px solid var(--hair);border-radius:var(--r-lg);margin-bottom:10px;background:var(--canvas)}
+details.d>summary{cursor:pointer;padding:16px 18px;font-size:15px;font-weight:400;letter-spacing:-.22px;list-style:none;
+  display:flex;gap:12px;align-items:flex-start;line-height:1.45;color:var(--ink)}
 details.d>summary::-webkit-details-marker{display:none}
-details.d>summary::before{content:"+";flex:0 0 auto;width:18px;height:18px;margin-top:2px;
-  border-radius:50%;background:var(--parchment);color:var(--sub);font-size:14px;font-weight:400;
-  display:flex;align-items:center;justify-content:center;line-height:1}
+details.d>summary::before{content:"+";flex:0 0 auto;width:22px;height:22px;margin-top:1px;border-radius:50%;
+  background:var(--parchment);color:var(--sub);font-size:16px;font-weight:400;display:flex;align-items:center;justify-content:center;line-height:1}
 details.d[open]>summary{font-weight:600}
 details.d[open]>summary::before{content:"\2212";background:var(--primary);color:#fff}
 details.d.p>summary::before,details.d.c>summary::before{background:var(--parchment);color:var(--sub)}
 details.d[open].p>summary::before,details.d[open].c>summary::before{background:var(--primary);color:#fff}
-details.d .dbody{padding:0 14px 14px 42px;font-size:14px;color:var(--sub);line-height:1.6;letter-spacing:-.15px}
+details.d .dbody{padding:0 18px 18px 52px;font-size:14.5px;color:var(--sub);line-height:1.6;letter-spacing:-.15px}
 details.d .dbody b{color:var(--ink)}
 
 /* ── 매뉴얼 배지 ── */
-.manual{border-radius:var(--r-md);padding:11px 13px;font-size:13px;line-height:1.55;margin-bottom:14px;
-  background:var(--parchment);border:1px solid transparent}
-.manual.good,.manual.mid{background:var(--parchment)}
+.manual{border-radius:var(--r-md);padding:12px 14px;font-size:13px;line-height:1.55;margin-bottom:16px;background:var(--parchment);border:1px solid transparent}
 .manual .mtitle{font-weight:600;font-size:12px;letter-spacing:.1px;margin-bottom:3px;text-transform:uppercase}
 .manual.good .mtitle{color:var(--primary)} .manual.mid .mtitle{color:var(--sub)}
 
-/* ── 출처·이력 ── */
-.credits{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);padding:26px 28px;margin-top:22px}
-.credits h3{margin:0 0 6px;font-size:19px;font-weight:600;letter-spacing:-.35px;color:var(--ink)}
-.credits p.lead{margin:0 0 16px;color:var(--sub);font-size:14px}
-.credits ul{margin:0;padding:0;list-style:none;display:grid;gap:12px}
-.credits li{font-size:14px;line-height:1.6}
+/* ── 출처·이력 (파치먼트 타일) ── */
+.credits{--tile:var(--parchment);background:var(--tile);box-shadow:0 0 0 100vmax var(--tile);clip-path:inset(0 -100vmax)}
+.credits+.credits{--tile:var(--canvas)}
+.credits h3{margin:0 0 8px;font-size:24px;font-weight:600;letter-spacing:-.37px;color:var(--ink)}
+.credits p.lead{margin:0 0 18px;color:var(--sub);font-size:15px}
+.credits ul{margin:0;padding:0;list-style:none;display:grid;gap:14px}
+.credits li{font-size:14.5px;line-height:1.6}
 .credits li b{color:var(--ink);font-weight:600}
 .credits li .who{color:var(--sub);font-size:13px}
 .credits a{color:var(--primary);word-break:break-all;text-decoration:none}
 .credits a:hover{text-decoration:underline}
-.credits .thanks{margin-top:16px;padding-top:14px;border-top:1px solid var(--divider);font-size:13.5px;color:var(--sub);line-height:1.7}
+.credits .thanks{margin-top:18px;padding-top:16px;border-top:1px solid var(--hair);font-size:14px;color:var(--sub);line-height:1.7}
+.credits .tablewrap{background:var(--canvas)}
 .cheap{color:var(--primary);font-weight:600}
 .dash{color:#c7c7cc}
 .chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--pill);background:var(--parchment);color:var(--sub);margin-left:5px;font-weight:400;letter-spacing:0}
 
 /* ── 생성기 ── */
-.gengrid{display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:start}
-@media(max-width:900px){.gengrid{grid-template-columns:1fr}.result{position:static!important}.lessonbox{max-height:320px!important}}
-.field{margin-bottom:18px}
-.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink);letter-spacing:-.1px}
-input[type=number],input[type=text],select{width:100%;padding:11px 14px;border:1px solid var(--hair-solid);
-  border-radius:var(--r-md);font-size:16px;font-family:inherit;background:var(--canvas);color:var(--ink)}
+.gengrid{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start}
+@media(max-width:900px){.gengrid{grid-template-columns:1fr}.result{position:static!important}.lessonbox{max-height:340px!important}}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;color:var(--ink);letter-spacing:-.1px}
+input[type=number],input[type=text],select{width:100%;padding:12px 16px;border:1px solid var(--hair-solid);border-radius:var(--r-md);
+  font-size:17px;letter-spacing:-.37px;font-family:inherit;background:var(--canvas);color:var(--ink)}
 input[type=number]:focus,input[type=text]:focus,select:focus{outline:2px solid var(--primary-focus);outline-offset:0;border-color:transparent}
-.seg{display:flex;gap:8px;flex-wrap:wrap}
-.seg button{flex:1;min-width:104px;padding:10px 12px;border:1px solid var(--hair-solid);background:var(--canvas);
-  border-radius:var(--pill);font-size:13.5px;cursor:pointer;font-weight:400;color:var(--ink);letter-spacing:-.15px;
-  transition:background .15s,color .15s,border-color .15s}
-.seg button.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
-.seglabel{font-size:12px;color:var(--sub);margin:12px 0 6px;font-weight:600;letter-spacing:.1px;text-transform:uppercase}
-#modeseg2 button{color:var(--sub)}
-#modeseg2 button.on{background:var(--primary);border-color:var(--primary);color:#fff}
 
-.lessonbox{max-height:460px;overflow-y:auto;border:1px solid var(--hair);border-radius:var(--r-md);padding:6px 4px;background:var(--canvas)}
+/* 설정 칩 (configurator-option-chip): 흰 필, 선택 = 2px 포커스 블루 테두리 */
+.seg{display:flex;gap:10px;flex-wrap:wrap}
+.seg button{flex:1;min-width:110px;padding:12px 16px;border:1px solid var(--hair-solid);background:var(--canvas);border-radius:var(--pill);
+  font-size:14px;cursor:pointer;font-weight:400;color:var(--ink);letter-spacing:-.22px;transition:border-color .15s,box-shadow .15s}
+.seg button.on{border:2px solid var(--primary-focus);padding:11px 15px;font-weight:600;color:var(--ink);background:var(--canvas)}
+.seglabel{font-size:12px;color:var(--sub);margin:16px 0 8px;font-weight:600;letter-spacing:.1px;text-transform:uppercase}
+#modeseg2 button{color:var(--sub)}
+#modeseg2 button.on{color:var(--primary)}
+
+.lessonbox{max-height:480px;overflow-y:auto;border:1px solid var(--hair);border-radius:var(--r-lg);padding:8px 6px;background:var(--canvas)}
 .gradehead{font-size:12px;font-weight:600;color:var(--sub);padding:12px 12px 6px;position:sticky;top:0;background:var(--canvas);letter-spacing:.1px;text-transform:uppercase}
-.lrow{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:var(--r-sm);cursor:pointer}
+.lrow{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:var(--r-md);cursor:pointer}
 .lrow:hover{background:var(--pearl)}
 .lrow input{margin-top:3px;width:18px;height:18px;flex:0 0 auto;accent-color:var(--primary)}
-.lrow .ltxt{font-size:14.5px;line-height:1.4;letter-spacing:-.2px}
+.lrow .ltxt{font-size:15px;line-height:1.4;letter-spacing:-.22px}
 .lrow .lmeta{font-size:12px;color:var(--sub)}
 .mini{font-size:11px;background:var(--parchment);color:var(--sub);border-radius:var(--pill);padding:2px 8px;margin-left:5px;letter-spacing:0;font-weight:400}
 .mini.warn{background:#fff4e6;color:var(--warn)}
 
-.result{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);padding:22px;position:sticky;top:64px}
-.total{font-size:34px;font-weight:600;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
+.result{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);padding:24px;position:sticky;top:64px}
+.total{font-size:40px;font-weight:600;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
 .total.over{color:var(--warn)}
 .total.ok{color:var(--ink)}
-.budgetbar{height:6px;background:var(--parchment);border-radius:var(--pill);overflow:hidden;margin:12px 0 6px}
+.budgetbar{height:6px;background:var(--parchment);border-radius:var(--pill);overflow:hidden;margin:14px 0 6px}
 .budgetbar i{display:block;height:100%;background:var(--primary);transition:width .3s}
 .budgetbar i.over{background:var(--warn)}
-.rlist{margin:16px 0 0;font-size:14px}
-.rline{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--divider);flex-wrap:wrap}
+.rlist{margin:18px 0 0;font-size:14.5px}
+.rline{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--divider);flex-wrap:wrap}
 .rline .rn{color:var(--ink);flex:1 1 60%;letter-spacing:-.15px}
 .rline .rv{font-variant-numeric:tabular-nums;color:var(--ink);flex:0 0 auto;font-weight:600}
 .rline.na .rn{color:var(--sub)}
-.vendorsel{display:block;width:100%;margin-top:7px;font-size:12.5px;padding:6px 10px;
-  border:1px solid var(--hair-solid);border-radius:var(--r-sm);background:var(--canvas);color:var(--ink);cursor:pointer}
+.vendorsel{display:block;width:100%;margin-top:8px;font-size:13px;padding:7px 12px;border:1px solid var(--hair-solid);border-radius:var(--r-sm);background:var(--canvas);color:var(--ink);cursor:pointer}
 .vendorsel.manual{border-color:var(--primary);color:var(--primary);font-weight:600;background:var(--primary-soft)}
-.pickbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--sub);
-  background:var(--primary-soft);border:1px solid transparent;border-radius:var(--r-md);padding:9px 12px;margin-bottom:10px}
+.pickbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--sub);background:var(--primary-soft);border:none;border-radius:var(--r-md);padding:10px 14px;margin-bottom:12px}
 .pickbar b{color:var(--primary);font-weight:600}
-.pickbar button{margin-left:auto;border:1px solid var(--primary);background:var(--canvas);border-radius:var(--pill);
-  font-size:12px;padding:5px 12px;cursor:pointer;color:var(--primary);font-weight:400}
+.pickbar button{margin-left:auto;border:1px solid var(--primary);background:var(--canvas);border-radius:var(--pill);font-size:12px;padding:5px 13px;cursor:pointer;color:var(--primary)}
 .pickbar.off{background:var(--parchment);color:var(--sub)}
 .pickbar.off b{color:var(--ink)}
 .pickbar.off button{border-color:var(--hair-solid);color:var(--ink)}
-
-.xbtn{margin-left:8px;border:1px solid var(--hair-solid);background:var(--canvas);border-radius:50%;
-  width:24px;height:24px;line-height:1;cursor:pointer;font-size:12px;color:var(--sub-48);padding:0;vertical-align:middle}
+.xbtn{margin-left:8px;border:1px solid var(--hair-solid);background:var(--canvas);border-radius:50%;width:26px;height:26px;line-height:1;cursor:pointer;font-size:12px;color:var(--sub-48);padding:0;vertical-align:middle}
 .xbtn:hover{border-color:var(--ink);color:var(--ink)}
 .xbtn.on{border-color:var(--primary);color:var(--primary)}
 .rline.off{opacity:.5}
@@ -210,12 +224,10 @@ input[type=number]:focus,input[type=text]:focus,select:focus{outline:2px solid v
 /* ── 실험 자료 위치 ── */
 .lwrap{display:flex;align-items:flex-start;gap:4px}
 .lwrap .lrow{flex:1 1 auto}
-.refbtn{flex:0 0 auto;margin:10px 10px 0 0;border:1px solid var(--hair-solid);background:var(--canvas);
-  border-radius:var(--pill);font-size:12px;padding:4px 11px;cursor:pointer;color:var(--primary);white-space:nowrap}
+.refbtn{flex:0 0 auto;margin:11px 10px 0 0;border:1px solid var(--hair-solid);background:var(--canvas);border-radius:var(--pill);font-size:12px;padding:4px 12px;cursor:pointer;color:var(--primary);white-space:nowrap}
 .refbtn:hover{background:var(--primary-soft)}
 .refbtn.on{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
-.refbox{margin:0 12px 10px 40px;padding:12px 14px;background:var(--parchment);border:1px solid transparent;
-  border-radius:var(--r-md);font-size:13px;line-height:1.6}
+.refbox{margin:0 12px 10px 40px;padding:14px 16px;background:var(--parchment);border:none;border-radius:var(--r-md);font-size:13px;line-height:1.6}
 .refhead{font-size:11px;font-weight:600;color:var(--sub);letter-spacing:.1px;margin-bottom:8px;text-transform:uppercase}
 .refrow{padding:7px 0;border-top:1px solid rgba(0,0,0,.06)}
 .refrow:first-of-type{border-top:none}
@@ -226,28 +238,43 @@ input[type=number]:focus,input[type=text]:focus,select:focus{outline:2px solid v
 .ed .edn{display:inline-block;background:var(--primary);color:#fff;border-radius:var(--pill);padding:1px 7px;font-size:10.5px;font-weight:600;margin-right:4px}
 .ed i{color:var(--sub-48);font-style:normal;font-size:11px;margin-left:3px}
 .refbox a{color:var(--primary);font-weight:600;word-break:break-all;text-decoration:none}
-.refbox a:hover{text-decoration:underline}
-.scale{display:flex;gap:4px;margin-top:7px}
-.scale button{border:1px solid var(--hair-solid);background:var(--canvas);border-radius:var(--pill);font-size:11px;
-  padding:3px 9px;cursor:pointer;color:var(--sub);line-height:1.5}
-.scale button.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
-.vsum{display:flex;justify-content:space-between;font-size:14.5px;font-weight:600;padding:11px 0;border-top:1px solid var(--hair-solid);margin-top:8px}
+.scale{display:flex;gap:4px;margin-top:8px}
+.scale button{border:1px solid var(--hair-solid);background:var(--canvas);border-radius:var(--pill);font-size:11px;padding:3px 10px;cursor:pointer;color:var(--sub);line-height:1.5}
+.scale button.on{border:2px solid var(--primary-focus);padding:2px 9px;color:var(--ink);font-weight:600}
+.vsum{display:flex;justify-content:space-between;font-size:15px;font-weight:600;padding:12px 0;border-top:1px solid var(--hair-solid);margin-top:8px}
 
-/* ── 버튼 ── */
-.btn{display:inline-block;padding:11px 20px;border-radius:var(--pill);border:1px solid var(--primary);
-  background:var(--canvas);color:var(--primary);font-size:14px;font-weight:400;cursor:pointer;letter-spacing:-.15px;
-  transition:background .15s,color .15s}
+/* ── 버튼 (button-primary / button-secondary-pill) ── */
+.btn{display:inline-block;padding:11px 22px;border-radius:var(--pill);border:1px solid var(--primary);background:transparent;color:var(--primary);
+  font-size:15px;font-weight:400;cursor:pointer;letter-spacing:-.22px;text-decoration:none;line-height:1.2;transition:background .15s,color .15s}
 .btn:hover{background:var(--primary-soft)}
 .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
 .btn.primary:hover{background:var(--primary-focus)}
-.btnrow{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
-.empty{color:var(--sub);font-size:14.5px;text-align:center;padding:34px 10px;line-height:1.6}
+.btn.big{padding:14px 28px;font-size:17px;font-weight:400}
+.btnrow{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.empty{color:var(--sub);font-size:15px;text-align:center;padding:36px 10px;line-height:1.6}
+
+/* ── 연수 허브 다운로드 (store-utility-card) ── */
+.dlgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:0 0 20px}
+.dl{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;text-decoration:none;color:var(--ink);
+  background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-lg);padding:18px;transition:border-color .15s}
+.dl:hover{border-color:var(--primary)}
+.dl-k{background:var(--ink);color:#fff;font-size:11px;font-weight:600;letter-spacing:.2px;padding:4px 9px;border-radius:var(--r-sm);margin-top:2px}
+.dl-t{font-size:14.5px;line-height:1.45;letter-spacing:-.2px}
+.dl-t b{display:block;margin-bottom:4px}
+.dl-t small{display:block;color:var(--sub);font-size:12.5px;line-height:1.5;letter-spacing:-.1px}
+.dl-go{color:var(--primary);font-size:20px;font-weight:300;margin-top:-2px}
+.hublinks{background:var(--parchment);border-radius:var(--r-lg);padding:22px 24px}
+.hub-main{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.hub-sec{display:grid;gap:6px}
+.hub-label{font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.1px;margin-bottom:4px}
+.hub-sec a{color:var(--primary);text-decoration:none;font-size:14.5px;letter-spacing:-.2px;line-height:1.5}
+.hub-sec a::after{content:" ›";opacity:.6}
+.hub-sec a:hover{text-decoration:underline}
 
 /* ── 버니어 영상 ── */
-.vidlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding-left:14px!important}
-.vid{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;text-decoration:none;
-  color:var(--ink);background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);padding:8px;
-  transition:border-color .15s}
+.vidlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;padding-left:18px!important}
+.vid{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:center;text-decoration:none;color:var(--ink);
+  background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);padding:8px;transition:border-color .15s}
 .vid:hover{border-color:var(--primary)}
 .vid img{width:96px;height:54px;object-fit:cover;border-radius:var(--r-sm);background:var(--parchment);display:block}
 .vid .vt{font-size:13px;line-height:1.35;letter-spacing:-.2px;color:var(--ink)}
@@ -255,16 +282,32 @@ input[type=number]:focus,input[type=text]:focus,select:focus{outline:2px solid v
 .vid .vgo{color:var(--primary);font-size:12px;padding-right:4px}
 @media(max-width:560px){.vidlist{grid-template-columns:1fr}}
 
-/* ── 푸터(파치먼트) ── */
-footer#app-credit{width:100%;box-sizing:border-box;margin:48px 0 0;padding:40px 22px 48px;
-  text-align:center;font-size:12px;line-height:1.8;color:var(--sub);background:var(--parchment);
-  border-top:1px solid var(--hair);letter-spacing:-.1px}
+/* ── 하단 고정 바 (floating-sticky-bar) ── */
+.stickybar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(245,245,247,.8);
+  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--hair)}
+.stickybar[hidden]{display:none}
+.sb-wrap{max-width:1160px;margin:0 auto;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:64px}
+.sb-l{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sb-k{font-size:12px;color:var(--sub);font-weight:600;text-transform:uppercase;letter-spacing:.1px}
+.sb-v{font-size:21px;font-weight:600;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.sb-v.over{color:var(--warn)}
+.sb-m{font-size:13px;color:var(--sub)}
+.sb-r{display:flex;gap:8px;flex:0 0 auto}
+.sb-r .btn{padding:9px 18px;font-size:14px}
+body[data-tab="p3"]{padding-bottom:88px}
+@media(max-width:560px){.sb-r .btn:first-child{display:none}.sb-m{display:none}}
+
+/* ── 푸터 ── */
+footer#app-credit{width:100%;box-sizing:border-box;margin:0;padding:48px 22px 56px;text-align:center;font-size:12px;line-height:1.9;
+  color:var(--sub-48);background:var(--parchment);border-top:1px solid var(--hair);letter-spacing:-.12px}
 footer#app-credit b{color:var(--ink);font-weight:600}
 
 @media print{
-  nav.tabs,.btnrow,header.top .gnav{display:none}
+  nav.tabs,.btnrow,header.top .gnav,.stickybar,.hero-cta{display:none}
   .panel{display:block!important}.result{position:static}
-  body{background:#fff}.card,.credits,.vcard{border-color:#ddd}
+  .panel>.card,.advice,.credits{box-shadow:none;clip-path:none;padding:24px 0}
+  .advice{color:#000;background:#fff}
+  body{background:#fff}
 }
 </style>
 </head>
@@ -272,24 +315,34 @@ footer#app-credit b{color:var(--ink);font-weight:600}
 
 <header class="top">
   <div class="gnav">중학교 과학 센서 구매 가이드 &nbsp;·&nbsp; 디지털 탐구 도구 활용 교원연수 강사용</div>
-  <div class="wrap">
-    <h1>중학교 과학 센서 구매 가이드</h1>
-    <p>디지털 탐구 도구 활용 교원연수 · 강사용 참고 자료</p>
+  <div class="wrap hero">
+    <div class="eyebrow">2026 · 중학교 과학</div>
+    <h1>센서, 무엇을 살까.</h1>
+    <p>업체 네 곳의 가격과 쓰임을 한 화면에서 비교하고,<br class="brk">예산·모둠 수·수업을 고르면 구매 계획과 정산서까지 나옵니다.</p>
+    <div class="hero-cta">
+      <button class="btn primary big" data-goto="p3">구매 계획 만들기</button>
+      <button class="btn big" data-goto="p2">가격표 보기 ›</button>
+    </div>
     <div class="badge-row">
-      <span class="badge">업체 4곳 가격 비교</span>
-      <span class="badge">수업 26건 · 성취기준 매핑</span>
-      <span class="badge">예산별 구매 계획 자동 산출</span>
+      <span class="badge">업체 4곳 · 센서 24종</span>
+      <span class="badge">수업 26건 · 성취기준</span>
+      <span class="badge">정산서 CSV</span>
+      <span class="badge">한국어 영상 41편</span>
     </div>
   </div>
 </header>
 
 <nav class="tabs">
   <div class="wrap">
-    <button class="tab on" data-p="p1">업체 비교</button>
-    <button class="tab" data-p="p2">센서 가격표</button>
-    <button class="tab" data-p="p3">구매 계획 생성기</button>
-    <button class="tab" data-p="p4">수업 사례 · 성취기준</button>
-    <button class="tab" data-p="p5">강사 참고 노트</button>
+    <span class="nav-title">센서 구매 가이드</span>
+    <div class="nav-links">
+      <button class="tab on" data-p="p1">업체 비교</button>
+      <button class="tab" data-p="p2">센서 가격표</button>
+      <button class="tab" data-p="p3">구매 계획 생성기</button>
+      <button class="tab" data-p="p4">수업 사례 · 성취기준</button>
+      <button class="tab" data-p="p5">강사 참고 노트</button>
+    </div>
+    <button class="nav-cta" data-goto="p3">계획 만들기</button>
   </div>
 </nav>
 
@@ -791,7 +844,7 @@ footer#app-credit b{color:var(--ink);font-weight:600}
             · 구분은 <b>필수</b>, 항목은 <b>⑥AI수업기자재</b>, 재원은 <b>교육청</b>으로 채워 둡니다. 학교 상황에 맞게 고치세요.<br>
             · 비고에 업체·모델명·S2B 물품번호를 넣어 두었습니다.<br>
             · 정산서 엑셀을 열고 13행부터 붙여 넣으시면 됩니다. <b>소계 행은 양식의 수식이 계산</b>하니 따로 넣지 않았습니다.<br>
-            · 이미 보유로 제외한 항목과 미취급 항목은 들어가지 않습니다.
+            · 이미 보유로 제외한 항목과 미취급 항목은 들어가지 않습니다.<br>· 붙여 넣을 <b>정산서 예시 xlsx</b>(수식 살아 있음)는 「강사 참고 노트」 탭 4번에서 내려받을 수 있습니다.
           </div>
         </details>
       </div>
@@ -869,7 +922,53 @@ footer#app-credit b{color:var(--ink);font-weight:600}
       <li>멀티 충전기 · USB-C 케이블 여분 · 센서 번호 스티커</li>
     </ul>
 
-    <h3>4. 센서를 산 다음 — 수업 운영 도구</h3>
+    <h3>4. MBL 센서 연수 허브에서 가져가기</h3>
+    <p style="font-size:15px;margin:0 0 14px;line-height:1.7;color:var(--sub)">
+      2026 찾아가는 디지털 과학 연수(송례중·위례솔중·역삼중)용으로 만든 진행 허브입니다.
+      이 가이드가 「무엇을 살까」라면, 허브는 「사서 어떻게 수업하고 어떻게 서류를 내나」까지 이어집니다.
+      아래 파일은 바로 내려받을 수 있고, 절 링크는 해당 부분이 바로 열립니다.
+    </p>
+
+    <div class="dlgrid">
+      <a class="dl" href="https://scienceisjo.github.io/growing-teachers/sensor-hub/docs/settlement_example_sensors.xlsx" download>
+        <span class="dl-k">XLSX</span>
+        <span class="dl-t"><b>정산서 예시 — 센서 구입분만 채운 교육청 양식</b>
+          <small>양식 그대로에 센서 줄만 넣은 것. 학교명·기간·교부액·품명·단가·수량만 바꾸면 되고, 노란 칸 수식은 살아 있습니다. 위 「정산서 CSV」를 여기에 붙이면 됩니다.</small></span>
+        <span class="dl-go">↓</span>
+      </a>
+      <a class="dl" href="https://scienceisjo.github.io/growing-teachers/sensor-hub/docs/report_appendix_sensors.hwpx" download>
+        <span class="dl-k">HWPX</span>
+        <span class="dl-t"><b>결과보고서 붙임 예시 — 센서가 들어가는 4·5·6·7번</b>
+          <small>지능형 과학실 결과보고서에서 센서 관련 항목(활용 사례·교원 역량 강화·사업 효과)을 채운 한글 파일. 활동 사진 2장 + 참가자 명단 + 연수 링크가 6번 한 줄이 됩니다.</small></span>
+        <span class="dl-go">↓</span>
+      </a>
+      <a class="dl" href="https://scienceisjo.github.io/growing-teachers/sensor-hub/docs/report_appendix_sensors.md" download>
+        <span class="dl-k">MD</span>
+        <span class="dl-t"><b>같은 내용 텍스트판</b>
+          <small>한글 없이 복사해 쓰실 때. 내용은 hwpx와 같습니다.</small></span>
+        <span class="dl-go">↓</span>
+      </a>
+    </div>
+
+    <div class="hublinks">
+      <div class="hub-main">
+        <a class="btn primary" href="https://scienceisjo.github.io/growing-teachers/sensor-hub/" target="_blank" rel="noopener">연수 허브 열기 (참가자용)</a>
+        <a class="btn" href="https://scienceisjo.github.io/growing-teachers/sensor-hub/teacher/" target="_blank" rel="noopener">강사용 (노트·대본 펼침)</a>
+      </div>
+      <div class="hub-sec">
+        <span class="hub-label">이 가이드와 이어지는 절</span>
+        <a href="https://scienceisjo.github.io/growing-teachers/sensor-hub/#sec-buy" target="_blank" rel="noopener">센서 구매 계획 세우기 — 수요 조사표 계산기</a>
+        <a href="https://scienceisjo.github.io/growing-teachers/sensor-hub/#sec-paper" target="_blank" rel="noopener">사고 나서 — 정산서·결과보고서·디지털 탐구 도구 정산보고서</a>
+        <a href="https://scienceisjo.github.io/growing-teachers/sensor-hub/#sec-ports" target="_blank" rel="noopener">센서는 어떻게 전달하나 — 이지메이커 보드 포트 이야기</a>
+        <a href="https://scienceisjo.github.io/growing-teachers/sensor-hub/#sec-basics" target="_blank" rel="noopener">센서 하나씩 익히기</a>
+        <a href="https://scienceisjo.github.io/growing-teachers/sensor-hub/#sec-g2" target="_blank" rel="noopener">중2 실험 전체 — 매뉴얼 쪽수와 축·수집 모드</a>
+        <a href="https://scienceisjo.github.io/growing-teachers/sensor-hub/#sec-axis" target="_blank" rel="noopener">축을 바꾸면 보인다 — 옴의 법칙·1/r²·P×V</a>
+        <a href="https://scienceisjo.github.io/growing-teachers/sensor-hub/#sec-lose" target="_blank" rel="noopener">무엇을 잃는가 — 센서가 가져간 자리에 무엇을 넣을 것인가</a>
+        <a href="https://scienceisjo.github.io/growing-teachers/sensor-hub/#sec-smartlab" target="_blank" rel="noopener">지능형 과학실</a>
+      </div>
+    </div>
+
+    <h3>5. 센서를 산 다음 — 수업 운영 도구</h3>
     <div class="card" style="border:1px solid #bfdbfe;background:var(--accent-soft);margin:10px 0 16px;padding:16px 18px">
       <div style="font-weight:800;font-size:16px;margin-bottom:2px">MBL 수업허브 <span class="mini">무료 · 설치 없음</span></div>
       <div style="font-size:12.5px;color:var(--sub);margin-bottom:10px">
@@ -900,7 +999,7 @@ footer#app-credit b{color:var(--ink);font-weight:600}
       </div>
     </div>
 
-    <h3>5. 버니어 영상 모음 — 중학교용으로 골라 정리</h3>
+    <h3>6. 버니어 영상 모음 — 중학교용으로 골라 정리</h3>
     <p style="font-size:13.5px;margin:0 0 10px;line-height:1.7">
       국내 총판 <b>한국과학(KoreaScientifics)</b> 유튜브 채널 90여 편 중 중학교 수업과 연수에 바로 쓸 만한 것을 골랐습니다.
       실험 영상은 3~8분이고 모두 한국어 자막·설명입니다. 연수에서 실물 시연이 어려운 센서는 이 영상으로 대신하기 좋습니다.
@@ -931,7 +1030,7 @@ footer#app-credit b{color:var(--ink);font-weight:600}
       영상 링크는 2026-09-17에 전부 열리는지 확인했습니다. 유튜브 영상은 삭제·비공개 전환될 수 있으니, 연수 당일 쓸 영상은 <b>전날 한 번 더 열어 보시길</b> 권합니다.
     </div>
 
-    <h3>6. 자주 나오는 발주 실수</h3>
+    <h3>7. 자주 나오는 발주 실수</h3>
     <ul style="font-size:14px">
       <li>이지메이커 <b>「공기압 센서」와 「기압 센서」는 다른 제품</b> — 주사기 연결용은 공기압</li>
       <li>이지메이커 <b>나노 센서는 나노보드와 배터리가 별도</b> — 센서만 발주하면 작동하지 않음</li>
@@ -949,7 +1048,7 @@ footer#app-credit b{color:var(--ink);font-weight:600}
     <table style="min-width:520px">
       <thead><tr><th style="width:96px">날짜</th><th>변경 내용</th></tr></thead>
       <tbody>
-        <tr><td class="name">2026-09-17</td><td style="white-space:normal"><b>애플 디자인으로 재조판.</b> 버니어 매뉴얼 평가를 <b>충실</b>로 정정하고 한국과학 채널 <b>한국어 영상 41편</b> 모음 신설. 구매 계획에 <b>한 업체로만</b> 프리셋 4종과 <b>정산서 양식 CSV 내려받기</b> 추가. 중복 구매 권고를 최상단으로, 고예산 기준에 버니어 추가, 영재·연구 항목에 이지메이커(탐구 자유도) 병기. 제작자 표기</td></tr>
+        <tr><td class="name">2026-09-17</td><td style="white-space:normal"><b>Apple iPhone 페이지 문법으로 재조판</b>(전폭 타일 교차·설정 칩·하단 고정 바·다크 권고 타일). <b>MBL 센서 연수 허브 자료</b>(정산서 예시 xlsx·결과보고서 붙임 hwpx/md·절 링크 8개) 추가. 버니어 매뉴얼 평가를 <b>충실</b>로 정정하고 한국과학 채널 <b>한국어 영상 41편</b> 모음 신설. 구매 계획에 <b>한 업체로만</b> 프리셋 4종과 <b>정산서 양식 CSV 내려받기</b> 추가. 중복 구매 권고를 최상단으로, 고예산 기준에 버니어 추가, 영재·연구 항목에 이지메이커(탐구 자유도) 병기. 제작자 표기</td></tr>
         <tr><td class="name">2026-08-25</td><td style="white-space:normal"><b>이지메이커 보드 구매 안내</b> 추가(센서만 사면 안 되는 이유·포트별 동시 연결 수). <b>사이언스큐브 유선 라인 제외</b>(인터페이스 별도 구매 필요). 업데이트 이력 신설</td></tr>
         <tr><td class="name">2026-08-19</td><td style="white-space:normal">클래스보드 『기초·측정 방법』 센서 19종 쪽수, 사이언스큐브 <b>S2B 물품번호</b> 23종, 사례집 <b>신판(따라잡기·245쪽)</b> 쪽수 병기. 자외선 항목 정정(조도센서 겸용)</td></tr>
         <tr><td class="name">2026-08-19</td><td style="white-space:normal">구매 계획에서 <b>보유 품목 제외</b> 기능, 실험별 <b>매뉴얼 위치</b> 표시(자료집 쪽수·파스코 링크)</td></tr>
@@ -1010,6 +1109,13 @@ footer#app-credit b{color:var(--ink);font-weight:600}
   </p>
 </section>
 
+</div>
+
+<div class="stickybar" id="stickybar" hidden>
+  <div class="sb-wrap">
+    <div class="sb-l"><span class="sb-k">구매 계획 합계</span><span class="sb-v" id="sbTotal">0원</span><span class="sb-m" id="sbMeta"></span></div>
+    <div class="sb-r"><button class="btn" onclick="copyPlan()">목록 복사</button><button class="btn primary" onclick="downloadSettlementCSV()">정산서 CSV</button></div>
+  </div>
 </div>
 
 <footer id="app-credit">
@@ -1211,15 +1317,34 @@ const LESSONS = [
 const won = n => n.toLocaleString('ko-KR') + '원';
 
 /* ---------- 탭 ---------- */
-document.querySelectorAll('.tab').forEach(t=>{
-  t.onclick=()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on');
-    document.getElementById(t.dataset.p).classList.add('on');
-    window.scrollTo({top:0,behavior:'smooth'});
-  };
-});
+function showTab(id, scroll){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on', x.dataset.p===id));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('on', x.id===id));
+  document.body.dataset.tab=id;
+  updateSticky();
+  if(scroll!==false){
+    const nav=document.querySelector('nav.tabs');
+    const y=nav.getBoundingClientRect().top+window.scrollY;
+    // 히어로 아래로 스크롤해 서브네비가 상단에 붙은 상태로 내용을 보여줍니다
+    window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+  }
+}
+document.querySelectorAll('.tab').forEach(t=>{ t.onclick=()=>showTab(t.dataset.p); });
+document.querySelectorAll('[data-goto]').forEach(b=>{ b.onclick=()=>showTab(b.dataset.goto); });
+
+/* 하단 고정 바 — 생성기 탭에서 계획이 있을 때만 */
+function updateSticky(){
+  const bar=document.getElementById('stickybar'); if(!bar) return;
+  const on=document.body.dataset.tab==='p3' && typeof lastPlan!=='undefined' && lastPlan && lastPlan.items.length;
+  bar.hidden=!on;
+  if(on){
+    document.getElementById('sbTotal').textContent=won(lastPlan.total);
+    const d=lastPlan.budget-lastPlan.total;
+    document.getElementById('sbMeta').textContent=lastPlan.groups+'모둠 · '+(d>=0?'여유 '+won(d):'초과 '+won(-d));
+    document.getElementById('sbTotal').classList.toggle('over', d<0);
+  }
+}
+document.body.dataset.tab='p1';
 
 /* ---------- 가격표 ---------- */
 function renderPrices(filter){
@@ -1411,7 +1536,7 @@ function calc(){
     document.getElementById('rtotal').className='total';
     document.getElementById('rbar').style.width='0%';
     document.getElementById('rbudget').textContent='예산 대비 0%';
-    lastPlan=null; return;
+    lastPlan=null; updateSticky(); return;
   }
 
   // 센서 종류별 동시 필요 개수의 최댓값
@@ -1558,6 +1683,7 @@ function calc(){
   bar.className=total>budget?'over':'';
   document.getElementById('rbudget').textContent=
     '예산 대비 '+(budget>0?Math.round(total/budget*100):0)+'% · '+groups+'모둠 기준';
+  updateSticky();
 }
 
 document.getElementById('budget').oninput=calc;
